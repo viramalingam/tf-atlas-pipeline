@@ -241,7 +241,7 @@ test_chromosome=`jq '.["0"]["test"][0]' $project_dir/splits.json | sed 's/"//g'`
 
 
 # modify the testing_input json for 
-cp testing_input.json testing_input_all.json
+cp $project_dir/testing_input.json $project_dir/testing_input_all.json
 echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
 sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
 
@@ -315,7 +315,7 @@ fastpredict \
 
 
 # modify the testing_input json for 
-cp testing_input.json testing_input_peaks.json
+cp $project_dir/testing_input.json $project_dir/testing_input_peaks.json
 echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json 
 sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json | tee -a $logfile 
 
