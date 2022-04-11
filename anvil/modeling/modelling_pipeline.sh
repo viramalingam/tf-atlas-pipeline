@@ -9,19 +9,18 @@ function timestamp {
 }
 
 experiment=$1
-input_json=$2
-training_input_json=$3
-testing_input_json=$4
-bpnet_params_json=$5
-splits_json=$6
-reference_file=$7
-reference_file_index=$8
-chrom_sizes=$9
-chroms_txt=${10}
-bigwigs=${11}
-peaks=${12}
-background_regions=${13}
-learning_rate=${14}
+training_input_json=$2
+testing_input_json=$3
+bpnet_params_json=$4
+splits_json=$5
+reference_file=$6
+reference_file_index=$7
+chrom_sizes=$8
+chroms_txt=${9}
+bigwigs=${10}
+peaks=${11}
+background_regions=${12}
+learning_rate=${13}
 
 
 mkdir /project
@@ -123,7 +122,12 @@ tee -a $logfile
 gunzip ${data_dir}/${experiment}_background_regions.bed.gz
 
 
+echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed.gz ${data_dir}/${experiment}_background_regions.bed.gz \
 
+">" ${data_dir}/${experiment}_combined.bed.gz |\
+tee -a $logfile 
+
+cat ${data_dir}/${experiment}_peaks.bed.gz ${data_dir}/${experiment}_background_regions.bed.gz > ${data_dir}/${experiment}_combined.bed.gz
 
 
 # cp input json template
@@ -140,29 +144,9 @@ echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/training_input.json
 sed -i -e "s/<>/$1/g" $project_dir/training_input.json | tee -a $logfile 
 
 
-# Finally, the input json for the rest of the commands 
-
-echo $( timestamp ): "cp" $input_json \
-$project_dir/input.json | tee -a $logfile 
-cp $input_json $project_dir/input.json
-
-
-
-# modify the input json for 
-echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/input.json 
-sed -i -e "s/<>/$1/g" $project_dir/input.json | tee -a $logfile 
-
-
 echo $( timestamp ): "cp" $testing_input_json \
 $project_dir/testing_input.json | tee -a $logfile 
 cp $testing_input_json $project_dir/testing_input.json
-
-
-
-# modify the testing_input json for 
-echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/testing_input.json 
-sed -i -e "s/<>/$1/g" $project_dir/testing_input.json | tee -a $logfile 
-
 
 
 # cp bpnet params json template
@@ -180,17 +164,17 @@ cp $splits_json $project_dir/splits.json
 
 
 ls /project/data/
-cat $project_dir/input.json
+cat $project_dir/training_input.json
 
 # compute the counts loss weight to be used for this experiment
 echo $( timestamp ): "counts_loss_weight=\`counts_loss_weight --input-data \
-$project_dir/input.json\`" | tee -a $logfile
+$project_dir/training_input.json\`" | tee -a $logfile
 
 #default counts_loss_weight
 counts_loss_weight=100
 
 #compute the counts_loss_weight; if it does not work default will be used
-counts_loss_weight=`counts_loss_weight --input-data $project_dir/input.json`
+counts_loss_weight=`counts_loss_weight --input-data $project_dir/training_input.json`
 
 # print the counts loss weight
 echo $( timestamp ): "counts_loss_weight:" $counts_loss_weight | tee -a $logfile 
@@ -202,7 +186,7 @@ sed -i -e "s/<>/$counts_loss_weight/g" $project_dir/bpnet_params.json
 
 #set threads based on number of peaks
 
-if [ $(wc -l < ${data_dir}/${experiment}_combined.bed) -lt 3500 ];then
+if [ $(wc -l < ${data_dir}/${experiment}_peaks.bed) -lt 3500 ];then
     threads=1
 else
     threads=2
@@ -254,6 +238,17 @@ echo 'test_chromosome=jq .["0"]["test"][0] $project_dir/splits.json | sed s/"//g
 
 test_chromosome=`jq '.["0"]["test"][0]' $project_dir/splits.json | sed 's/"//g'` 
 
+# modify he input json for the testing
+
+
+# modify the testing_input json for 
+echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/testing_input.json 
+sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
+
+echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/testing_input.json 
+sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
+
+
 echo $( timestamp ): "
 fastpredict \\
     --model $model_dir/${1}_split000.h5 \\
@@ -261,7 +256,7 @@ fastpredict \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
-    --input-data $project_dir/input.json \\
+    --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -276,7 +271,7 @@ fastpredict \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
-    --input-data $project_dir/input.json \
+    --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
@@ -294,7 +289,7 @@ fastpredict \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
-    --input-data $project_dir/input.json \\
+    --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -309,7 +304,7 @@ fastpredict \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_all_chroms \
-    --input-data $project_dir/input.json \
+    --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
@@ -319,7 +314,12 @@ fastpredict \
     --threads $threads
 
 
+# modify the testing_input json for 
+echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/testing_input.json 
+sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json | tee -a $logfile 
 
+echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/testing_input.json 
+sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a $logfile
 
 echo $( timestamp ): "
 fastpredict \\
@@ -328,7 +328,7 @@ fastpredict \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
-    --input-data $project_dir/testing_input.json \\
+    --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -343,7 +343,7 @@ fastpredict \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms \
-    --input-data $project_dir/testing_input.json \
+    --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
@@ -360,7 +360,7 @@ fastpredict \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
-    --input-data $project_dir/testing_input.json \\
+    --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -375,7 +375,7 @@ fastpredict \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_all_chroms \
-    --input-data $project_dir/testing_input.json \
+    --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \

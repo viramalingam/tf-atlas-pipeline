@@ -3,7 +3,6 @@ version 1.0
 task run_modelling {
 	input {
 		String experiment
-		File input_json
 		File training_input_json
 		File testing_input_json
 		File bpnet_params_json
@@ -29,8 +28,8 @@ task run_modelling {
 
 		##modelling
 
-		echo "run /my_scripts/TF-Atlas/anvil/modeling/modelling_pipeline.sh" ${experiment} ${input_json} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
-		/my_scripts/TF-Atlas/anvil/modeling/modelling_pipeline.sh ${experiment} ${input_json} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
+		echo "run /my_scripts/TF-Atlas/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
+		/my_scripts/TF-Atlas/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -45,6 +44,10 @@ task run_modelling {
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/spearman.txt /cromwell_root/spearman.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/pearson.txt /cromwell_root/pearson.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/jsd.txt /cromwell_root/jsd.txt
+
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/spearman.txt /cromwell_root/spearman_all_peaks.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/pearson.txt /cromwell_root/pearson_all_peaks.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/jsd.txt /cromwell_root/jsd_all_peaks.txt
 		
 	}
 	
@@ -57,9 +60,13 @@ task run_modelling {
 		Array[File] predictions_and_metrics_all_peaks_all_chroms = glob("predictions_and_metrics_all_peaks_all_chroms/*")
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = glob("predictions_and_metrics_all_peaks_test_chroms/*")
 
-		Float spearman = read_float("spearman.txt")
-		Float pearson = read_float("pearson.txt")
-		Float jsd = read_float("jsd.txt")
+		Float spearman = read_float("spearman_all_peaks.txt")
+		Float pearson = read_float("pearson_all_peaks.txt")
+		Float jsd = read_float("jsd_all_peaks.txt")
+
+		Float spearman = read_float("spearman_all_peaks.txt")
+		Float pearson = read_float("pearson_all_peaks.txt")
+		Float jsd = read_float("jsd_all_peaks.txt")
 	
 	
 	}
@@ -79,7 +86,6 @@ task run_modelling {
 workflow modelling {
 	input {
 		String experiment
-		File input_json
 		File training_input_json
 		File testing_input_json
 		File bpnet_params_json
@@ -98,7 +104,6 @@ workflow modelling {
 	call run_modelling {
 		input:
 			experiment = experiment,
-			input_json = input_json,
 			training_input_json = training_input_json,
 			testing_input_json = testing_input_json,
 			bpnet_params_json = bpnet_params_json,
@@ -122,6 +127,9 @@ workflow modelling {
 		Float spearman = run_modelling.spearman
 		Float pearson = run_modelling.pearson
 		Float jsd = run_modelling.jsd
+		Float spearman = run_modelling.spearman_all_peaks
+		Float pearson = run_modelling.pearson_all_peaks
+		Float jsd = run_modelling.jsd_all_peaks
 		
 	}
 }
