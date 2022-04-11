@@ -155,12 +155,13 @@ if __name__=="__main__":
             neg_start=neg_tuple[1]
             neg_end=neg_tuple[2]
             neg_chrom_real=neg_tuple[3]
-            negatives_bed.append([neg_chrom_real,int(neg_start),int(neg_end), cur_gc]) 
+            negatives_bed.append([neg_chrom_real,int(neg_start),int(neg_end), ".",0,".",0,0,0,(int(neg_start)-int(neg_end))//2]) 
             output_gc_vals.append(cur_gc)
             foreground_gc_vals.append(gc_value)       
   
     print("Following foreground chromosomes {} were ignored since they are not present in the given fold".format(",".join(list(set(ignored_chroms)))))     
     negatives_bed = pd.DataFrame(negatives_bed)
+    negatives_bed
     negatives_bed.to_csv(args.output_prefix+".bed", sep='\t', index=False, header=False, quoting=csv.QUOTE_NONE)
 
     # checking how far the true distribution of foreground is compared to the backgrounds generated

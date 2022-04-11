@@ -138,8 +138,8 @@ $project_dir/training_input.json | tee -a $logfile
 cp $training_input_json $project_dir/training_input.json
 
 # modify the input json 
-echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/training_input.json 
-sed -i -e "s/<>/$1/g" $project_dir/training_input.json | tee -a $logfile 
+echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/training_input.json 
+sed -i -e "s/<experiment>/$1/g" $project_dir/training_input.json | tee -a $logfile 
 
 
 echo $( timestamp ): "cp" $testing_input_json \
