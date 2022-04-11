@@ -60,13 +60,13 @@ task run_modelling {
 		Array[File] predictions_and_metrics_all_peaks_all_chroms = glob("predictions_and_metrics_all_peaks_all_chroms/*")
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = glob("predictions_and_metrics_all_peaks_test_chroms/*")
 
-		Float spearman = read_float("spearman_all_peaks.txt")
-		Float pearson = read_float("pearson_all_peaks.txt")
-		Float jsd = read_float("jsd_all_peaks.txt")
+		Float spearman = read_float("spearman.txt")
+		Float pearson = read_float("pearson.txt")
+		Float jsd = read_float("jsd.txt")
 
-		Float spearman = read_float("spearman_all_peaks.txt")
-		Float pearson = read_float("pearson_all_peaks.txt")
-		Float jsd = read_float("jsd_all_peaks.txt")
+		Float spearman_all_peaks = read_float("spearman_all_peaks.txt")
+		Float pearson_all_peaks = read_float("pearson_all_peaks.txt")
+		Float jsd_all_peaks = read_float("jsd_all_peaks.txt")
 	
 	
 	}
