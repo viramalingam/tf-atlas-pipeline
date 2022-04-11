@@ -122,12 +122,10 @@ tee -a $logfile
 gunzip ${data_dir}/${experiment}_background_regions.bed.gz
 
 
-echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed.gz ${data_dir}/${experiment}_background_regions.bed.gz \
-
-">" ${data_dir}/${experiment}_combined.bed.gz |\
+echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed ">" ${data_dir}/${experiment}_combined.bed.gz |\
 tee -a $logfile 
 
-cat ${data_dir}/${experiment}_peaks.bed.gz ${data_dir}/${experiment}_background_regions.bed.gz > ${data_dir}/${experiment}_combined.bed.gz
+cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed > ${data_dir}/${experiment}_combined.bed
 
 
 # cp input json template
