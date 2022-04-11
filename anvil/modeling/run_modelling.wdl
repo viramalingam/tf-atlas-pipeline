@@ -127,9 +127,9 @@ workflow modelling {
 		Float spearman = run_modelling.spearman
 		Float pearson = run_modelling.pearson
 		Float jsd = run_modelling.jsd
-		Float spearman = run_modelling.spearman_all_peaks
-		Float pearson = run_modelling.pearson_all_peaks
-		Float jsd = run_modelling.jsd_all_peaks
+		Float spearman_all_peaks = run_modelling.spearman_all_peaks
+		Float pearson_all_peaks = run_modelling.pearson_all_peaks
+		Float jsd_all_peaks = run_modelling.jsd_all_peaks
 		
 	}
 }
