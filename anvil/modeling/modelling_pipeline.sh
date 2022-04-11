@@ -16,11 +16,25 @@ splits_json=$5
 reference_file=$6
 reference_file_index=$7
 chrom_sizes=$8
-chroms_txt=${9}
+chroms_txt=$9
 bigwigs=${10}
 peaks=${11}
 background_regions=${12}
 learning_rate=${13}
+
+echo $1
+echo $2
+echo $3
+echo $4
+echo $5
+echo $6
+echo $7
+echo $8
+echo $9
+echo ${10}
+echo ${11}
+echo ${12}
+echo ${13}
 
 
 mkdir /project
