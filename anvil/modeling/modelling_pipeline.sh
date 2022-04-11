@@ -190,6 +190,7 @@ else
     threads=2
 fi
 
+head ${data_dir}/${experiment}_peaks.bed
 
 echo $( timestamp ): "
 train \\
