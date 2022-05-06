@@ -4,7 +4,6 @@ task run_fastpredict {
 	input {
 		String experiment
 		Array [File] model
-		File input_json
 		File testing_input_json
 		File splits_json
 		File reference_file
@@ -29,8 +28,8 @@ task run_fastpredict {
 
 		##fastpredict
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${input_json} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${input_json} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -83,7 +82,6 @@ workflow fastpredict {
 	input {
 		String experiment
 		Array [File] model
-		File input_json
 		File testing_input_json
 		File splits_json
 		File reference_file
@@ -100,7 +98,6 @@ workflow fastpredict {
 		input:
 			experiment = experiment,
 			model = model,
-			input_json = input_json,
 			testing_input_json = testing_input_json,
 			splits_json = splits_json,
 			reference_file = reference_file,
