@@ -59,7 +59,7 @@ task run_fastpredict {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev2'
 		memory: 16 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
