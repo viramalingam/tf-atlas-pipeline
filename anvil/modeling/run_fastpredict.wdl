@@ -42,18 +42,26 @@ task run_fastpredict {
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/spearman.txt /cromwell_root/spearman.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/pearson.txt /cromwell_root/pearson.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/jsd.txt /cromwell_root/jsd.txt
-		
+
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/spearman.txt /cromwell_root/spearman_all_peaks.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/pearson.txt /cromwell_root/pearson_all_peaks.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/jsd.txt /cromwell_root/jsd_all_peaks.txt
 	}
 	
 	output {
 		Array[File] predictions_and_metrics_test_peaks_test_chroms = glob("predictions_and_metrics_test_peaks_test_chroms/*")
 		Array[File] predictions_and_metrics_test_peaks_all_chroms = glob("predictions_and_metrics_test_peaks_all_chroms/*")
+
 		Array[File] predictions_and_metrics_all_peaks_all_chroms = glob("predictions_and_metrics_all_peaks_all_chroms/*")
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = glob("predictions_and_metrics_all_peaks_test_chroms/*")
 
 		Float spearman = read_float("spearman.txt")
 		Float pearson = read_float("pearson.txt")
 		Float jsd = read_float("jsd.txt")
+
+		Float spearman_all_peaks = read_float("spearman_all_peaks.txt")
+		Float pearson_all_peaks = read_float("pearson_all_peaks.txt")
+		Float jsd_all_peaks = read_float("jsd_all_peaks.txt")
 	
 	
 	}
@@ -110,6 +118,9 @@ workflow fastpredict {
 		Float spearman = run_fastpredict.spearman
 		Float pearson = run_fastpredict.pearson
 		Float jsd = run_fastpredict.jsd
+		Float spearman_all_peaks = run_modelling.spearman_all_peaks
+		Float pearson_all_peaks = run_modelling.pearson_all_peaks
+		Float jsd_all_peaks = run_modelling.jsd_all_peaks
 		
 	}
 }
