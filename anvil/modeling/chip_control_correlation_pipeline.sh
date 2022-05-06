@@ -19,8 +19,7 @@ chrom_sizes=$8
 chroms_txt=$9
 bigwigs=${10}
 peaks=${11}
-background_regions=${12}
-
+peaks_for_testing=${12}
 
 
 mkdir /project
@@ -66,6 +65,7 @@ echo $( timestamp ): "mkdir" $predictions_dir_test_peaks_all_chroms | tee -a $lo
 mkdir $predictions_dir_test_peaks_all_chroms
 
 
+ls $project_dir
 
 echo $( timestamp ): "cp" $reference_file ${reference_dir}/hg38.genome.fa | \
 tee -a $logfile 
@@ -88,7 +88,7 @@ cp $chrom_sizes $reference_dir/chrom.sizes
 cp $chroms_txt $reference_dir/hg38_chroms.txt
 
 
-# Step 1: Copy the bigwig, model and peak files
+# Step 1: Copy the bigwig,models and peak files
 
 echo $bigwigs | sed 's/,/ /g' | xargs cp -t $data_dir/
 
@@ -102,43 +102,50 @@ echo $( timestamp ): "cp" $model ${model_dir}/ |\
 tee -a $logfile 
 
 
-echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}_peaks.bed.gz |\
+echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}_combined.bed.gz |\
 tee -a $logfile 
 
-cp $peaks ${data_dir}/${experiment}_peaks.bed.gz
+cp $peaks ${data_dir}/${experiment}_combined.bed.gz
 
-echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
+echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_combined.bed.gz |\
 tee -a $logfile 
 
-gunzip ${data_dir}/${experiment}_peaks.bed.gz
+gunzip ${data_dir}/${experiment}_combined.bed.gz
 
 
 
-
-echo $( timestamp ): "cp" $background_regions ${data_dir}/${experiment}_background_regions.bed.gz |\
+echo $( timestamp ): "cp" $peaks_for_testing ${data_dir}/${experiment}_peaks_only.bed.gz |\
 tee -a $logfile 
 
-cp $background_regions ${data_dir}/${experiment}_background_regions.bed.gz
+cp $peaks_for_testing ${data_dir}/${experiment}_peaks_only.bed.gz
 
 
-echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_background_regions.bed.gz |\
+echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks_only.bed.gz |\
 tee -a $logfile 
 
-gunzip ${data_dir}/${experiment}_background_regions.bed.gz
+gunzip ${data_dir}/${experiment}_peaks_only.bed.gz
 
 
-echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed ">" ${data_dir}/${experiment}_combined.bed.gz |\
-tee -a $logfile 
 
-cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed > ${data_dir}/${experiment}_combined.bed
+# cp the input json for the rest of the commands 
+
+echo $( timestamp ): "cp" $input_json \
+$project_dir/input.json | tee -a $logfile 
+cp $input_json $project_dir/input.json
+
+# modify the input json
+echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/input.json 
+sed -i -e "s/<>/$1/g" $project_dir/input.json | tee -a $logfile 
 
 
-# cp input json template
 
 echo $( timestamp ): "cp" $testing_input_json \
 $project_dir/testing_input.json | tee -a $logfile 
 cp $testing_input_json $project_dir/testing_input.json
 
+# modify the testing_input json
+echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/testing_input.json 
+sed -i -e "s/<>/$1/g" $project_dir/testing_input.json | tee -a $logfile 
 
 
 # cp splits json template
@@ -148,36 +155,22 @@ cp $splits_json $project_dir/splits.json
 
 
 
-ls /project/data/
 
 #set threads based on number of peaks
-
-if [ $(wc -l < ${data_dir}/${experiment}_peaks.bed) -lt 3500 ];then
+#
+if [ $(wc -l < ${data_dir}/${experiment}_combined.bed) -lt 3500 ];then
     threads=1
 else
     threads=2
 fi
 
-head ${data_dir}/${experiment}_peaks.bed
-
+# threads=1
 
 #get the test chromosome
 
 echo 'test_chromosome=jq .["0"]["test"][0] $project_dir/splits.json | sed s/"//g'
 
 test_chromosome=`jq '.["0"]["test"][0]' $project_dir/splits.json | sed 's/"//g'` 
-
-# modify he input json for the testing
-
-
-# modify the testing_input json for 
-cp $project_dir/testing_input.json $project_dir/testing_input_all.json
-echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
-sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
-
-echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
-sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
-
 
 echo $( timestamp ): "
 fastpredict \\
@@ -186,7 +179,7 @@ fastpredict \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
-    --input-data $project_dir/testing_input_all.json \\
+    --input-data $project_dir/input.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -201,7 +194,7 @@ fastpredict \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
-    --input-data $project_dir/testing_input_all.json \
+    --input-data $project_dir/input.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
@@ -219,7 +212,7 @@ fastpredict \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
-    --input-data $project_dir/testing_input_all.json \\
+    --input-data $project_dir/input.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -234,7 +227,7 @@ fastpredict \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_all_chroms \
-    --input-data $project_dir/testing_input_all.json \
+    --input-data $project_dir/input.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
@@ -244,13 +237,6 @@ fastpredict \
     --threads $threads
 
 
-# modify the testing_input json for 
-cp $project_dir/testing_input.json $project_dir/testing_input_peaks.json
-echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json 
-sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json | tee -a $logfile 
-
-echo  $( timestamp ): "sed -i -e" "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json 
-sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a $logfile
 
 
 echo $( timestamp ): "
@@ -260,7 +246,7 @@ fastpredict \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
-    --input-data $project_dir/testing_input_peaks.json \\
+    --input-data $project_dir/testing_input.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -275,7 +261,7 @@ fastpredict \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms \
-    --input-data $project_dir/testing_input_peaks.json \
+    --input-data $project_dir/testing_input.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
@@ -292,7 +278,7 @@ fastpredict \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
-    --input-data $project_dir/testing_input_peaks.json \\
+    --input-data $project_dir/testing_input.json \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
@@ -307,7 +293,7 @@ fastpredict \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_all_chroms \
-    --input-data $project_dir/testing_input_peaks.json \
+    --input-data $project_dir/testing_input.json \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \

@@ -13,7 +13,7 @@ task run_fastpredict {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
-		File peaks_for_testing
+		File background_regions
 
 
   	}	
@@ -28,8 +28,8 @@ task run_fastpredict {
 
 		##fastpredict
 
-		echo "run /my_scripts/TF-Atlas/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${input_json} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${peaks_for_testing}
-		/my_scripts/TF-Atlas/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${input_json} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${peaks_for_testing}
+		echo "run /my_scripts/TF-Atlas/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${input_json} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
+		/my_scripts/TF-Atlas/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${input_json} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -60,7 +60,7 @@ task run_fastpredict {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling'
-		memory: 8 + "GB"
+		memory: 16 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		gpuType: "nvidia-tesla-k80"
@@ -83,7 +83,7 @@ workflow fastpredict {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
-		File peaks_for_testing
+		File background_regions
 
 	}
 
@@ -100,7 +100,7 @@ workflow fastpredict {
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,
 			peaks = peaks,
-			peaks_for_testing = peaks_for_testing
+			background_regions = background_regions
  	}
 	output {
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = run_fastpredict.predictions_and_metrics_all_peaks_test_chroms
