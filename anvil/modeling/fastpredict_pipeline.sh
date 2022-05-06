@@ -20,18 +20,6 @@ bigwigs=${9}
 peaks=${10}
 background_regions=${11}
 
-echo $experiment
-echo $model
-echo $testing_input_json
-echo $splits_json
-echo $reference_file
-echo $reference_file_index
-echo $chrom_sizes
-echo $chroms_txt
-echo $bigwigs
-echo $peaks
-echo $background_regions
-
 
 mkdir /project
 project_dir=/project
