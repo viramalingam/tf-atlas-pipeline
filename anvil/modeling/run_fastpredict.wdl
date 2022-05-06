@@ -118,9 +118,9 @@ workflow fastpredict {
 		Float spearman = run_fastpredict.spearman
 		Float pearson = run_fastpredict.pearson
 		Float jsd = run_fastpredict.jsd
-		Float spearman_all_peaks = run_modelling.spearman_all_peaks
-		Float pearson_all_peaks = run_modelling.pearson_all_peaks
-		Float jsd_all_peaks = run_modelling.jsd_all_peaks
+		Float spearman_all_peaks = run_fastpredict.spearman_all_peaks
+		Float pearson_all_peaks = run_fastpredict.pearson_all_peaks
+		Float jsd_all_peaks = run_fastpredict.jsd_all_peaks
 		
 	}
 }
