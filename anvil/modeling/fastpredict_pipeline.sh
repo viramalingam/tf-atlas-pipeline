@@ -208,6 +208,7 @@ fastpredict \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
+free -g -c 10 | tee -a $logfile &
 
 
 echo $( timestamp ): "
@@ -250,6 +251,7 @@ sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json | tee -a $
 echo  $( timestamp ): "sed -i -e" "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json 
 sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a $logfile
 
+free -g -c 10 | tee -a $logfile &
 
 echo $( timestamp ): "
 fastpredict \\
@@ -282,6 +284,7 @@ fastpredict \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
+free -g -c 10 | tee -a $logfile &
 
 echo $( timestamp ): "
 fastpredict \\
