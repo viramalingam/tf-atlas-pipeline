@@ -112,7 +112,6 @@ gunzip ${data_dir}/${experiment}_peaks.bed.gz
 
 
 
-
 echo $( timestamp ): "cp" $background_regions ${data_dir}/${experiment}_background_regions.bed.gz |\
 tee -a $logfile 
 
@@ -176,6 +175,7 @@ sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $lo
 echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
 sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
 
+free -g -c 10 | tee -a $logfile &
 
 echo $( timestamp ): "
 fastpredict \\
