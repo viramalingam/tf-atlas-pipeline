@@ -68,7 +68,7 @@ task run_fastpredict {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev2'
-		memory: 16 + "GB"
+		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		gpuType: "nvidia-tesla-k80"
