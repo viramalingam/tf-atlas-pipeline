@@ -13,14 +13,14 @@ task run_basicstats {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone https://github.com/kundajelab/TF-Atlas.git
-		chmod -R 777 TF-Atlas
-		cd TF-Atlas/anvil/modeling/
+		git clone https://github.com/viramalingam/tf-atlas-pipeline.git
+		chmod -R 777 tf-atlas-pipeline
+		cd tf-atlas-pipeline/anvil/modeling/
 
 
-		##basic_stats
+		#basic stats
 
-		echo "run /my_scripts/TF-Atlas/anvil/modeling/basic_stats.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions}
 		/my_scripts/TF-Atlas/anvil/modeling/basic_stats.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions}
 
 		echo "copying all files to cromwell_root folder"
