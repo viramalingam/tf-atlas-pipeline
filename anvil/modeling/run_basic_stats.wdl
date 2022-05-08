@@ -21,7 +21,7 @@ task run_basicstats {
 		#basic stats
 
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions}
-		/my_scripts/TF-Atlas/anvil/modeling/basic_stats.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions}
 
 		echo "copying all files to cromwell_root folder"
 		
