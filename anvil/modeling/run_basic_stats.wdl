@@ -27,7 +27,7 @@ task run_basicstats {
 		
 		cp -r /project/chip_control_correlation_peaks/spearman.txt /cromwell_root/spearman.txt
 		cp -r /project/chip_control_correlation_peaks/pearson.txt /cromwell_root/pearson.txt
-		cp -r /project/chip_control_correlation_peaks/jsd.txt /cromwell_root/number_of_peaks.txt
+		cp -r /project/chip_control_correlation_peaks/number_of_peaks.txt /cromwell_root/number_of_peaks.txt
 
 		cp -r /project/chip_control_correlation_all_peaks/spearman.txt /cromwell_root/spearman_all_peaks.txt
 		cp -r /project/chip_control_correlation_all_peaks/pearson.txt /cromwell_root/pearson_all_peaks.txt
