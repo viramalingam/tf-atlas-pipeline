@@ -45,7 +45,7 @@ task run_basicstats {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev2'
-		memory: 8 + "GB"
+		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		nvidiaDriverVersion: "418.87.00"
