@@ -187,7 +187,7 @@ sed -i -e "s/<>/$counts_loss_weight/g" $project_dir/bpnet_params.json
 if [ $(wc -l < ${data_dir}/${experiment}_peaks.bed) -lt 3500 ];then
     threads=1
 else
-    threads=2
+    threads=4
 fi
 
 head ${data_dir}/${experiment}_peaks.bed
@@ -250,7 +250,7 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 
 echo $( timestamp ): "
-fastpredict \\
+predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
@@ -261,11 +261,11 @@ fastpredict \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
     --output-window-size 1000 \\
-    --batch-size 64 \\
+    --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-fastpredict \
+predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
@@ -276,14 +276,14 @@ fastpredict \
     --input-seq-len 2114 \
     --output-len 1000 \
     --output-window-size 1000 \
-    --batch-size 64 \
+    --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
 
 
 echo $( timestamp ): "
-fastpredict \\
+predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
@@ -294,11 +294,11 @@ fastpredict \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
     --output-window-size 1000 \\
-    --batch-size 64 \\
+    --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-fastpredict \
+predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
@@ -309,7 +309,7 @@ fastpredict \
     --input-seq-len 2114 \
     --output-len 1000 \
     --output-window-size 1000 \
-    --batch-size 64 \
+    --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
@@ -324,7 +324,7 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 
 echo $( timestamp ): "
-fastpredict \\
+predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
@@ -335,11 +335,11 @@ fastpredict \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
     --output-window-size 1000 \\
-    --batch-size 64 \\
+    --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-fastpredict \
+predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
@@ -350,13 +350,13 @@ fastpredict \
     --input-seq-len 2114 \
     --output-len 1000 \
     --output-window-size 1000 \
-    --batch-size 64 \
+    --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
 
 echo $( timestamp ): "
-fastpredict \\
+predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
@@ -367,11 +367,11 @@ fastpredict \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
     --output-window-size 1000 \\
-    --batch-size 64 \\
+    --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-fastpredict \
+predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
@@ -382,7 +382,7 @@ fastpredict \
     --input-seq-len 2114 \
     --output-len 1000 \
     --output-window-size 1000 \
-    --batch-size 64 \
+    --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
