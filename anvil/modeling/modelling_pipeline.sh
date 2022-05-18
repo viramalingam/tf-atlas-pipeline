@@ -209,6 +209,7 @@ train \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
     --threads $threads \\
+    --batch-size 1024 \\
     --reverse-complement-augmentation \\
     --learning-rate $learning_rate" | tee -a $logfile 
 
@@ -228,6 +229,7 @@ train \
     --input-seq-len 2114 \
     --output-len 1000 \
     --threads $threads \
+    --batch-size 1024 \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate
 
