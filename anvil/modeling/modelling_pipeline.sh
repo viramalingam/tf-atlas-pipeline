@@ -187,7 +187,7 @@ sed -i -e "s/<>/$counts_loss_weight/g" $project_dir/bpnet_params.json
 if [ $(wc -l < ${data_dir}/${experiment}_peaks.bed) -lt 3500 ];then
     threads=1
 else
-    threads=4
+    threads=2
 fi
 
 head ${data_dir}/${experiment}_peaks.bed
@@ -209,7 +209,7 @@ train \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
     --threads $threads \\
-    --batch-size 1024 \\
+    --batch-size 64 \\
     --reverse-complement-augmentation \\
     --learning-rate $learning_rate" | tee -a $logfile 
 
@@ -229,7 +229,7 @@ train \
     --input-seq-len 2114 \
     --output-len 1000 \
     --threads $threads \
-    --batch-size 1024 \
+    --batch-size 64 \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate
 
