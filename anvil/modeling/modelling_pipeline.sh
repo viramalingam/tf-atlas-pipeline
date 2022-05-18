@@ -386,14 +386,3 @@ predict \
     --generate-predicted-profile-bigWigs \
     --threads $threads
 
-# create necessary files to copy the predictions results to cromwell folder
-
-tail -n 1 $predictions_dir_test_peaks_test_chroms/predict.log | awk '{a=$8;print (substr(a,2,6)+substr($9,1,6))/2}' > $predictions_dir_test_peaks_test_chroms/spearman.txt
-tail -n 2 $predictions_dir_test_peaks_test_chroms/predict.log | head -n 1 | awk '{a=$8;print (substr(a,2,6)+substr($9,1,6))/2}' > $predictions_dir_test_peaks_test_chroms/pearson.txt
-tail -n 7 $predictions_dir_test_peaks_test_chroms/predict.log | head -n 1 | awk '{print $NF}' > $predictions_dir_test_peaks_test_chroms/jsd.txt
-
-
-tail -n 1 $predictions_dir_all_peaks_test_chroms/predict.log | awk '{a=$8;print (substr(a,2,6)+substr($9,1,6))/2}' > $predictions_dir_all_peaks_test_chroms/spearman.txt
-tail -n 2 $predictions_dir_all_peaks_test_chroms/predict.log | head -n 1 | awk '{a=$8;print (substr(a,2,6)+substr($9,1,6))/2}' > $predictions_dir_all_peaks_test_chroms/pearson.txt
-tail -n 7 $predictions_dir_all_peaks_test_chroms/predict.log | head -n 1 | awk '{print $NF}' > $predictions_dir_all_peaks_test_chroms/jsd.txt
-
