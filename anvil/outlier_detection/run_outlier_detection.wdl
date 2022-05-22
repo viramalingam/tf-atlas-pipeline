@@ -14,15 +14,15 @@ task run_outlier_detection {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone https://github.com/kundajelab/TF-Atlas.git
-		chmod -R 777 TF-Atlas
-		cd TF-Atlas/anvil/outlier_detection/
+		git clone --depth 1 --branch v1.0.1a https://github.com/viramalingam/tf-atlas-pipeline.git
+		chmod -R 777 tf-atlas-pipeline
+		cd tf-atlas-pipeline/anvil/outlier_detection/
 
 
 		##outlier_detection
 
-		echo "run /my_scripts/TF-Atlas/anvil/outlier_detection//outliers.sh" ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
-		/my_scripts/TF-Atlas/anvil/outlier_detection//outliers.sh ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/outlier_detection//outliers.sh" ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
+		/my_scripts/tf-atlas-pipeline/anvil/outlier_detection//outliers.sh ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
 
 		echo "copying all files to cromwell_root folder"
 

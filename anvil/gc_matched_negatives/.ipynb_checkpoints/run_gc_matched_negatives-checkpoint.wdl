@@ -16,17 +16,17 @@ task run_gc_matched_negatives {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone https://github.com/kundajelab/TF-Atlas.git
-		chmod -R 777 TF-Atlas
-		cd TF-Atlas/anvil/gc_matched_negatives/
+		git clone --depth 1 --branch v1.0.1a https://github.com/viramalingam/tf-atlas-pipeline.git
+		chmod -R 777 tf-atlas-pipeline
+		cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
 
 
 
 		##outlier_detection
 
-		echo "run /my_scripts/TF-Atlas/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${reference_gc_hg38_stride_1000_flank_size_1057} ${peaks} ${splits}
-		/my_scripts/TF-Atlas/anvil/gc_matched_negatives/gc_negatives.sh ${experiment} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${reference_gc_hg38_stride_1000_flank_size_1057} ${peaks} ${splits}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${reference_gc_hg38_stride_1000_flank_size_1057} ${peaks} ${splits}
+		/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ${experiment} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${reference_gc_hg38_stride_1000_flank_size_1057} ${peaks} ${splits}
 
 		echo "copying all files to cromwell_root folder"
 

@@ -22,7 +22,7 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.0.1 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.0.1a https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -69,8 +69,8 @@ task run_modelling {
 		Float spearman_all_peaks = read_float("spearman_all_peaks.txt")
 		Float pearson_all_peaks = read_float("pearson_all_peaks.txt")
 		Float jsd_all_peaks = read_float("jsd_all_peaks.txt")
-		Float jsd_all_peaks = read_float("auprc.txt")
-		Float jsd_all_peaks = read_float("auroc.txt")
+		Float auprc = read_float("auprc.txt")
+		Float auroc = read_float("auroc.txt")
 	
 	
 	}
