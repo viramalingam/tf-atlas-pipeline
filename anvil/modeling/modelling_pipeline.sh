@@ -291,7 +291,7 @@ predict \
     
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics ..."
 echo $( timestamp ): "
-python /my_scripts/auprc_auroc_calculations.py \\
+python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \\
     --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \\
     --output_dir $predictions_dir_all_peaks_test_chroms \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
@@ -299,7 +299,7 @@ python /my_scripts/auprc_auroc_calculations.py \\
     --output_len 1000 \\
     --chroms $test_chromosome" | tee -a $logfile 
 
-python /my_scripts/auprc_auroc_calculations.py \
+python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
     --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \
     --output_dir $predictions_dir_all_peaks_test_chroms \
     --peak_file ${data_dir}/${experiment}_peaks.bed \

@@ -22,7 +22,7 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.0.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.0.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -48,6 +48,8 @@ task run_modelling {
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/spearman.txt /cromwell_root/spearman_all_peaks.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/pearson.txt /cromwell_root/pearson_all_peaks.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/jsd.txt /cromwell_root/jsd_all_peaks.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc.txt /cromwell_root/auprc.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auroc.txt /cromwell_root/auroc.txt
 		
 	}
 	
@@ -67,12 +69,14 @@ task run_modelling {
 		Float spearman_all_peaks = read_float("spearman_all_peaks.txt")
 		Float pearson_all_peaks = read_float("pearson_all_peaks.txt")
 		Float jsd_all_peaks = read_float("jsd_all_peaks.txt")
+		Float jsd_all_peaks = read_float("auprc.txt")
+		Float jsd_all_peaks = read_float("auroc.txt")
 	
 	
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev2'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.0.0'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
@@ -130,6 +134,8 @@ workflow modelling {
 		Float spearman_all_peaks = run_modelling.spearman_all_peaks
 		Float pearson_all_peaks = run_modelling.pearson_all_peaks
 		Float jsd_all_peaks = run_modelling.jsd_all_peaks
+		Float auprc = run_fastpredict.auprc
+		Float auroc = run_fastpredict.auroc
 		
 	}
 }
