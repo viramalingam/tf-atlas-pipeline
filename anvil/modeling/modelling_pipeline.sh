@@ -232,6 +232,13 @@ train \
     --batch-size 64 \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate
+    
+# save the values used for training
+cp $project_dir/training_input.json $model_dir/
+cp ${data_dir}/${experiment}_peaks.bed $model_dir/
+cp ${data_dir}/${experiment}_background_regions.bed $model_dir/
+cp $project_dir/bpnet_params.json $model_dir/
+cp $project_dir/splits.json $model_dir/
 
 #get the test chromosome
 
@@ -281,6 +288,24 @@ predict \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
+    
+echo $( timestamp ): "Calculating the AUPRC and AUROC metrics ..."
+echo $( timestamp ): "
+python /my_scripts/auprc_auroc_calculations.py \\
+    --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \\
+    --output_dir $predictions_dir_all_peaks_test_chroms \\
+    --peak_file ${data_dir}/${experiment}_peaks.bed \\
+    --neg_file ${data_dir}/${experiment}_background_regions.bed \\
+    --output_len 1000 \\
+    --chroms $test_chromosome" | tee -a $logfile 
+
+python /my_scripts/auprc_auroc_calculations.py \
+    --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \
+    --output_dir $predictions_dir_all_peaks_test_chroms \
+    --peak_file ${data_dir}/${experiment}_peaks.bed \
+    --neg_file ${data_dir}/${experiment}_background_regions.bed \
+    --output_len 1000 \
+    --chroms $test_chromosome 
 
 
 
