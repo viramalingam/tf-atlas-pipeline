@@ -10,20 +10,18 @@ function timestamp {
 
 experiment=$1
 model=$2
-input_json=$3
-testing_input_json=$4
-splits_json=$5
-reference_file=$6
-reference_file_index=$7
-chrom_sizes=$8
-chroms_txt=$9
-bigwigs=${10}
-peaks=${11}
-background_regions=${12}
+testing_input_json=$3
+splits_json=$4
+reference_file=$5
+reference_file_index=$6
+chrom_sizes=$7
+chroms_txt=$8
+bigwigs=${9}
+peaks=${10}
+background_regions=${11}
 
 echo $experiment
 echo $model
-echo $input_json
 echo $testing_input_json
 echo $splits_json
 echo $reference_file
