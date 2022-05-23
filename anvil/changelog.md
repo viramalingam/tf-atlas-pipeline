@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [1.0.1d] - 2022-05-22
+### Added
+1. Started saving combined bed files in the model folder.
 
 ## [1.0.1] - 2022-05-22
 ### Added
