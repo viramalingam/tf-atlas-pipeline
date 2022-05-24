@@ -393,8 +393,10 @@ def train_and_validate(
     # compile the model
     logging.debug("Compiling model")
     logging.info("loss weights - {}".format(model_arch_params['loss_weights']))
-    logging.info("counts loss - {}".format(model_arch_params['counts_loss']))
-    model.compile(Adam(learning_rate=hyper_params['learning_rate']), 
+    model.compile(Adam(learning_rate=hyper_params['learning_rate']),
+                    loss=[MultichannelMultinomialNLL(
+                        train_gen._total_signal_tracks), 
+                          CustomMeanSquaredError()], 
                     loss_weights=model_arch_params['loss_weights'])
     
     # begin time for training

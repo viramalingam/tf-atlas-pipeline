@@ -16,8 +16,11 @@ setup(
                       "tensorflow-probability==0.12.2", "tqdm", "scikit-learn",
                       "scipy", "scikit-image", "scikit-learn", 
                       "numpy", "deepdish", "pandas", "matplotlib", "plotly", 
-                      "deeptools", "pyfaidx", "deeplift"
-                      ],
+                      "deeptools", "pyfaidx", "deeplift", 
+                      "modisco @ git+https://github.com/kundajelab/tfmodisco@v0.5.15.0",
+                      "shap @ git+https://github.com/zahoorz/shap.git", 
+                      "mseqgen @ git+https://github.com/kundajelab/mseqgen.git@v1.0.0", 
+                      "genomicsdlarchsandlosses @ git+https://github.com/kundajelab/genomics-DL-archsandlosses.git@v1.0.0"],
     extras_require={"dev": ["pytest", "pytest-cov"]},
     license="MIT license",
     zip_safe=False,
