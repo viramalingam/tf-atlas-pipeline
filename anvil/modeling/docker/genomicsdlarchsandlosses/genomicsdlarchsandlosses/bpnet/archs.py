@@ -224,11 +224,11 @@ def syntax_module(
                            name='{}_add_{}'.format(name_prefix, i))
      
     # RELU for the last dilation layer
-    x_activated = layers.ReLU(name=x.name.split('/')[0]+'_relu')(x)
+    #x_activated = layers.ReLU(name=x.name.split('/')[0]+'_relu')(x)
     
     # the final output from the dilated convolutions with 
     # resnet-style connections
-    return x_activated
+    return x
 
 
 def profile_head(
