@@ -222,9 +222,10 @@ def syntax_module(
                 
             x = layers.add([conv_output_without_activation, x_activated], 
                            name='{}_add_{}'.format(name_prefix, i))
-            
+     
+    # RELU for the last dilation layer
     x_activated = layers.ReLU(name=x.name.split('/')[0]+'_relu')(x)
-            
+    
     # the final output from the dilated convolutions with 
     # resnet-style connections
     return x_activated
@@ -444,13 +445,8 @@ def counts_bias_module(counts_head, counts_bias_inputs, tasks_info,
         else:
             # concatenate counts head with slice of counts bias input
             # for this task
-            
-            counts_bias_input_out_logcounts = layers.Lambda(
-                lambda x: tf.math.reduce_logsumexp(x, axis=-1, keepdims=True),
-                name="{}_logsumexp_counts_bias_{}".format(name_prefix, i))(counts_bias_inputs[i])
-            
             concat_with_counts_bias_input = layers.concatenate(
-                [_counts_head, counts_bias_input_out_logcounts], 
+                [_counts_head, counts_bias_inputs[i]], 
                 name="{}_concat_with_counts_bias_{}".format(name_prefix, i),
                 axis=-1)
 
@@ -459,13 +455,9 @@ def counts_bias_module(counts_head, counts_bias_inputs, tasks_info,
             if num_tasks == 1:
                 name = "logcounts_predictions"
             else:
-            #     name = "logcounts_predictions_{}".format(i)
-            # counts_outputs.append(layers.Dense(
-            #     units=num_task_tracks, 
-            #     name=name)(concat_with_counts_bias_input))
                 name = "logcounts_predictions_{}".format(i)
             counts_outputs.append(layers.Dense(
-                units=num_tasks, 
+                units=num_task_tracks, 
                 name=name)(concat_with_counts_bias_input))
 
     # counts output
@@ -476,7 +468,7 @@ def counts_bias_module(counts_head, counts_bias_inputs, tasks_info,
             counts_outputs, 
             name="logcounts_predictions", axis=-1)
 
-
+    
 def load_params(params):
     """
         Load BPNet parameters from dictionary, override defaults for
@@ -546,10 +538,6 @@ def load_params(params):
     if 'loss_weights' in params:
         loss_weights = params['loss_weights']
         
-    counts_loss = bpnetdefaults.COUNTS_LOSS
-    if 'counts_loss' in params:
-        counts_loss = params['counts_loss']
-        
     bias_model = None
     if 'bias_model' in params:
         bias_model_path = params['bias_model']
@@ -568,7 +556,7 @@ def load_params(params):
     return (input_len, output_profile_len, motif_module_params, 
             syntax_module_params, profile_head_params, counts_head_params,
             profile_bias_module_params, counts_bias_module_params,
-            use_attribution_prior, attribution_prior_params, loss_weights, counts_loss,
+            use_attribution_prior, attribution_prior_params, loss_weights,
             bias_model)
 
 
@@ -606,8 +594,6 @@ def atac_dnase_bias_model(
     return bias_model_def.outputs
     
 
-
-    
 def BPNet(
     tasks, bpnet_params, initiliaze_as_bias_model=False, one_hot_input=None, 
     name_prefix=None):
@@ -649,7 +635,6 @@ def BPNet(
                     'profile_grad_loss_weight' (float)
                     'counts_grad_loss_weight' (float)
                 'loss_weights': (list)
-                'counts_loss': (str)
             initialize_as_bias_model (boolean): specify if this 
                 definition is to be used as a placeholder for 
                 initializing weights from the bias model
@@ -657,6 +642,7 @@ def BPNet(
                 initialize_as_bias_model is True 
             name_prefix (str): prefix to use for layer names
                 
+
         Returns:
             tensorflow.keras.layers.Model
     """
@@ -673,7 +659,6 @@ def BPNet(
      use_attribution_prior, 
      attribution_prior_params, 
      loss_weights,
-     counts_loss,
      _) = load_params(bpnet_params)    
 
     # Step 1 - sequence input
@@ -698,10 +683,8 @@ def BPNet(
     # Step 4.1.1 - get total number of output tracks across all tasks
     num_tasks = len(list(tasks.keys()))
     total_tracks = 0
-    tracks_for_each_task = []
     for i in range(num_tasks):
         total_tracks += len(tasks[i]['signal']['source'])
-        tracks_for_each_task.append(total_tracks)
     
     # Step 4.1.2 - conv layer to get pre bias profile prediction
     profile_head_out = profile_head(
@@ -743,8 +726,7 @@ def BPNet(
     # the units for the Dense layers
     units = counts_head_params["units"]
     # the last Dense layer's units are set to total tracks
-    if units[-1]==-1:
-        units[-1] = num_tasks
+    units[-1] = total_tracks
     counts_head_out = counts_head(
         syntax_module_out, counts_head_name, units, 
         counts_head_params['dropouts'], counts_head_params['activations'],
@@ -791,7 +773,6 @@ def BPNet(
             profile_head_out, profile_bias_inputs, tasks, 
             kernel_sizes=profile_bias_module_params['kernel_sizes'], 
             name_prefix=name_prefix)
-        
     
         # Step 5.3 - account for counts bias
         logcounts_outputs = counts_bias_module(
@@ -811,12 +792,7 @@ def BPNet(
         
     else:
         # instantiate keras Model with inputs and outputs
-        # print({'num_tasks':num_tasks,\
-        #        'tracks_for_each_task':tracks_for_each_task,\
-        #        'output_profile_len':output_profile_len,\
-        #        'loss_weights':loss_weights,\
-        #        'inputs':inputs, 'outputs':[profile_outputs, logcounts_outputs]})
-        return CustomModel(num_tasks,tracks_for_each_task,output_profile_len,loss_weights,counts_loss,
+        return CustomModel(total_tracks, loss_weights,
             inputs=inputs, outputs=[profile_outputs, logcounts_outputs])
 
 

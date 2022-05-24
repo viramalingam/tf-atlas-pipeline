@@ -6,7 +6,6 @@ from genomicsdlarchsandlosses.bpnet.attribution_prior_utils import \
     smooth_tensor_1d
 
 
-
 class CustomMeanSquaredError(object):
     """ Custom class to compute mean squared error
         but ignore the incoming sample weights

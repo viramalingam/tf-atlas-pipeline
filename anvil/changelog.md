@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## dev_old_standspecific_multinomial — branch - 2022-05-23
+### Added
+changing to the old strand specific multinomial for metrics calculation
+
 ## [1.1.0] - 2022-05-23
 ### Added
 1. "Added activation after the dilation layer eight. Changed the ratio of pos to neg in the negative file for the test chromosome. Updated all wdl files to use docker v1.1.0"
