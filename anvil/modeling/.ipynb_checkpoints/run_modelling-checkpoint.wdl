@@ -15,8 +15,9 @@ task run_modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
-
+		
 	}
+	
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
@@ -24,35 +25,36 @@ task run_modelling {
 		git clone --depth 1 --branch dev_without_bias_prediction_metrics https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
-
+		
 		##modelling
-
+		
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
 		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
-
+		
 		echo "copying all files to cromwell_root folder"
-        
+		
 		cp /project/bpnet_params.json /cromwell_root/bpnet_params.json
 		cp -r /project/model /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_all_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_all_peaks_all_chroms /cromwell_root/
-
+		
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/spearman.txt /cromwell_root/spearman.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/pearson.txt /cromwell_root/pearson.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/jsd.txt /cromwell_root/jsd.txt
-
+		
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/spearman.txt /cromwell_root/spearman_all_peaks.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/pearson.txt /cromwell_root/pearson_all_peaks.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/jsd.txt /cromwell_root/jsd_all_peaks.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc.txt /cromwell_root/auprc.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auroc.txt /cromwell_root/auroc.txt
-        
+		
+		
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms_wo_bias/spearman.txt /cromwell_root/spearman_wo_bias.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms_wo_bias/pearson.txt /cromwell_root/pearson_wo_bias.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms_wo_bias/jsd.txt /cromwell_root/jsd_wo_bias.txt
-
+		
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/spearman.txt /cromwell_root/spearman_all_peaks_wo_bias.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/pearson.txt /cromwell_root/pearson_all_peaks_wo_bias.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/jsd.txt /cromwell_root/jsd_all_peaks_wo_bias.txt
@@ -68,21 +70,21 @@ task run_modelling {
 
 		Array[File] predictions_and_metrics_all_peaks_all_chroms = glob("predictions_and_metrics_all_peaks_all_chroms/*")
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = glob("predictions_and_metrics_all_peaks_test_chroms/*")
-
+		
 		Float spearman = read_float("spearman.txt")
 		Float pearson = read_float("pearson.txt")
 		Float jsd = read_float("jsd.txt")
-
+		
 		Float spearman_all_peaks = read_float("spearman_all_peaks.txt")
 		Float pearson_all_peaks = read_float("pearson_all_peaks.txt")
 		Float jsd_all_peaks = read_float("jsd_all_peaks.txt")
 		Float auprc = read_float("auprc.txt")
 		Float auroc = read_float("auroc.txt")
-
+		
 		Float spearman_wo_bias = read_float("spearman_wo_bias.txt")
 		Float pearson_wo_bias = read_float("pearson_wo_bias.txt")
 		Float jsd_wo_bias = read_float("jsd_wo_bias.txt")
-
+		
 		Float spearman_all_peaks_wo_bias = read_float("spearman_all_peaks_wo_bias.txt")
 		Float pearson_all_peaks_wo_bias = read_float("pearson_all_peaks_wo_bias.txt")
 		Float jsd_all_peaks_wo_bias = read_float("jsd_all_peaks_wo_bias.txt")
@@ -119,9 +121,9 @@ workflow modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
-        
+		
 	}
-    
+	
 	call run_modelling {
 		input:
 			experiment = experiment,
@@ -153,7 +155,8 @@ workflow modelling {
 		Float jsd_all_peaks = run_modelling.jsd_all_peaks
 		Float auprc = run_modelling.auprc
 		Float auroc = run_modelling.auroc
-        
+		
+		
 		Float spearman_wo_bias = run_modelling.spearman_wo_bias
 		Float pearson_wo_bias = run_modelling.pearson_wo_bias
 		Float jsd_wo_bias = run_modelling.jsd_wo_bias
@@ -162,6 +165,6 @@ workflow modelling {
 		Float jsd_all_peaks_wo_bias = run_modelling.jsd_all_peaks_wo_bias
 		Float auprc_wo_bias = run_modelling.auprc_wo_bias
 		Float auroc_wo_bias = run_modelling.auroc_wo_bias
-
+		
 	}
 }
