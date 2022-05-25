@@ -1112,7 +1112,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
                         
                     profile_track_idx += 1
                     
-                if not set_bias_as_zero:
+                if not self._set_bias_as_zero:
                 #skip setting the bias values. Initialization value of zero will be used
                     # Step 3. get the bias values
                     bias_track_idx = 0
@@ -1156,7 +1156,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         logcounts_predictions = np.log(
             np.sum(profile_predictions, axis=1) + 1)
         
-        if not set_bias_as_zero:
+        if not self._set_bias_as_zero:
             #skip setting the bias values. Initialization value of zero will be used
             for key in profile_bias_input:
                 counts_bias_input[key] = np.log(
