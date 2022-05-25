@@ -209,7 +209,7 @@ class MSequenceGenerator:
     def __init__(self, tasks_json, batch_gen_params, reference_genome, 
                  chrom_sizes, chroms, num_threads=10, batch_size=64, 
                  epochs=100, background_only=False, foreground_weight=1, 
-                 background_weight=0,_set_bias_as_zero=False):
+                 background_weight=0, set_bias_as_zero=False):
         
         #: ML task mode 'train', 'val' or 'test'
         self._mode = batch_gen_params['mode']
