@@ -134,6 +134,9 @@ class MSequenceGenerator:
             background_weight (float): sample weight for background
                 samples
                 
+            set_bias_as_zero (boolean): if True bias tracks will be zero. This can be
+            used for testing without bias after training with bias tracks.
+                
         **Members**
         
         IGNORE_FOR_SPHINX_DOCS:
@@ -198,13 +201,15 @@ class MSequenceGenerator:
                 
             _resized_loci_size (int): size of the resized loci dataframe
             
+            
+            
         IGNORE_FOR_SPHINX_DOCS
     """
 
     def __init__(self, tasks_json, batch_gen_params, reference_genome, 
                  chrom_sizes, chroms, num_threads=10, batch_size=64, 
                  epochs=100, background_only=False, foreground_weight=1, 
-                 background_weight=0):
+                 background_weight=0,_set_bias_as_zero=False):
         
         #: ML task mode 'train', 'val' or 'test'
         self._mode = batch_gen_params['mode']
@@ -254,6 +259,9 @@ class MSequenceGenerator:
         self._bias_tracks = {}
         for i in range(self._num_tasks):
             self._bias_tracks[i] = len(self._tasks[i]['bias']['source'])
+            
+        #whether to set bias as zero
+        self._set_bias_as_zero = set_bias_as_zero
 
         #: path to the reference genome
         self._reference = reference_genome
@@ -935,7 +943,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
     def __init__(self, tasks_json, batch_gen_params, reference_genome, 
                  chrom_sizes, chroms, num_threads=10, batch_size=64, 
                  epochs=100, background_only=False, foreground_weight=1, 
-                 background_weight=0):
+                 background_weight=0, set_bias_as_zero=False):
         
         # name of the generator class
         self.name = "BPNet"
@@ -944,7 +952,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         super().__init__(tasks_json, batch_gen_params, reference_genome, 
                          chrom_sizes, chroms, num_threads, batch_size, 
                          epochs, background_only, foreground_weight, 
-                         background_weight)
+                         background_weight, set_bias_as_zero)
         
     def get_name(self):
         """ 
@@ -1103,34 +1111,36 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
                         np.nan_to_num(signal_file.values(chrom, start, end))  
                         
                     profile_track_idx += 1
-                                          
-                # Step 3. get the bias values
-                bias_track_idx = 0
-                for j in range(len(bias_files[i])):
-                    bias_file = bias_files[i][j]
-                    profile_bias_input[i][rowCnt, :, bias_track_idx] = \
-                        np.nan_to_num(bias_file.values(chrom, start, end))
-                                          
-                    bias_track_idx += 1
-                                
-                    # add the smoothed track if 'smoothing' has been
-                    # specified
-                    if self._tasks[i]['bias']['smoothing'][j] is not None:
-                        # get the smoothing params
-                        sigma = self._tasks[i]['bias']['smoothing'][j][0]
-                        window_size = \
-                            self._tasks[i]['bias']['smoothing'][j][1]
-                        
-                        # the smoothed bias track will immediately 
-                        # follow the original bias track in the last
-                        # dimension
+                    
+                if not set_bias_as_zero:
+                #skip setting the bias values. Initialization value of zero will be used
+                    # Step 3. get the bias values
+                    bias_track_idx = 0
+                    for j in range(len(bias_files[i])):
+                        bias_file = bias_files[i][j]
                         profile_bias_input[i][rowCnt, :, bias_track_idx] = \
-                            utils.gaussian1D_smoothing(
-                                profile_bias_input[i][
-                                    rowCnt, :, bias_track_idx - 1],
-                                sigma, window_size)
-                                          
+                            np.nan_to_num(bias_file.values(chrom, start, end))
+
                         bias_track_idx += 1
+
+                        # add the smoothed track if 'smoothing' has been
+                        # specified
+                        if self._tasks[i]['bias']['smoothing'][j] is not None:
+                            # get the smoothing params
+                            sigma = self._tasks[i]['bias']['smoothing'][j][0]
+                            window_size = \
+                                self._tasks[i]['bias']['smoothing'][j][1]
+
+                            # the smoothed bias track will immediately 
+                            # follow the original bias track in the last
+                            # dimension
+                            profile_bias_input[i][rowCnt, :, bias_track_idx] = \
+                                utils.gaussian1D_smoothing(
+                                    profile_bias_input[i][
+                                        rowCnt, :, bias_track_idx - 1],
+                                    sigma, window_size)
+
+                            bias_track_idx += 1
 
             rowCnt += 1
 
@@ -1145,10 +1155,12 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         # profiles for the entire batch
         logcounts_predictions = np.log(
             np.sum(profile_predictions, axis=1) + 1)
-
-        for key in profile_bias_input:
-            counts_bias_input[key] = np.log(
-                np.sum(profile_bias_input[key], axis=1) + 1)
+        
+        if not set_bias_as_zero:
+            #skip setting the bias values. Initialization value of zero will be used
+            for key in profile_bias_input:
+                counts_bias_input[key] = np.log(
+                    np.sum(profile_bias_input[key], axis=1) + 1)
         
         # inputs to train, val & test
         # 'coordinates', 'jitters', 'index', 'status' & 'rev_comp'

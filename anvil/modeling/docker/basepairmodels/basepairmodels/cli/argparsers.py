@@ -228,7 +228,11 @@ def fastpredict_argsparser():
                         action='store_true', default=False, 
                         help="specify if bigWig tracks of predictions should " 
                         "be generated")
-    
+    parser.add_argument('--set-bias-as-zero', 
+                        action='store_true', default=False, 
+                        help="specify if bias values should be set as zero." 
+                        "Used only during testing. Usefull when trained with bias"
+                        "but need to test without it.")
     return parser
 
 
