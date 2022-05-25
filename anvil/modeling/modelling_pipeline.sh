@@ -478,7 +478,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --threads $threads
+    --threads $threads \
     --set-bias-as-zero
 
 echo $( timestamp ): "
