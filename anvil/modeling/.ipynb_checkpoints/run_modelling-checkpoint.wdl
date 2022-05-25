@@ -16,8 +16,7 @@ task run_modelling {
 		File background_regions
 		Float learning_rate
 
-
-  	}	
+	}
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
@@ -60,9 +59,6 @@ task run_modelling {
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/jsd.txt /cromwell_root/jsd_all_peaks_wo_bias.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/auprc.txt /cromwell_root/auprc_wo_bias.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/auroc.txt /cromwell_root/auroc_wo_bias.txt
-
-
-		
 	}
 	
 	output {
