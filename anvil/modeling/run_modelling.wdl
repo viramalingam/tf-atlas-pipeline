@@ -21,7 +21,7 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.1.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_without_bias_prediction_metrics https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -31,14 +31,13 @@ task run_modelling {
 		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
 
 		echo "copying all files to cromwell_root folder"
-		
+        
 		cp /project/bpnet_params.json /cromwell_root/bpnet_params.json
 		cp -r /project/model /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_all_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_all_peaks_all_chroms /cromwell_root/
-
 
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/spearman.txt /cromwell_root/spearman.txt
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms/pearson.txt /cromwell_root/pearson.txt
@@ -94,14 +93,14 @@ task run_modelling {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.1.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_without_bias_prediction_metrics'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
 		nvidiaDriverVersion: "418.87.00"
-  		maxRetries: 3 
+		maxRetries: 3 
 	}
 }
 
@@ -120,9 +119,9 @@ workflow modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
-
+        
 	}
-
+    
 	call run_modelling {
 		input:
 			experiment = experiment,
@@ -138,7 +137,7 @@ workflow modelling {
 			peaks = peaks,
 			background_regions = background_regions,
 			learning_rate = learning_rate
- 	}
+	}
 	output {
 		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json
 		Array[File] model = run_modelling.model
@@ -164,7 +163,5 @@ workflow modelling {
 		Float auprc_wo_bias = run_modelling.auprc_wo_bias
 		Float auroc_wo_bias = run_modelling.auroc_wo_bias
 
-
-		
 	}
 }

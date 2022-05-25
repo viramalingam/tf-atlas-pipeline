@@ -15,13 +15,13 @@ task run_fastpredict {
 		File background_regions
 
 
-  	}	
+	}
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch v1.1.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_without_bias_prediction_metrics https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -92,14 +92,14 @@ task run_fastpredict {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.1.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_without_bias_prediction_metrics'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
 		nvidiaDriverVersion: "418.87.00"
-  		maxRetries: 3 
+		maxRetries: 3 
 	}
 }
 
@@ -132,7 +132,7 @@ workflow fastpredict {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions
- 	}
+	}
 	output {
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = run_fastpredict.predictions_and_metrics_all_peaks_test_chroms
 		Array[File] predictions_and_metrics_test_peaks_test_chroms = run_fastpredict.predictions_and_metrics_test_peaks_test_chroms
