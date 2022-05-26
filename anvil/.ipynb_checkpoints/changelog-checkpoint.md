@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [1.2.1] - 2022-05-26
+### Added
+added compile false to shap; added loss=None in training; bug fix; fixed tag version in wdl files;
+
 ## [1.2.1] - 2022-05-25
 ### Added
 bug fix. Changed the wdl files to use the correct git tag v1.2.1.
