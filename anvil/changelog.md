@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [1.2.0] - 2022-05-23
+## [1.2.1] - 2022-05-25
+### Added
+bug fix. Changed the wdl files to use the correct git tag v1.2.1.
+
+
+## [1.2.0] - 2022-05-25
 ### Added
 merged branch dev_without_bias_prediction_metrics. We now also calculated metrics with just providing zeros as bias track during prediction eventhough the models are trained with bias. This could tell us how much the models are using the sequence component to predict the signal.
 
