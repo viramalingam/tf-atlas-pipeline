@@ -117,6 +117,9 @@ echo  $( timestamp ): "sed -i -e" "s/modeling/shap/g" $project_dir/input.json | 
 tee -a $logfile 
 sed -i -e "s/modeling/shap/g" $project_dir/input.json
 
+cp $project_dir/input.json $shap_dir/input.json
+cp $model_dir/${1}_split000.h5 $shap_dir/${1}_split000.h5
+
 echo $( timestamp ): "
 shap_scores \\
     --reference-genome $reference_dir/hg38.genome.fa \\

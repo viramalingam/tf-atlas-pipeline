@@ -18,7 +18,7 @@ task run_shap {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.2.3 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch vdev_shap_single_multinomial https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/shap/
 
@@ -30,17 +30,20 @@ task run_shap {
 		echo "copying all files to cromwell_root folder"
 		
 		cp -r /project/shap /cromwell_root/
-		
+		cp -r /project/shap/counts_scores.h5 /cromwell_root/counts_scores.h5
+		cp -r /project/shap/profile_scores.h5 /cromwell_root/profile_scores.h5
 	}
 	
 	output {
 		Array[File] shap = glob("shap/*")
+		File profile_shape_scores = "counts_scores.h5"
+		File counts_shape_scores = "profile_scores.h5"
 	
 	
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.2.3'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_vdev_shap_single_multinomial'
 		memory: 30 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
@@ -79,7 +82,8 @@ workflow shap {
  	}
 	output {
 		Array[File] shap = run_shap.shap
-
+		File profile_shape_scores = run_shap.counts_scores.h5
+		File counts_shape_scores = run_shap.profile_scores.h5
 		
 	}
 }
