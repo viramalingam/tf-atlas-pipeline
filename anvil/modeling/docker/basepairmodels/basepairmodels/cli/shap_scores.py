@@ -87,7 +87,7 @@ def save_scores(peaks_df, one_hot_sequences, hyp_shap_scores, output_fname):
 
 def shap_scores(args, shap_dir):
     # load the model
-    model = load_model(args.model)
+    model = load_model(args.model, compile=False)
     
     # read all the peaks into a pandas dataframe
     peaks_df = pd.read_csv(args.bed_file, sep='\t', header=None, 

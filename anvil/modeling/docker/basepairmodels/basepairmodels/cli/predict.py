@@ -753,13 +753,13 @@ def predict(args, pred_dir):
     logging.info("counts spearman: {}".format(counts_spearman))
     
     with open('{}/spearman.txt'.format(args.output_dir), "w+") as f:
-        f.write(str(round(np.mean(counts_spearman),3)))
+        f.write(str(round(np.nan_to_num(np.mean(counts_spearman)),3)))
         f.close
     with open('{}/pearson.txt'.format(args.output_dir), "w+") as f:
-        f.write(str(round(np.mean(counts_pearson),3)))
+        f.write(str(round(np.nan_to_num(np.mean(counts_pearson)),3)))
         f.close
     with open('{}/jsd.txt'.format(args.output_dir), "w+") as f:
-        f.write(str(round(np.median(metrics_tracker['profile_jsds']),3)))
+        f.write(str(round(np.nan_to_num(np.median(metrics_tracker['profile_jsds'])),3)))
         f.close
     
     np.savez_compressed(

@@ -395,6 +395,7 @@ def train_and_validate(
     logging.info("loss weights - {}".format(model_arch_params['loss_weights']))
     logging.info("counts loss - {}".format(model_arch_params['counts_loss']))
     model.compile(Adam(learning_rate=hyper_params['learning_rate']), 
+					  loss = None,
                     loss_weights=model_arch_params['loss_weights'])
     
     # begin time for training
