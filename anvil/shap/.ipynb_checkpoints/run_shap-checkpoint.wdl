@@ -36,8 +36,8 @@ task run_shap {
 	
 	output {
 		Array[File] shap = glob("shap/*")
-		File profile_shape_scores = "counts_scores.h5"
-		File counts_shape_scores = "profile_scores.h5"
+		File profile_shap_scores = "counts_scores.h5"
+		File counts_shap_scores = "profile_scores.h5"
 	
 	
 	}
@@ -82,8 +82,8 @@ workflow shap {
  	}
 	output {
 		Array[File] shap = run_shap.shap
-		File profile_shape_scores = run_shap.counts_scores.h5
-		File counts_shape_scores = run_shap.profile_scores.h5
+		File profile_shap_scores = run_shap.counts_shap_scores
+		File counts_shap_scores = run_shap.profile_shap_scores
 		
 	}
 }
