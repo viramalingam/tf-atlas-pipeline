@@ -17,7 +17,7 @@ chroms_txt=$6
 bigwigs=$7
 peaks=$8
 background_regions=$9
-model=$10
+model=${10}
 
 mkdir /project
 project_dir=/project
