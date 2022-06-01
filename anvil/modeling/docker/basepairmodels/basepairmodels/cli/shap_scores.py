@@ -278,7 +278,7 @@ def shap_scores(args, shap_dir):
     # shap explainer for the counts head
     profile_model_counts_explainer = shap.explainers.deep.TFDeepExplainer(
         ([model.input[0], model.input[2]], 
-         model.outputs[1]),
+         tf.reduce_sum(model.outputs[1], axis=-1)),
         data_func, 
         combine_mult_and_diffref=combine_mult_and_diffref)
 
@@ -290,17 +290,17 @@ def shap_scores(args, shap_dir):
         data_func, 
         combine_mult_and_diffref=combine_mult_and_diffref)
 
-#     logging.info("Generating 'counts' shap scores")
-#     counts_shap_scores = profile_model_counts_explainer.shap_values(
-#         [X, bias_counts_input], progress_message=100)
+    logging.info("Generating 'counts' shap scores")
+    counts_shap_scores = profile_model_counts_explainer.shap_values(
+        [X, bias_counts_input], progress_message=100)
     
-#     # save the dictionary in HDF5 formnat
-#     logging.info("Saving 'counts' scores")
-#     output_fname = '{}/counts_scores.h5'.format(shap_dir)
+    # save the dictionary in HDF5 formnat
+    logging.info("Saving 'counts' scores")
+    output_fname = '{}/counts_scores.h5'.format(shap_dir)
     
-#     # save the hyp shap scores, one hot sequences & chrom positions
-#     # to a HDF5 file
-#     save_scores(peaks_df, X, counts_shap_scores[0], output_fname)
+    # save the hyp shap scores, one hot sequences & chrom positions
+    # to a HDF5 file
+    save_scores(peaks_df, X, counts_shap_scores[0], output_fname)
     
     logging.info("Generating 'profile' shap scores")
     profile_shap_scores = profile_model_profile_explainer.shap_values(

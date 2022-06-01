@@ -10,6 +10,7 @@ task run_shap {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
+		File background_regions        
 		Array [File] model
 
 
@@ -24,20 +25,27 @@ task run_shap {
 
 		##shap
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh" ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model}
-		/my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh" ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' model}
+		/my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' model}
 
 		echo "copying all files to cromwell_root folder"
 		
-		cp -r /project/shap /cromwell_root/
-		cp -r /project/shap/counts_scores.h5 /cromwell_root/counts_scores.h5
-		cp -r /project/shap/profile_scores.h5 /cromwell_root/profile_scores.h5
+		cp -r /project/shap_dir_peaks /cromwell_root/
+		cp -r /project/shap_dir_peaks/counts_scores.h5 /cromwell_root/counts_scores.h5
+		cp -r /project/shap_dir_peaks/profile_scores.h5 /cromwell_root/profile_scores.h5
+		cp -r /project/shap_dir_peaks/counts_scores.bw /cromwell_root/counts_scores.bw
+		cp -r /project/shap_dir_peaks/profile_scores.bw /cromwell_root/profile_scores.bw
+		cp -r /project/shap_dir_all /cromwell_root/
 	}
 	
 	output {
-		Array[File] shap = glob("shap/*")
-		File profile_shap_scores = "counts_scores.h5"
-		File counts_shap_scores = "profile_scores.h5"
+		Array[File] shap_dir_peaks = glob("shap_dir_peaks/*")
+		File counts_shap_scores = "counts_scores.h5"
+		File profile_shap_scores = "profile_scores.h5"
+		File counts_shap_scores_bw = "counts_scores.bw"
+		File profile_shap_scores_bw = "profile_scores.bw"
+		        
+		Array[File] shap_dir_all = glob("shap_dir_all/*")
 	
 	
 	}
@@ -64,6 +72,7 @@ workflow shap {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
+		File background_regions
 		Array [File] model
 
 	}
@@ -78,12 +87,16 @@ workflow shap {
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,
 			peaks = peaks,
+			background_regions = background_regions,       
 			model = model
  	}
 	output {
-		Array[File] shap = run_shap.shap
-		File profile_shap_scores = run_shap.counts_shap_scores
-		File counts_shap_scores = run_shap.profile_shap_scores
+		Array[File] shap_dir_peaks = run_shap.shap_dir_peaks
+		File profile_shap_scores = run_shap.profile_shap_scores
+		File counts_shap_scores = run_shap.counts_shap_scores
+		File profile_shap_scores_bw = run_shap.profile_shap_scores_bw
+		File counts_shap_scores_bw = run_shap.counts_shap_scores_bw
+		Array[File] shap_dir_all = run_shap.shap_dir_all
 		
 	}
 }

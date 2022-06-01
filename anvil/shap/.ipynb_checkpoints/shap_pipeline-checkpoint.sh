@@ -9,14 +9,15 @@ function timestamp {
 }
 
 experiment=$1
-input_json=$2
+testing_input_json=$2
 reference_file=$3
 reference_file_index=$4
 chrom_sizes=$5
 chroms_txt=$6
 bigwigs=$7
 peaks=$8
-model=$9
+background_regions=$9
+model=$10
 
 mkdir /project
 project_dir=/project
@@ -41,10 +42,14 @@ model_dir=$project_dir/model
 echo $( timestamp ): "mkdir" $model_dir | tee -a $logfile
 mkdir $model_dir
 
-# create the shap directory
-shap_dir=$project_dir/shap
-echo $( timestamp ): "mkdir" $shap_dir | tee -a $logfile
-mkdir $shap_dir
+# create the shap directories
+shap_dir_peaks=$project_dir/shap_dir_peaks
+echo $( timestamp ): "mkdir" $shap_dir_peaks | tee -a $logfile
+mkdir $shap_dir_peaks
+
+shap_dir_all=$project_dir/shap_dir_all
+echo $( timestamp ): "mkdir" $shap_dir_all | tee -a $logfile
+mkdir $shap_dir_all
 
 
 # copy down bigwig files, bed file, reference, and model file
@@ -86,39 +91,124 @@ tee -a $logfile
 echo $model | sed 's/,/ /g' | xargs cp -t $model_dir/
 
 
-echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}.bed.gz |\
+echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
-cp $peaks ${data_dir}/${experiment}.bed.gz
+cp $peaks ${data_dir}/${experiment}_peaks.bed.gz
 
-echo $( timestamp ): "gunzip" ${data_dir}/${experiment}.bed.gz |\
+echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
-gunzip ${data_dir}/${experiment}.bed.gz
-
-ls ${data_dir}
+gunzip ${data_dir}/${experiment}_peaks.bed.gz
 
 
-# download input json template
-# the input json 
-
-echo $( timestamp ): "cp" $input_json \
-$project_dir/input.json | tee -a $logfile 
-cp $input_json $project_dir/input.json
-
-
-# modify the input json for 
-echo  $( timestamp ): "sed -i -e" "s/<>/$1/g" $project_dir/input.json 
-sed -i -e "s/<>/$1/g" $project_dir/input.json | tee -a $logfile 
-
-
-# modify the input json to change the directory name
-echo  $( timestamp ): "sed -i -e" "s/modeling/shap/g" $project_dir/input.json | \
+echo $( timestamp ): "cp" $background_regions ${data_dir}/${experiment}_background_regions.bed.gz |\
 tee -a $logfile 
-sed -i -e "s/modeling/shap/g" $project_dir/input.json
 
-cp $project_dir/input.json $shap_dir/input.json
-cp $model_dir/${1}_split000.h5 $shap_dir/${1}_split000.h5
+cp $background_regions ${data_dir}/${experiment}_background_regions.bed.gz
+
+
+echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_background_regions.bed.gz |\
+tee -a $logfile 
+
+gunzip ${data_dir}/${experiment}_background_regions.bed.gz
+
+
+echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed ">" ${data_dir}/${experiment}_combined.bed.gz |\
+tee -a $logfile 
+
+cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed > ${data_dir}/${experiment}_combined.bed
+
+
+# cp input json template
+
+echo $( timestamp ): "cp" $testing_input_json \
+$project_dir/testing_input.json | tee -a $logfile 
+cp $testing_input_json $project_dir/testing_input.json
+
+
+# modify the testing_input json for 
+cp $project_dir/testing_input.json $project_dir/testing_input_peaks.json
+echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json 
+sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json | tee -a $logfile 
+
+echo  $( timestamp ): "sed -i -e" "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json 
+sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a $logfile
+
+
+cp $project_dir/testing_input_peaks.json $shap_dir_peaks/testing_input_peaks.json
+cp $model_dir/${1}_split000.h5 $shap_dir_peaks/${1}_split000.h5
+
+
+echo $( timestamp ): "
+shap_scores \\
+    --reference-genome $reference_dir/hg38.genome.fa \\
+    --model $model_dir/${1}_split000.h5 \\
+    --bed-file $data_dir/${1}_peaks.bed \\
+    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+    --output-dir $shap_dir_peaks \\
+    --input-seq-len 2114 \\
+    --control-len 1000 \\
+    --task-id 0 \\
+    --input-data $project_dir/testing_input_peaks.json" | tee -a $logfile
+
+shap_scores \
+    --reference-genome $reference_dir/hg38.genome.fa \
+    --model $model_dir/${1}_split000.h5 \
+    --bed-file $data_dir/${1}_peaks.bed \
+    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+    --output-dir $shap_dir_peaks \
+    --input-seq-len 2114 \
+    --control-len 1000 \
+    --task-id 0 \
+    --input-data $project_dir/testing_input_peaks.json # this file doesnt have negatives
+
+echo $( timestamp ): "
+python importance_hdf5_to_bigwig.py \\
+        -h5 $shap_dir_peaks/profile_scores.h5 \\
+        -c $reference_dir/chrom.sizes \\
+        -r $data_dir/${1}_peaks.bed \\
+        -o $shap_dir_peaks/profile_scores.bw\\
+        -s $shap_dir_peaks/profile_scores.stats.txt" \\ | tee -a $logfile 
+
+python importance_hdf5_to_bigwig.py \
+        -h5 $shap_dir_peaks/profile_scores.h5 \
+        -c $reference_dir/chrom.sizes \
+        -r $data_dir/${1}_peaks.bed \
+        -o $shap_dir_peaks/profile_scores.bw\
+        -s $shap_dir_peaks/profile_scores.stats.txt
+        
+echo $( timestamp ): "
+python importance_hdf5_to_bigwig.py \\
+        -h5 $shap_dir_peaks/counts_scores.h5 \\
+        -c $reference_dir/chrom.sizes \\
+        -r $data_dir/${1}_peaks.bed \\
+        -o $shap_dir_peaks/counts_scores.bw\\
+        -s $shap_dir_peaks/counts_scores.stats.txt" \\ | tee -a $logfile 
+
+python importance_hdf5_to_bigwig.py \
+        -h5 $shap_dir_peaks/counts_scores.h5 \
+        -c $reference_dir/chrom.sizes \
+        -r $data_dir/${1}_peaks.bed \
+        -o $shap_dir_peaks/counts_scores.bw\
+        -s $shap_dir_peaks/counts_scores.stats.txt
+        
+
+
+
+
+# modify the testing_input json for 
+cp $project_dir/testing_input.json $project_dir/testing_input_all.json
+echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
+sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
+
+echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
+sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
+
+
+cp $project_dir/testing_input_all.json $shap_dir_all/testing_input_all.json
+cp $model_dir/${1}_split000.h5 $shap_dir_all/${1}_split000.h5
+
 
 echo $( timestamp ): "
 shap_scores \\
@@ -126,19 +216,49 @@ shap_scores \\
     --model $model_dir/${1}_split000.h5 \\
     --bed-file $data_dir/${1}.bed \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
-    --output-dir $shap_dir \\
+    --output-dir $shap_dir_all \\
     --input-seq-len 2114 \\
     --control-len 1000 \\
     --task-id 0 \\
-    --input-data $project_dir/input.json" | tee -a $logfile
+    --input-data $project_dir/testing_input_all.json" | tee -a $logfile
 
 shap_scores \
     --reference-genome $reference_dir/hg38.genome.fa \
     --model $model_dir/${1}_split000.h5 \
     --bed-file $data_dir/${1}.bed \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
-    --output-dir $shap_dir \
+    --output-dir $shap_dir_all \
     --input-seq-len 2114 \
     --control-len 1000 \
     --task-id 0 \
-    --input-data $project_dir/input.json # this file doesnt have negatives
+    --input-data $project_dir/testing_input_all.json # this file doesnt have negatives
+
+echo $( timestamp ): "
+python importance_hdf5_to_bigwig.py \\
+        -h5 $shap_dir_all/profile_scores.h5 \\
+        -c $reference_dir/chrom.sizes \\
+        -r $data_dir/${1}_combined.bed \\
+        -o $shap_dir_all/profile_scores.bw\\
+        -s $shap_dir_all/profile_scores.stats.txt" \\ | tee -a $logfile 
+
+python importance_hdf5_to_bigwig.py \
+        -h5 $shap_dir_all/profile_scores.h5 \
+        -c $reference_dir/chrom.sizes \
+        -r $data_dir/${1}_combined.bed \
+        -o $shap_dir_all/profile_scores.bw\
+        -s $shap_dir_all/profile_scores.stats.txt
+        
+echo $( timestamp ): "
+python importance_hdf5_to_bigwig.py \\
+        -h5 $shap_dir_all/counts_scores.h5 \\
+        -c $reference_dir/chrom.sizes \\
+        -r $data_dir/${1}_combined.bed \\
+        -o $shap_dir_all/counts_scores.bw\\
+        -s $shap_dir_all/counts_scores.stats.txt" \\ | tee -a $logfile 
+
+python importance_hdf5_to_bigwig.py \
+        -h5 $shap_dir_all/counts_scores.h5 \
+        -c $reference_dir/chrom.sizes \
+        -r $data_dir/${1}_combined.bed \
+        -o $shap_dir_all/counts_scores.bw\
+        -s $shap_dir_all/counts_scores.stats.txt
