@@ -214,7 +214,7 @@ echo $( timestamp ): "
 shap_scores \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --model $model_dir/${1}_split000.h5 \\
-    --bed-file $data_dir/${1}.bed \\
+    --bed-file $data_dir/${1}_combined.bed \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --output-dir $shap_dir_all \\
     --input-seq-len 2114 \\
@@ -225,7 +225,7 @@ shap_scores \\
 shap_scores \
     --reference-genome $reference_dir/hg38.genome.fa \
     --model $model_dir/${1}_split000.h5 \
-    --bed-file $data_dir/${1}.bed \
+    --bed-file $data_dir/${1}_combined.bed \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --output-dir $shap_dir_all \
     --input-seq-len 2114 \
