@@ -278,7 +278,7 @@ def shap_scores(args, shap_dir):
     # shap explainer for the counts head
     profile_model_counts_explainer = shap.explainers.deep.TFDeepExplainer(
         ([model.input[0], model.input[2]], 
-         model.outputs[1]),
+         tf.reduce_sum(model.outputs[1], axis=-1)),
         data_func, 
         combine_mult_and_diffref=combine_mult_and_diffref)
 

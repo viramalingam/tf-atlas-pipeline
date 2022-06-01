@@ -176,10 +176,14 @@ def get_weightedsum_meannormed_logits(model, task_id, stranded):
     # See Google slide deck for explanations
     # We meannorm as per section titled 
     # "Adjustments for Softmax Layers" in the DeepLIFT paper
-    meannormed_logits = \
-        (model.outputs[0][:, :, start_idx:end_idx] - \
-         tf.reduce_mean(
-            model.outputs[0][:, :, start_idx:end_idx], axis=1)[:, None, :])
+    # Reshaping is done to be compatible with the single multinomial
+    reshaped_out=tf.reshape(model.outputs[0], [-1,model.outputs[0][:, :, start_idx:end_idx].shape[1]*(end_idx-start_idx)])
+
+    meannormed_logits=reshaped_out-tf.reduce_mean(reshaped_out, axis=1)[:,None]
+    # meannormed_logits = \
+    #     (model.outputs[0][:, :, start_idx:end_idx] - \
+    #      tf.reduce_mean(
+    #         model.outputs[0][:, :, start_idx:end_idx], axis=1)[:, None, :])
         
     # 'stop_gradient' will prevent importance from being propagated
     # through this operation; we do this because we just want to treat
@@ -193,8 +197,11 @@ def get_weightedsum_meannormed_logits(model, task_id, stranded):
     # Weight the logits according to the softmax probabilities, take
     # the sum for each example. This mirrors what was done for the
     # bpnet paper.
+    # weightedsum_meannormed_logits = tf.reduce_sum(softmax_out * \
+    #                                               meannormed_logits,
+    #                                               axis=(1, 2))
     weightedsum_meannormed_logits = tf.reduce_sum(softmax_out * \
                                                   meannormed_logits,
-                                                  axis=(1, 2))
+                                                  axis=(1))
     
     return weightedsum_meannormed_logits

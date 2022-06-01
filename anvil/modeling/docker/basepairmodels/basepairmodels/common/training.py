@@ -428,7 +428,7 @@ def train_and_validate(
     val_losses_lr = []
     
     # track best loss so we can restore weights 
-    best_loss = 1e6
+    best_loss = 1e32
     
     # keep a copy of the best weights
     best_weights = None

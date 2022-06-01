@@ -270,8 +270,6 @@ class TFDeepExplainer(Explainer):
 
         # compute the attributions
         output_phis = []
-        
-        
         for i in range(model_output_ranks.shape[1]):
             phis = []
             for k in range(len(X)):
