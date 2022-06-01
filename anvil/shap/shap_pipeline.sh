@@ -16,8 +16,8 @@ chrom_sizes=$5
 chroms_txt=$6
 bigwigs=$7
 peaks=$8
-background_regions=$9
-model=${10}
+# background_regions=$9
+model=${9}
 
 mkdir /project
 project_dir=/project
@@ -47,9 +47,9 @@ shap_dir_peaks=$project_dir/shap_dir_peaks
 echo $( timestamp ): "mkdir" $shap_dir_peaks | tee -a $logfile
 mkdir $shap_dir_peaks
 
-shap_dir_all=$project_dir/shap_dir_all
-echo $( timestamp ): "mkdir" $shap_dir_all | tee -a $logfile
-mkdir $shap_dir_all
+# shap_dir_all=$project_dir/shap_dir_all
+# echo $( timestamp ): "mkdir" $shap_dir_all | tee -a $logfile
+# mkdir $shap_dir_all
 
 
 # copy down bigwig files, bed file, reference, and model file
@@ -197,68 +197,68 @@ python importance_hdf5_to_bigwig.py \
 
 
 
-# modify the testing_input json for 
-cp $project_dir/testing_input.json $project_dir/testing_input_all.json
-echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
-sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
+# # modify the testing_input json for 
+# cp $project_dir/testing_input.json $project_dir/testing_input_all.json
+# echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
+# sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
 
-echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
-sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
-
-
-cp $project_dir/testing_input_all.json $shap_dir_all/testing_input_all.json
-cp $model_dir/${1}_split000.h5 $shap_dir_all/${1}_split000.h5
+# echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
+# sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
 
 
-echo $( timestamp ): "
-shap_scores \\
-    --reference-genome $reference_dir/hg38.genome.fa \\
-    --model $model_dir/${1}_split000.h5 \\
-    --bed-file $data_dir/${1}_combined.bed \\
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
-    --output-dir $shap_dir_all \\
-    --input-seq-len 2114 \\
-    --control-len 1000 \\
-    --task-id 0 \\
-    --input-data $project_dir/testing_input_all.json" | tee -a $logfile
+# cp $project_dir/testing_input_all.json $shap_dir_all/testing_input_all.json
+# cp $model_dir/${1}_split000.h5 $shap_dir_all/${1}_split000.h5
 
-shap_scores \
-    --reference-genome $reference_dir/hg38.genome.fa \
-    --model $model_dir/${1}_split000.h5 \
-    --bed-file $data_dir/${1}_combined.bed \
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
-    --output-dir $shap_dir_all \
-    --input-seq-len 2114 \
-    --control-len 1000 \
-    --task-id 0 \
-    --input-data $project_dir/testing_input_all.json # this file doesnt have negatives
 
-echo $( timestamp ): "
-python importance_hdf5_to_bigwig.py \\
-        -h5 $shap_dir_all/profile_scores.h5 \\
-        -c $reference_dir/chrom.sizes \\
-        -r $data_dir/${1}_combined.bed \\
-        -o $shap_dir_all/profile_scores.bw\\
-        -s $shap_dir_all/profile_scores.stats.txt" \\ | tee -a $logfile 
+# echo $( timestamp ): "
+# shap_scores \\
+#     --reference-genome $reference_dir/hg38.genome.fa \\
+#     --model $model_dir/${1}_split000.h5 \\
+#     --bed-file $data_dir/${1}_combined.bed \\
+#     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+#     --output-dir $shap_dir_all \\
+#     --input-seq-len 2114 \\
+#     --control-len 1000 \\
+#     --task-id 0 \\
+#     --input-data $project_dir/testing_input_all.json" | tee -a $logfile
 
-python importance_hdf5_to_bigwig.py \
-        -h5 $shap_dir_all/profile_scores.h5 \
-        -c $reference_dir/chrom.sizes \
-        -r $data_dir/${1}_combined.bed \
-        -o $shap_dir_all/profile_scores.bw\
-        -s $shap_dir_all/profile_scores.stats.txt
+# shap_scores \
+#     --reference-genome $reference_dir/hg38.genome.fa \
+#     --model $model_dir/${1}_split000.h5 \
+#     --bed-file $data_dir/${1}_combined.bed \
+#     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+#     --output-dir $shap_dir_all \
+#     --input-seq-len 2114 \
+#     --control-len 1000 \
+#     --task-id 0 \
+#     --input-data $project_dir/testing_input_all.json # this file doesnt have negatives
+
+# echo $( timestamp ): "
+# python importance_hdf5_to_bigwig.py \\
+#         -h5 $shap_dir_all/profile_scores.h5 \\
+#         -c $reference_dir/chrom.sizes \\
+#         -r $data_dir/${1}_combined.bed \\
+#         -o $shap_dir_all/profile_scores.bw\\
+#         -s $shap_dir_all/profile_scores.stats.txt" \\ | tee -a $logfile 
+
+# python importance_hdf5_to_bigwig.py \
+#         -h5 $shap_dir_all/profile_scores.h5 \
+#         -c $reference_dir/chrom.sizes \
+#         -r $data_dir/${1}_combined.bed \
+#         -o $shap_dir_all/profile_scores.bw\
+#         -s $shap_dir_all/profile_scores.stats.txt
         
-echo $( timestamp ): "
-python importance_hdf5_to_bigwig.py \\
-        -h5 $shap_dir_all/counts_scores.h5 \\
-        -c $reference_dir/chrom.sizes \\
-        -r $data_dir/${1}_combined.bed \\
-        -o $shap_dir_all/counts_scores.bw\\
-        -s $shap_dir_all/counts_scores.stats.txt" \\ | tee -a $logfile 
+# echo $( timestamp ): "
+# python importance_hdf5_to_bigwig.py \\
+#         -h5 $shap_dir_all/counts_scores.h5 \\
+#         -c $reference_dir/chrom.sizes \\
+#         -r $data_dir/${1}_combined.bed \\
+#         -o $shap_dir_all/counts_scores.bw\\
+#         -s $shap_dir_all/counts_scores.stats.txt" \\ | tee -a $logfile 
 
-python importance_hdf5_to_bigwig.py \
-        -h5 $shap_dir_all/counts_scores.h5 \
-        -c $reference_dir/chrom.sizes \
-        -r $data_dir/${1}_combined.bed \
-        -o $shap_dir_all/counts_scores.bw\
-        -s $shap_dir_all/counts_scores.stats.txt
+# python importance_hdf5_to_bigwig.py \
+#         -h5 $shap_dir_all/counts_scores.h5 \
+#         -c $reference_dir/chrom.sizes \
+#         -r $data_dir/${1}_combined.bed \
+#         -o $shap_dir_all/counts_scores.bw\
+#         -s $shap_dir_all/counts_scores.stats.txt
