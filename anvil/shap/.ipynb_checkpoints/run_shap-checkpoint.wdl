@@ -18,7 +18,7 @@ task run_shap {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch dev_shap_single_multinomial https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.3.0 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/shap/
 
@@ -48,7 +48,7 @@ task run_shap {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_vdev_shap_single_multinomial'
+		docker: 'vivekramalingam/tf-atlas:v1.3.0'
 		memory: 30 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
@@ -78,7 +78,7 @@ workflow shap {
 			experiment = experiment,
 			input_json = input_json,
 			reference_file = reference_file,
-			reference_file_index = reference_file_index,	
+			reference_file_index = reference_file_index,
 			chrom_sizes = chrom_sizes,
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,

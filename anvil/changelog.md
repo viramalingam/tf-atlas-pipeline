@@ -3,7 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [1.2.1] - 2022-05-26
+## [1.3.0] - 2022-05-26
+### Added
+1. **shap works with the single multinomial models.** Merged with the dev branch.
+2. bug fixes.
+3. wdl files use the correct git tag v1.3.0
+4. **support multiple test chromosomes.** 
+
+## [1.2.2] - 2022-05-26
 ### Added
 added compile false to shap; added loss=None in training; bug fix; fixed tag version in wdl files;
 

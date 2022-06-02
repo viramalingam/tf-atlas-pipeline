@@ -254,9 +254,10 @@ cp $project_dir/splits.json $model_dir/
 
 #get the test chromosome
 
-echo 'test_chromosome=jq .["0"]["test"][0] $project_dir/splits.json | sed s/"//g'
+echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
 
-test_chromosome=`jq '.["0"]["test"][0]' $project_dir/splits.json | sed 's/"//g'` 
+test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
+
 
 # modify he input json for the testing
 

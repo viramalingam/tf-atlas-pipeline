@@ -7,12 +7,12 @@ import pandas as pd
 
 def metrics_argsparser():
     parser=argparse.ArgumentParser(description="generate ")
-    parser.add_argument("--h5_file",help="h5 file containing the predictions")
-    parser.add_argument("-p","--peak_file", help="peak bed file in encode format; contains 5th column value 1")
-    parser.add_argument("-n","--neg_file", help="negative bed file; contains 5th column value 0")
+    parser.add_argument("--h5_file",required=True, help="h5 file containing the predictions")
+    parser.add_argument("-p","--peak_file", required=True, help="peak bed file in encode format; contains 5th column value 1")
+    parser.add_argument("-n","--neg_file", required=True, help="negative bed file; contains 5th column value 0")
+    parser.add_argument("-o","--output_dir", required=True, help="directory for the output")
+    parser.add_argument("--chroms", nargs='+', required=True, help="test chromosome")
     parser.add_argument("--output_length", type=int, default=1000, help="negative bed file")
-    parser.add_argument("-o","--output_dir", help="directory for the output")
-    parser.add_argument("--chroms", help="test chromosome")
     return parser
 
 parser = metrics_argsparser()
@@ -33,7 +33,7 @@ h5_df = pd.DataFrame({'chroms':f['coords']['coords_chrom'][()],
                      'log_counts':(f['predictions']['pred_logcounts'][()][:,0]).tolist()})
 
 predictions = pd.merge(all_regions_df, h5_df, how='inner', on=['chroms','start','end'])
-predictions = predictions[predictions['chroms']==args.chroms].reset_index(drop=True)
+predictions = predictions[predictions['chroms'].isin(args.chroms)].reset_index(drop=True)
 
 from sklearn.metrics import roc_auc_score, average_precision_score
 
