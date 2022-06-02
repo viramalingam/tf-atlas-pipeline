@@ -15,7 +15,7 @@ task run_basicstats {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.3 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.3.6 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -52,8 +52,7 @@ task run_basicstats {
 		memory: mem_gb + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
-		nvidiaDriverVersion: "418.87.00"
-  		maxRetries: 1
+		maxRetries: 1
 	}
 }
 

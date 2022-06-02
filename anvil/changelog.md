@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.3.6] - 2022-06-02
+### Added
+1.big fix to feature to set instance memory based on peak file size for basic stats calculation
+
 ## [v1.3.5] - 2022-06-02
 ### Added
 1.added feature to set instance memory based on peak file size for basic stats calculation
