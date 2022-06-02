@@ -6,10 +6,11 @@ task run_basicstats {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		File splits_json       
+		File splits_json
+		Int mem_gb
 
 
-  	}	
+	}	
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
@@ -48,7 +49,7 @@ task run_basicstats {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
-		memory: 32 + "GB"
+		memory: mem_gb + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		nvidiaDriverVersion: "418.87.00"
@@ -65,6 +66,8 @@ workflow basicstats {
 		File splits_json 
 
 	}
+	Float size_of_peak_file = size(peaks, "KB")
+	Int mem_gb=ceil(size_of_peak_file/1200)*32
 
 	call run_basicstats {
 		input:
@@ -72,7 +75,8 @@ workflow basicstats {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions,
-			splits_json = splits_json
+			splits_json = splits_json,
+			mem_gb = mem_gb
  	}
 	output {
 		Float spearman_with_control = run_basicstats.spearman
