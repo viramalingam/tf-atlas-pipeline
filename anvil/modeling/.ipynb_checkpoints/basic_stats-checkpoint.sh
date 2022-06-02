@@ -85,7 +85,7 @@ echo $( timestamp ): "python ./basic_stats.py -p ${data_dir}/${experiment}_peaks
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \\
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \\
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \\
---chroms $test_chromosome\\
+--chroms $test_chromosome \\
 -o ${chip_control_correlation_peaks}" | tee -a $logfile 
 
 python ./basic_stats.py -p ${data_dir}/${experiment}_peaks.bed \
@@ -93,7 +93,7 @@ python ./basic_stats.py -p ${data_dir}/${experiment}_peaks.bed \
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \
---chroms $test_chromosome\
+--chroms $test_chromosome \
 -o ${chip_control_correlation_peaks} | tee -a $logfile 
 
 
@@ -104,7 +104,7 @@ echo $( timestamp ): "python ./basic_stats.py -p ${data_dir}/${experiment}_combi
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \\
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \\
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \\
---chroms $test_chromosome\\
+--chroms $test_chromosome \\
 -o ${chip_control_correlation_all_peaks}" | tee -a $logfile 
 
 python ./basic_stats.py -p ${data_dir}/${experiment}_combined.bed \
@@ -112,5 +112,5 @@ python ./basic_stats.py -p ${data_dir}/${experiment}_combined.bed \
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \
---chroms $test_chromosome\
+--chroms $test_chromosome \
 -o ${chip_control_correlation_all_peaks} | tee -a $logfile 
