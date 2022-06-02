@@ -12,7 +12,7 @@ experiment=$1
 bigwigs=$2
 peaks=$3
 background_regions=$4
-input_json=$5
+splits_json=$5
 
 
 mkdir /project
@@ -75,9 +75,9 @@ cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_reg
 
 #get the test chromosome
 
-echo 'test_chromosome=jq .["0"]["test"] | join(" ") $input_json | sed s/"//g'
+echo 'test_chromosome=jq .["0"]["test"] | join(" ") $splits_json | sed s/"//g'
 
-test_chromosome=`jq '.["0"]["test"] | join(" ")' $input_json | sed 's/"//g'`
+test_chromosome=`jq '.["0"]["test"] | join(" ")' $splits_json | sed 's/"//g'`
 
 
 echo $( timestamp ): "python ./basic_stats.py -p ${data_dir}/${experiment}_peaks.bed \\

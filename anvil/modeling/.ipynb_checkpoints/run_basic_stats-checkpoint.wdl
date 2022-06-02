@@ -6,7 +6,7 @@ task run_basicstats {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		File input_json       
+		File splits_json       
 
 
   	}	
@@ -21,8 +21,8 @@ task run_basicstats {
 
 		#basic stats
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions} ${input_json}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions} ${input_json}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions} ${splits_json}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/basic_stats.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${background_regions} ${splits_json}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -62,7 +62,7 @@ workflow basicstats {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		File input_json 
+		File splits_json 
 
 	}
 
@@ -72,7 +72,7 @@ workflow basicstats {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions,
-			input_json = input_json
+			splits_json = splits_json
  	}
 	output {
 		Float spearman_with_control = run_basicstats.spearman
