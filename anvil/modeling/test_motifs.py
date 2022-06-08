@@ -246,7 +246,7 @@ def get_suffled_peak_sequences(peak_path,fasta_path, input_seq_len = 2114,
     Input_start = Input_start.mask(Input_start < 0,0)
     Input_end = peaks_df['start'] + peaks_df['summit'] + (input_seq_len//2)
 
-    if num_of_simulated_sequences<len(peaks_df):
+    if len(peaks_df)<num_of_simulated_sequences:
         num_of_simulated_sequences = len(peaks_df)
     for i in range(num_of_simulated_sequences):
         actual_sequence = fasta_ref.fetch(peaks_df['chrom'][i], Input_start[i] , Input_end[i]).upper()
