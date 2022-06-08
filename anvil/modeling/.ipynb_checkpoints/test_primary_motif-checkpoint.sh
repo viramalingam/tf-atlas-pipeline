@@ -44,7 +44,7 @@ echo $( timestamp ): "mkdir" $model_dir | tee -a $logfile
 mkdir $model_dir
 
 # create the predictions directory
-predictions_dir=$project_dir/predictions
+predictions_dir=$project_dir/prediction
 echo $( timestamp ): "mkdir" $predictions_dir | tee -a $logfile
 mkdir $predictions_dir
 
