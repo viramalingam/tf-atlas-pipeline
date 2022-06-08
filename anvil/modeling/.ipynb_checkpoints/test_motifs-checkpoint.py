@@ -314,7 +314,7 @@ with CustomObjectScope({'MultichannelMultinomialNLL': lambda n='0':n,
                        "CustomModel":CustomModel}):
     model = load_model(args.h5model,compile=False)
     
-fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak_path,
+fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak,
                                                           model=model,
                                                           motifs=args.motifs,
                                                           number_of_backgrounds=args.number_of_backgrounds,
