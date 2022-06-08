@@ -61,7 +61,7 @@ workflow test_primary_motif_workflow {
 
 	}
 
-	call run_basicstats {
+	call test_primary_motif {
 		input:
 			experiment = experiment,
 			primary_motifs = primary_motifs,
