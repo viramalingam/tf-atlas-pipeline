@@ -21,6 +21,7 @@ from genomicsdlarchsandlosses.bpnet.losses import \
 MultichannelMultinomialNLL, multinomial_nll, CustomMeanSquaredError
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import CustomObjectScope
+import tensorflow.keras.backend as kb
 
 import argparse
 
