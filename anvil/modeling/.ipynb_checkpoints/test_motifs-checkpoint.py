@@ -285,10 +285,8 @@ def calculate_fold_change_in_predicted_signal(peak_path,
 
     fold_changes = []
     motifs_lst = str.split(motifs,sep=';')
-    print(motifs_lst)
     for motif in motifs_lst:
         motif_inserted_sequences = []
-        print(motif)
         for sequence in background_sequences:
             inserted_sequence = (sequence[:(input_seq_len//2)] 
                                 +motif
@@ -304,16 +302,13 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
         fold_changes.append({'motif':motif,'median_fold_change':round(median_fold_change,3)})
         
-    print(not_test_reverse_complement)
     if not not_test_reverse_complement:
         
         rc_fold_changes = []
         motifs_lst = str.split(motifs,sep=';')
-        print(motifs_lst)
         for motif in motifs_lst:
             motif_inserted_sequences = []
             rc_motif=motif.translate(str.maketrans("ACTG", "TGAC"))[::-1]
-            print(rc_motif)
             for sequence in background_sequences:
                 inserted_sequence = (sequence[:(input_seq_len//2)] 
                                     +rc_motif
