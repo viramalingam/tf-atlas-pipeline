@@ -348,17 +348,17 @@ fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_pa
 
   
 print(fold_changes,rc_fold_changes)
-with open(f'{output_dir}/median_log2_fold_change.txt', 'w') as f:
+with open(f'{args.output_dir}/median_log2_fold_change.txt', 'w') as f:
     f.write(str(max(pd.DataFrame(fold_changes)['median_fold_change'])))
 
-with open(f'{output_dir}/all_log2_fold_changes.txt', 'w') as f:
+with open(f'{args.output_dir}/all_log2_fold_changes.txt', 'w') as f:
     all_log2_fold_changes=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in fold_changes])
     f.write(all_log2_fold_changes)
     
-with open(f'{output_dir}/median_log2_fold_change_rc.txt', 'w') as f:
+with open(f'{args.output_dir}/median_log2_fold_change_rc.txt', 'w') as f:
     f.write(str(max(pd.DataFrame(rc_fold_changes)['median_fold_change'])))
 
-with open(f'{output_dir}/all_log2_fold_changes_rc.txt', 'w') as f:
+with open(f'{args.output_dir}/all_log2_fold_changes_rc.txt', 'w') as f:
     all_log2_fold_changes_rc=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in rc_fold_changes])
     f.write(all_log2_fold_changes_rc)
 
