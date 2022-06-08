@@ -327,7 +327,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                             output_seq_len = output_seq_len)
 
             median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
-            rc_fold_changes.append({'motif':motif,'median_fold_change':round(median_fold_change,3)})
+            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':round(median_fold_change,3)})
     
     
     return fold_changes,rc_fold_changes
@@ -348,6 +348,7 @@ fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_pa
 
   
 print(fold_changes,rc_fold_changes)
+
 with open(f'{args.output_dir}/median_log2_fold_change.txt', 'w') as f:
     f.write(str(max(pd.DataFrame(fold_changes)['median_fold_change'])))
 
