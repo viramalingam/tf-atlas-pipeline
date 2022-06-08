@@ -74,8 +74,6 @@ cp $peaks ${data_dir}/${experiment}_peaks.bed.gz
 echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
-gunzip ${data_dir}/${experiment}_peaks.bed.gz
-
 
 echo $( timestamp ): "
 python test_motifs.py \\
