@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.3.7] - 2022-06-02
+### Added
+1.**feature to test motif effects on models.**
+2. merged with the dev_test_motif_effects branch
+
 ## [v1.3.6] - 2022-06-02
 ### Added
 1.big fix to feature to set instance memory based on peak file size for basic stats calculation
