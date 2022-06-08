@@ -9,13 +9,13 @@ function timestamp {
 }
 
 experiment=$1
-primary_motifs=$2
+motifs=$2
 model=$3
 reference_file=$4
 peaks=${5}
 
 echo $experiment
-echo $primary_motifs
+echo $motifs
 echo $model
 echo $reference_file
 echo $peaks
