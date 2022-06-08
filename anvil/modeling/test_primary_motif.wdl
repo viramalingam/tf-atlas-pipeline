@@ -9,30 +9,34 @@ task test_primary_motif {
 		File peaks
 
 
-	}	
+	}
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.7 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_test_motif_effects https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
 
 		#test_primary_motif
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} ${primary_motifs} ${model} ${reference_file} ${peaks}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} ${primary_motifs} ${model} ${reference_file} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} ${primary_motifs} ${sep=',' model} ${reference_file} ${peaks}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} ${primary_motifs} ${sep=',' model} ${reference_file} ${peaks}
 
 		echo "copying all files to cromwell_root folder"
 		
 		cp -r /project/prediction/median_log2_fold_change.txt /cromwell_root/median_log2_fold_change.txt
 		cp -r /project/prediction/all_log2_fold_changes.txt /cromwell_root/all_log2_fold_changes.txt
+		cp -r /project/prediction/median_log2_fold_change_rc.txt /cromwell_root/median_log2_fold_change_rc.txt
+		cp -r /project/prediction/all_log2_fold_changes_rc.txt /cromwell_root/all_log2_fold_changes_rc.txt
 	}
 	
 	output {
 		Float primary_log2_fold_change = read_float("median_log2_fold_change.txt")
 		String all_log2_fold_changes = read_string("all_log2_fold_changes.txt")
+		Float primary_log2_fold_change_rc = read_float("median_log2_fold_change_rc.txt")
+		String all_log2_fold_changes_rc = read_string("all_log2_fold_changes_rc.txt")
 	}
 
 	runtime {
@@ -54,10 +58,9 @@ workflow test_primary_motif_workflow {
 		Array [File] model
 		File reference_file
 		File peaks
-
 	}
 
-	call run_basicstats {
+	call test_primary_motif {
 		input:
 			experiment = experiment,
 			primary_motifs = primary_motifs,
@@ -68,5 +71,7 @@ workflow test_primary_motif_workflow {
 	output {
 		Float primary_log2_fold_change = test_primary_motif.primary_log2_fold_change
 		String all_log2_fold_changes = test_primary_motif.all_log2_fold_changes
+		Float primary_log2_fold_change_rc = test_primary_motif.primary_log2_fold_change_rc
+		String all_log2_fold_changes_rc = test_primary_motif.all_log2_fold_changes_rc
 	}
 }

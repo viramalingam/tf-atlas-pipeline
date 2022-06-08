@@ -9,13 +9,13 @@ function timestamp {
 }
 
 experiment=$1
-primary_motifs=$2
+motifs=$2
 model=$3
 reference_file=$4
 peaks=${5}
 
 echo $experiment
-echo $primary_motifs
+echo $motifs
 echo $model
 echo $reference_file
 echo $peaks
@@ -44,7 +44,7 @@ echo $( timestamp ): "mkdir" $model_dir | tee -a $logfile
 mkdir $model_dir
 
 # create the predictions directory
-predictions_dir=$project_dir/predictions
+predictions_dir=$project_dir/prediction
 echo $( timestamp ): "mkdir" $predictions_dir | tee -a $logfile
 mkdir $predictions_dir
 
@@ -73,8 +73,6 @@ cp $peaks ${data_dir}/${experiment}_peaks.bed.gz
 
 echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
-
-gunzip ${data_dir}/${experiment}_peaks.bed.gz
 
 
 echo $( timestamp ): "
