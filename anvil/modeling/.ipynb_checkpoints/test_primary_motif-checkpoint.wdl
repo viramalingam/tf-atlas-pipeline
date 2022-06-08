@@ -9,7 +9,7 @@ task test_primary_motif {
 		File peaks
 
 
-	}	
+	}
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
@@ -21,8 +21,8 @@ task test_primary_motif {
 
 		#test_primary_motif
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} ${primary_motifs} ${model} ${reference_file} ${peaks}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} ${primary_motifs} ${model} ${reference_file} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} ${primary_motifs} ${sep=',' model} ${reference_file} ${peaks}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} ${primary_motifs} ${sep=',' model} ${reference_file} ${peaks}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -58,7 +58,6 @@ workflow test_primary_motif_workflow {
 		Array [File] model
 		File reference_file
 		File peaks
-
 	}
 
 	call test_primary_motif {
