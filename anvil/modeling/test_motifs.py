@@ -32,7 +32,7 @@ parser.add_argument("-h5", "--h5model", type=str, required=True, help="model fil
 parser.add_argument("--motifs", type=str, required=True, help="motifs string. Mutiple motifs are seperated by a colon")
 parser.add_argument("--reference_genome", type=str,required=True, help="path the genome fasta")
 parser.add_argument("-n", "--number_of_backgrounds", type=int,default=1000, help="number of gc maintaining shuffled background regions to test.")
-parser.add_argument("-r", "--not_test_reverse_complement", action='store_false', default=True, help="boolean to whether test the motifs in the reverse complement orientation")
+parser.add_argument("-r", "--not_test_reverse_complement", action='store_true', default=False, help="boolean to whether test the motifs in the reverse complement orientation")
 parser.add_argument("--input_seq_len", type=int,default=2114, help="length of the sequence input to the model.")
 parser.add_argument("--output_len", type=int,default=1000, help="output length from the model")
 parser.add_argument("--output_dir", type=str,default='.', help="output length from the model")
