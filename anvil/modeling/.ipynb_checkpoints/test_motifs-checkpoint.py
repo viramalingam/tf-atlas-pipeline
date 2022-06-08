@@ -274,7 +274,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                                  number_of_backgrounds=1000,
                                                  output_seq_len=1000,
                                                  input_seq_len=2114,
-                                                 test_reverse_complement=True):
+                                                 not_test_reverse_complement=False):
 
     background_sequences = get_suffled_peak_sequences(peak_path=peak_path,fasta_path=reference_genome, 
                                                       input_seq_len = input_seq_len,
@@ -303,9 +303,34 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
         fold_changes.append({'motif':motif,'median_fold_change':round(median_fold_change,3)})
+        
+    
+    if not not_test_reverse_complement:
+        
+        rc_fold_changes = []
+        motifs_lst = str.split(motifs,sep=';')
+        print(motifs_lst)
+        for motif in motifs_lst:
+            motif_inserted_sequences = []
+            rc_motif=motif.translate(str.maketrans("ACTG", "TGAC"))[::-1]
+            print(rc_motif)
+            for sequence in background_sequences:
+                inserted_sequence = (sequence[:(input_seq_len//2)] 
+                                    +rc_motif
+                                    +sequence[(input_seq_len//2)+len(motif):])
+                motif_inserted_sequences.append(inserted_sequence+random_seq(input_seq_len-len(inserted_sequence)))
+
+
+            one_hot_encoded_sequence = one_hot_encode(motif_inserted_sequences)
+
+            prediction_motif_sequences = predict_logits(model,encoded_inserted_sequences = one_hot_encoded_sequence,
+                                            output_seq_len = output_seq_len)
+
+            median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
+            rc_fold_changes.append({'motif':motif,'median_fold_change':round(median_fold_change,3)})
     
     
-    return fold_changes
+    return fold_changes,rc_fold_changes
 
 with CustomObjectScope({'MultichannelMultinomialNLL': lambda n='0':n,
                         "kb": kb,
@@ -314,23 +339,28 @@ with CustomObjectScope({'MultichannelMultinomialNLL': lambda n='0':n,
                        "CustomModel":CustomModel}):
     model = load_model(args.h5model,compile=False)
     
-fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak,
+fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak,
                                                           model=model,
                                                           motifs=args.motifs,
                                                           number_of_backgrounds=args.number_of_backgrounds,
                                                           reference_genome = args.reference_genome,
-                                                          test_reverse_complement=args.test_reverse_complement)
+                                                          not_test_reverse_complement=args.not_test_reverse_complement)
 
-
-
-    
-print(fold_changes)
+  
+print(fold_changes,rc_fold_changes)
 with open(f'{output_dir}/median_log2_fold_change.txt', 'w') as f:
     f.write(str(max(pd.DataFrame(fold_changes)['median_fold_change'])))
 
 with open(f'{output_dir}/all_log2_fold_changes.txt', 'w') as f:
     all_log2_fold_changes=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in fold_changes])
     f.write(all_log2_fold_changes)
+    
+with open(f'{output_dir}/median_log2_fold_change_rc.txt', 'w') as f:
+    f.write(str(max(pd.DataFrame(rc_fold_changes)['median_fold_change'])))
+
+with open(f'{output_dir}/all_log2_fold_changes_rc.txt', 'w') as f:
+    all_log2_fold_changes_rc=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in rc_fold_changes])
+    f.write(all_log2_fold_changes_rc)
 
 
     
