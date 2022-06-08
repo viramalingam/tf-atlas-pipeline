@@ -304,7 +304,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
         fold_changes.append({'motif':motif,'median_fold_change':round(median_fold_change,3)})
         
-    
+    print(not_test_reverse_complement)
     if not not_test_reverse_complement:
         
         rc_fold_changes = []
