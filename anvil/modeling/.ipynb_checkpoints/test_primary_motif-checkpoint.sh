@@ -15,7 +15,7 @@ reference_file=$4
 peaks=${5}
 
 echo $experiment
-echo $motifs
+echo "{$motifs}"
 echo $model
 echo $reference_file
 echo $peaks
@@ -75,21 +75,21 @@ echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
 
-echo $( timestamp ): "
+echo $( timestamp ): '
 python test_motifs.py \\
     --peak ${data_dir}/${experiment}_peaks.bed.gz \\
     --h5model $model_dir/${1}_split000.h5 \\
-    --motifs $motifs \\
+    --motifs "{$motifs}" \\
     --reference_genome $reference_dir/hg38.genome.fa \\
     --number_of_backgrounds 1000 \\
     --output_dir $predictions_dir \\
     --input_seq_len 2114 \\
-    --output_len 1000" | tee -a $logfile 
+    --output_len 1000' | tee -a $logfile 
 
 python test_motifs.py \
     --peak ${data_dir}/${experiment}_peaks.bed.gz \
     --h5model $model_dir/${1}_split000.h5 \
-    --motifs $motifs \
+    --motifs "{$motifs}" \
     --reference_genome $reference_dir/hg38.genome.fa \
     --number_of_backgrounds 1000 \
     --output_dir $predictions_dir \

@@ -21,8 +21,8 @@ task test_primary_motif {
 
 		#test_primary_motif
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} ${primary_motifs} ${sep=',' model} ${reference_file} ${peaks}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} ${primary_motifs} ${sep=',' model} ${reference_file} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks}
 
 		echo "copying all files to cromwell_root folder"
 		

@@ -300,7 +300,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                         output_seq_len = output_seq_len)
         
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
-        fold_changes.append({'motif':motif,'median_fold_change':round(median_fold_change,3)})
+        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change})
         
     if not not_test_reverse_complement:
         
@@ -322,7 +322,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                             output_seq_len = output_seq_len)
 
             median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
-            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':round(median_fold_change,3)})
+            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change})
     
     
     return fold_changes,rc_fold_changes
@@ -345,14 +345,14 @@ fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_pa
 print(fold_changes,rc_fold_changes)
 
 with open(f'{args.output_dir}/median_log2_fold_change.txt', 'w') as f:
-    f.write(str(max(pd.DataFrame(fold_changes)['median_fold_change'])))
+    f.write(str(round(max(pd.DataFrame(fold_changes)['median_fold_change']),3)))
 
 with open(f'{args.output_dir}/all_log2_fold_changes.txt', 'w') as f:
     all_log2_fold_changes=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in fold_changes])
     f.write(all_log2_fold_changes)
     
 with open(f'{args.output_dir}/median_log2_fold_change_rc.txt', 'w') as f:
-    f.write(str(max(pd.DataFrame(rc_fold_changes)['median_fold_change'])))
+    f.write(str(round(max(pd.DataFrame(rc_fold_changes)['median_fold_change']),3)))
 
 with open(f'{args.output_dir}/all_log2_fold_changes_rc.txt', 'w') as f:
     all_log2_fold_changes_rc=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in rc_fold_changes])
