@@ -113,8 +113,11 @@ class MSequenceGenerator:
                 
             chrom_sizes (str): path to the chromosome sizes file
             
-            chroms (str): the list of chromosomes that will be sampled
+            chroms (list): the list of chromosomes that will be sampled
                 for batch generation
+                
+            loci_indices (list): list of indices to filter rows from
+                the 'loci' peaks file
 
             num_threads (int): number of parallel threads for batch
                 generation, default = 10
@@ -126,16 +129,14 @@ class MSequenceGenerator:
                 be generated
                 
             background_only (boolean): True, if batches are to be 
-                generated with background samples alone
+                generated with background samples alone (i.e. in the 
+                case where we are training a background model)
                 
             foreground_weight (float): sample weight for foreground
                 samples
             
             background_weight (float): sample weight for background
                 samples
-                
-            set_bias_as_zero (boolean): if True bias tracks will be zero. This can be
-            used for testing without bias after training with bias tracks.
                 
         **Members**
         
@@ -157,6 +158,9 @@ class MSequenceGenerator:
             
             _chroms (list): the list of chromosomes that will be sampled
                 for batch generation
+                
+            _loci_indices (list): list of indices to filter rows from
+                the 'loci' peaks file
             
             _chrom_sizes_df (pandas.Dataframe): dataframe of the 
                 chromosomes and their corresponding sizes
@@ -201,15 +205,13 @@ class MSequenceGenerator:
                 
             _resized_loci_size (int): size of the resized loci dataframe
             
-            
-            
         IGNORE_FOR_SPHINX_DOCS
     """
 
     def __init__(self, tasks_json, batch_gen_params, reference_genome, 
-                 chrom_sizes, chroms, num_threads=10, batch_size=64, 
-                 epochs=100, background_only=False, foreground_weight=1, 
-                 background_weight=0, set_bias_as_zero=False):
+                 chrom_sizes, chroms=None, loci_indices=None, num_threads=10,
+                 batch_size=64, epochs=100, background_only=False, 
+                 foreground_weight=1, background_weight=0):
         
         #: ML task mode 'train', 'val' or 'test'
         self._mode = batch_gen_params['mode']
@@ -259,9 +261,6 @@ class MSequenceGenerator:
         self._bias_tracks = {}
         for i in range(self._num_tasks):
             self._bias_tracks[i] = len(self._tasks[i]['bias']['source'])
-            
-        #whether to set bias as zero
-        self._set_bias_as_zero = set_bias_as_zero
 
         #: path to the reference genome
         self._reference = reference_genome
@@ -273,10 +272,14 @@ class MSequenceGenerator:
         #: list of chromosomes that will be sampled for batch generation
         self._chroms = chroms
         
+        #: list of indices to select rows from the 'loci' peaks file
+        self._loci_indices = loci_indices
+        
         # keep only those _chrom_sizes_df rows corresponding to the 
         # required chromosomes in _chroms
-        self._chrom_sizes_df = self._chrom_sizes_df[
-            self._chrom_sizes_df['chrom'].isin(self._chroms)]
+        if self._chroms != None:
+            self._chrom_sizes_df = self._chrom_sizes_df[
+                self._chrom_sizes_df['chrom'].isin(self._chroms)]
 
         # generate a new column for sampling weights of the chromosomes
         self._chrom_sizes_df['weights'] = \
@@ -350,6 +353,7 @@ class MSequenceGenerator:
                 self._tasks,
                 self._chrom_sizes_df[['chrom', 'size']], self._input_flank,
                 self._chroms,
+                loci_indices=self._loci_indices,
                 loci_keys=loci_keys,
                 drop_duplicates=True, background_only=background_only, 
                 foreground_weight=foreground_weight, 
@@ -932,27 +936,42 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
             chroms (str): the list of chromosomes that will be sampled
                 for batch generation
                 
+            loci_indices (list): list of indices to filter rows from
+                the 'loci' peaks file
+                
             num_threads (int): number of parallel threads for batch
                 generation, default = 10
                 
             batch_size (int): size of each generated batch of data, 
                 default = 64
                         
+            epochs (int): the number of epochs for which data has to 
+                be generated
+                
+            background_only (boolean): True, if batches are to be 
+                generated with background samples alone (i.e. in the 
+                case where we are training a background model)
+                
+            foreground_weight (float): sample weight for foreground
+                samples
+            
+            background_weight (float): sample weight for background
+                samples
     """
 
     def __init__(self, tasks_json, batch_gen_params, reference_genome, 
-                 chrom_sizes, chroms, num_threads=10, batch_size=64, 
-                 epochs=100, background_only=False, foreground_weight=1, 
-                 background_weight=0, set_bias_as_zero=False):
+                 chrom_sizes, chroms=None, loci_indices=None, num_threads=10,
+                 batch_size=64, epochs=100, background_only=False, 
+                 foreground_weight=1, background_weight=0):
         
         # name of the generator class
         self.name = "BPNet"
         
         # call base class constructor
         super().__init__(tasks_json, batch_gen_params, reference_genome, 
-                         chrom_sizes, chroms, num_threads, batch_size, 
-                         epochs, background_only, foreground_weight, 
-                         background_weight, set_bias_as_zero)
+                         chrom_sizes, chroms, loci_indices, num_threads, 
+                         batch_size, epochs, background_only, 
+                         foreground_weight, background_weight)
         
     def get_name(self):
         """ 
@@ -1111,36 +1130,34 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
                         np.nan_to_num(signal_file.values(chrom, start, end))  
                         
                     profile_track_idx += 1
-                    
-                if not self._set_bias_as_zero:
-                #skip setting the bias values. Initialization value of zero will be used
-                    # Step 3. get the bias values
-                    bias_track_idx = 0
-                    for j in range(len(bias_files[i])):
-                        bias_file = bias_files[i][j]
+                                          
+                # Step 3. get the bias values
+                bias_track_idx = 0
+                for j in range(len(bias_files[i])):
+                    bias_file = bias_files[i][j]
+                    profile_bias_input[i][rowCnt, :, bias_track_idx] = \
+                        np.nan_to_num(bias_file.values(chrom, start, end))
+                                          
+                    bias_track_idx += 1
+                                
+                    # add the smoothed track if 'smoothing' has been
+                    # specified
+                    if self._tasks[i]['bias']['smoothing'][j] is not None:
+                        # get the smoothing params
+                        sigma = self._tasks[i]['bias']['smoothing'][j][0]
+                        window_size = \
+                            self._tasks[i]['bias']['smoothing'][j][1]
+                        
+                        # the smoothed bias track will immediately 
+                        # follow the original bias track in the last
+                        # dimension
                         profile_bias_input[i][rowCnt, :, bias_track_idx] = \
-                            np.nan_to_num(bias_file.values(chrom, start, end))
-
+                            utils.gaussian1D_smoothing(
+                                profile_bias_input[i][
+                                    rowCnt, :, bias_track_idx - 1],
+                                sigma, window_size)
+                                          
                         bias_track_idx += 1
-
-                        # add the smoothed track if 'smoothing' has been
-                        # specified
-                        if self._tasks[i]['bias']['smoothing'][j] is not None:
-                            # get the smoothing params
-                            sigma = self._tasks[i]['bias']['smoothing'][j][0]
-                            window_size = \
-                                self._tasks[i]['bias']['smoothing'][j][1]
-
-                            # the smoothed bias track will immediately 
-                            # follow the original bias track in the last
-                            # dimension
-                            profile_bias_input[i][rowCnt, :, bias_track_idx] = \
-                                utils.gaussian1D_smoothing(
-                                    profile_bias_input[i][
-                                        rowCnt, :, bias_track_idx - 1],
-                                    sigma, window_size)
-
-                            bias_track_idx += 1
 
             rowCnt += 1
 
@@ -1155,12 +1172,10 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         # profiles for the entire batch
         logcounts_predictions = np.log(
             np.sum(profile_predictions, axis=1) + 1)
-        
-        if not self._set_bias_as_zero:
-            #skip setting the bias values. Initialization value of zero will be used
-            for key in profile_bias_input:
-                counts_bias_input[key] = np.log(
-                    np.sum(profile_bias_input[key], axis=1) + 1)
+
+        for key in profile_bias_input:
+            counts_bias_input[key] = np.log(
+                np.sum(profile_bias_input[key], axis=1) + 1)
         
         # inputs to train, val & test
         # 'coordinates', 'jitters', 'index', 'status' & 'rev_comp'

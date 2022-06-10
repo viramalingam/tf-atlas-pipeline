@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## dev_test_abhi_models - 2022-06-09
+1. default basepairmodels repo and other repos.
+2. changes fastpredict script to use inputlength-1122 and outputl-length-500
+3. fastpredict wdl to take single model_split0004.h5 file
+
 ## [v1.3.10] - 2022-06-08
 ### Added
 1. bugfix

@@ -117,7 +117,7 @@ echo $( timestamp ): "cp" $bigwigs ${data_dir}/ |\
 tee -a $logfile 
 
 
-echo $model | sed 's/,/ /g' | xargs cp -t $model_dir/
+cp $model $model_dir/
 
 echo $( timestamp ): "cp" $model ${model_dir}/ |\
 tee -a $logfile 
@@ -197,31 +197,31 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/model_split004.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/model_split004.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -231,49 +231,49 @@ echo $( timestamp ): "Calculating the AUPRC and AUROC metrics ..."
 
 echo $( timestamp ): "
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \\
-    --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \\
+    --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split004_predictions.h5 \\
     --output_dir $predictions_dir_all_peaks_test_chroms \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len 500 \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
-    --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \
+    --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split004_predictions.h5 \
     --output_dir $predictions_dir_all_peaks_test_chroms \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len 500 \
     --chroms $test_chromosome
     
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/model_split004.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads\\
     --set-bias-as-zero" | tee -a $logfile 
 
 predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/model_split004.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
@@ -283,49 +283,49 @@ echo $( timestamp ): "Calculating the AUPRC and AUROC metrics without bias..."
 
 echo $( timestamp ): "
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \\
-    --h5_file $predictions_dir_all_peaks_test_chroms_wo_bias/${experiment}_split000_predictions.h5 \\
+    --h5_file $predictions_dir_all_peaks_test_chroms_wo_bias/${experiment}_split004_predictions.h5 \\
     --output_dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len 500 \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
-    --h5_file $predictions_dir_all_peaks_test_chroms_wo_bias/${experiment}_split000_predictions.h5 \
+    --h5_file $predictions_dir_all_peaks_test_chroms_wo_bias/${experiment}_split004_predictions.h5 \
     --output_dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len 500 \
     --chroms $test_chromosome
 
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/model_split004.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/model_split004.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -343,31 +343,31 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/model_split004.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/model_split004.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -375,32 +375,32 @@ predict \
     
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/model_split004.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
     --set-bias-as-zero" | tee -a $logfile 
 
 predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/model_split004.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
@@ -408,31 +408,31 @@ predict \
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/model_split004.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/model_split004.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads

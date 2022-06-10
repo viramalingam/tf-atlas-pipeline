@@ -1,6 +1,7 @@
 """
     Default parameters for BPNet architecture defintion - single
     unstranded task
+
 """
 
 # length of one hot encoded input sequence
@@ -78,4 +79,3 @@ ATTRIBUTION_PRIOR_PARAMS = {
 }
 
 LOSS_WEIGHTS = [1.0, 1.0]
-COUNTS_LOSS = "MSE"

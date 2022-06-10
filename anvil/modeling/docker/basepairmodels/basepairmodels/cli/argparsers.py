@@ -68,19 +68,16 @@ def training_argsparser():
     # reference params
     parser.add_argument('--reference-genome', '-g', type=str, required=True,
                         help="number of gpus to use", default=1)
-    
-    parser.add_argument('--chrom-sizes', '-c', type=str, required=True,
-                        help="path to chromosome sizes file")
-    
-    parser.add_argument('--chroms', nargs='+', required=True,
-                        help="master list of chromosomes for the genome")
-    
-    parser.add_argument('--exclude-chroms', nargs='+', help="list of "
-                        "chromosomes to be excluded", default=[])    
 
     # validation params
+    parser.add_argument('--chrom-sizes', '-c', type=str,
+                        help="path to chromosome sizes file")
+    
+    parser.add_argument('--chroms', nargs='+',
+                        help="master list of chromosomes for the genome")
+
     parser.add_argument('--splits', '-s', type=str,
-                        help="path to json file")
+                        help="path to json file") 
 
     # output params    
     parser.add_argument('--output-dir', '-d', type=str,
@@ -228,11 +225,7 @@ def fastpredict_argsparser():
                         action='store_true', default=False, 
                         help="specify if bigWig tracks of predictions should " 
                         "be generated")
-    parser.add_argument('--set-bias-as-zero', 
-                        action='store_true', default=False, 
-                        help="specify if bias values should be set as zero." 
-                        "Used only during testing. Usefull when trained with bias"
-                        "but need to test without it.")
+    
     return parser
 
 
@@ -269,11 +262,6 @@ def shap_scores_argsparser():
                         help="the path to the bed file containing "
                         "postions at which the model should be interpreted")
 
-    parser.add_argument('--sample', '-s', type=int,
-                        help="the number of samples to randomly sample from "
-                        "the bed file. Only one of --sample or --chroms can "
-                        "be used.")
-
     parser.add_argument('--chroms', '-c', nargs='+',
                         help="list of chroms on which the contribution scores "
                         "are to be computed. If not specified all chroms in "
@@ -290,10 +278,6 @@ def shap_scores_argsparser():
                         "control bigWigs. The --task-id is matched with "
                         "'task_id' in the the json file to get the list of "
                         "control bigWigs")
-
-    parser.add_argument('--control-smoothing', nargs='+',
-                        help="sigma and window width for gaussian 1d "
-                        "smoothing of the control", default=[7.0, 81])
     
     parser.add_argument('--num-shuffles', type=int,
                         help="the number of dinucleotide shuffles to perform "

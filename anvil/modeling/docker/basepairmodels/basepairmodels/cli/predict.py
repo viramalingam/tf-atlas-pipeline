@@ -402,7 +402,7 @@ def predict(args, pred_dir):
     test_gen = BatchGenerator(
         args.input_data, batch_gen_params, args.reference_genome, 
         args.chrom_sizes, args.chroms, num_threads=args.threads, 
-        batch_size=args.batch_size, epochs=1, set_bias_as_zero=args.set_bias_as_zero)
+        batch_size=args.batch_size, epochs=1)
 
     # testing generator function
     test_generator = test_gen.gen()
@@ -518,11 +518,10 @@ def predict(args, pred_dir):
         coordinates = batch['coordinates']
         true_profiles = batch['true_profiles']
         true_logcounts = batch['true_logcounts']
-        
+
         # predict on the batch
         predictions = model.predict(batch)
         
-                
         # arrays to hold required values for each batch before we 
         # write to HDF5 file
         pred_profiles = np.zeros(
@@ -568,30 +567,15 @@ def predict(args, pred_dir):
                 _start = args.output_len // 2 - args.output_window_size // 2  
                 _end = _start + args.output_window_size
                 
-                # combined counts prediction from the count head
-                logcounts_prediction = predictions[1][idx] # this is the logsum of both the strands that is 
-                                                           # predicted                
-
-                # predicted profile — for now assuming that there are two strands and only one task
-                pred_profile_logits = np.reshape(predictions[0][idx, :, :],[1,args.output_len*2])
-                
-                profile_predictions = (np.exp(\
-                                              pred_profile_logits - \
-                                              logsumexp(\
-                                                        pred_profile_logits\
-                                                       )) * (np.exp(logcounts_prediction))\
-                                      )
-                                
-                pred_profiles[cnt_batch_examples, :, j] = np.reshape(\
-                                                                     profile_predictions,\
-                                                                     [args.output_len,2]\
-                                                                    )[_start:_end,j] 
-                
                 # counts prediction
-                pred_logcounts[cnt_batch_examples, j] = np.log(np.sum(np.reshape(\
-                                                                                     profile_predictions,\
-                                                                                     [args.output_len,2]\
-                                                                                    )[:,j]))                
+                logcounts_prediction = predictions[1][idx, j]
+                pred_logcounts[cnt_batch_examples, j] = logcounts_prediction
+
+                # predicted profile
+                pred_profile_logits = predictions[0][idx, _start:_end, j]
+                pred_profiles[cnt_batch_examples, :, j] = np.exp(
+                    pred_profile_logits - logsumexp(pred_profile_logits)) * \
+                    (np.exp(logcounts_prediction) - 1)
             
                 # true profile
                 _true_profiles[cnt_batch_examples, :, j] = \
@@ -614,7 +598,7 @@ def predict(args, pred_dir):
             cnt_batch_examples += 1
 
         # assign values at correct index locations 
-        # in the arrays
+        # in the hdf5 datsets
         start_idx = cnt_examples
         end_idx = cnt_examples + cnt_batch_examples
 
@@ -636,8 +620,7 @@ def predict(args, pred_dir):
         
         # increment the total examples counter
         cnt_examples += cnt_batch_examples
-        
-    logging.info('Writing to h5 file ...')
+
     # write to HDF5 all at once
     pred_profs_dset[:, :, :] = all_pred_profiles
     pred_logcounts_dset[:, :] = all_pred_logcounts
@@ -647,7 +630,7 @@ def predict(args, pred_dir):
     coords_chrom_dset[:] = all_chroms
     coords_start_dset[:] = all_starts
     coords_end_dset[:] = all_ends
-    
+        
     # close hdf5 file
     h5_file.close()
 
@@ -751,17 +734,7 @@ def predict(args, pred_dir):
 
     logging.info("counts pearson: {}".format(counts_pearson))
     logging.info("counts spearman: {}".format(counts_spearman))
-    
-    with open('{}/spearman.txt'.format(args.output_dir), "w+") as f:
-        f.write(str(round(np.nan_to_num(np.mean(counts_spearman)),3)))
-        f.close
-    with open('{}/pearson.txt'.format(args.output_dir), "w+") as f:
-        f.write(str(round(np.nan_to_num(np.mean(counts_pearson)),3)))
-        f.close
-    with open('{}/jsd.txt'.format(args.output_dir), "w+") as f:
-        f.write(str(round(np.nan_to_num(np.median(metrics_tracker['profile_jsds'])),3)))
-        f.close
-    
+
     np.savez_compressed(
         '{}/mnll'.format(args.output_dir), 
         mnll=metrics_tracker['profile_mnlls'])

@@ -12,7 +12,7 @@ setup(
                  "highthroughput sequencing)"),
     author="Zahoor Zafrulla",
     author_email="zahoor@stanford.edu",
-    url="https://github.com/kundajelab/genomics-DL-archsandlosses",
+    url="https://github.com/kundajelab/mseqgen",
     packages=find_packages(),
     install_requires=["tensorflow-gpu==2.4.1", 
                       "tensorflow-probability==0.12.2", "numpy", "scipy"],
