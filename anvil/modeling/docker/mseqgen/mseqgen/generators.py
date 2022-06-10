@@ -1194,11 +1194,14 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         for key in profile_bias_input:
             _key = 'profile_bias_input_' + str(key)
             inputs[_key] = profile_bias_input[key]
+            
+        inputs['control_profile']=profile_bias_input[0] # just for dealing with abhi's models
 
         # add counts bias input
         for key in counts_bias_input:
             _key = 'counts_bias_input_' + str(key)
             inputs[_key] = counts_bias_input[key]
+        inputs['control_logcount']=counts_bias_input[0] # just for dealing with abhi's models
                                           
         # in 'train' mode we add some extras to track all the
         # loci used in every batch of training
