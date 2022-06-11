@@ -1175,7 +1175,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
 
         for key in profile_bias_input:
             counts_bias_input[key] = np.log(
-                np.sum(profile_bias_input[key], axis=1) + 1)
+                np.sum(profile_bias_input[key]) + 1) # abhi's model expect one bias count (combined both strands) per region
         
         # inputs to train, val & test
         # 'coordinates', 'jitters', 'index', 'status' & 'rev_comp'
