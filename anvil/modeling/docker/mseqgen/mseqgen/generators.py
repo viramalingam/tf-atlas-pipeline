@@ -1216,7 +1216,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
             outputs = {
                 'profile_predictions': profile_predictions,
                 'logcounts_predictions': logcounts_predictions}
-
+            print(inputs, outputs, weights)
             return (inputs, outputs, weights)
 
         # in 'test' mode we only return inputs
