@@ -48,16 +48,6 @@ task run_fastpredict {
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc.txt /cromwell_root/auprc.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auroc.txt /cromwell_root/auroc.txt
 		
-		cp -r /project/predictions_and_metrics_test_peaks_test_chroms_wo_bias/spearman.txt /cromwell_root/spearman_wo_bias.txt
-		cp -r /project/predictions_and_metrics_test_peaks_test_chroms_wo_bias/pearson.txt /cromwell_root/pearson_wo_bias.txt
-		cp -r /project/predictions_and_metrics_test_peaks_test_chroms_wo_bias/jsd.txt /cromwell_root/jsd_wo_bias.txt
-		
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/spearman.txt /cromwell_root/spearman_all_peaks_wo_bias.txt
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/pearson.txt /cromwell_root/pearson_all_peaks_wo_bias.txt
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/jsd.txt /cromwell_root/jsd_all_peaks_wo_bias.txt
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/auprc.txt /cromwell_root/auprc_wo_bias.txt
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms_wo_bias/auroc.txt /cromwell_root/auroc_wo_bias.txt
-		
 	}
 	
 	output {
@@ -78,15 +68,6 @@ task run_fastpredict {
 		Float auprc = read_float("auprc.txt")
 		Float auroc = read_float("auroc.txt")
 		
-		Float spearman_wo_bias = read_float("spearman_wo_bias.txt")
-		Float pearson_wo_bias = read_float("pearson_wo_bias.txt")
-		Float jsd_wo_bias = read_float("jsd_wo_bias.txt")
-		
-		Float spearman_all_peaks_wo_bias = read_float("spearman_all_peaks_wo_bias.txt")
-		Float pearson_all_peaks_wo_bias = read_float("pearson_all_peaks_wo_bias.txt")
-		Float jsd_all_peaks_wo_bias = read_float("jsd_all_peaks_wo_bias.txt")
-		Float auprc_wo_bias = read_float("auprc_wo_bias.txt")
-		Float auroc_wo_bias = read_float("auroc_wo_bias.txt")
 	
 	
 	}
@@ -147,14 +128,5 @@ workflow fastpredict {
 		Float jsd_all_peaks = run_fastpredict.jsd_all_peaks
 		Float auprc = run_fastpredict.auprc
 		Float auroc = run_fastpredict.auroc
-		
-		Float spearman_wo_bias = run_fastpredict.spearman_wo_bias
-		Float pearson_wo_bias = run_fastpredict.pearson_wo_bias
-		Float jsd_wo_bias = run_fastpredict.jsd_wo_bias
-		Float spearman_all_peaks_wo_bias = run_fastpredict.spearman_all_peaks_wo_bias
-		Float pearson_all_peaks_wo_bias = run_fastpredict.pearson_all_peaks_wo_bias
-		Float jsd_all_peaks_wo_bias = run_fastpredict.jsd_all_peaks_wo_bias
-		Float auprc_wo_bias = run_fastpredict.auprc_wo_bias
-		Float auroc_wo_bias = run_fastpredict.auroc_wo_bias
 	}
 }
