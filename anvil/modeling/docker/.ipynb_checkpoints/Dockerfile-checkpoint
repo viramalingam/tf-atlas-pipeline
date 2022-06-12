@@ -51,7 +51,7 @@ RUN apt install -y --allow-unauthenticated libbz2-dev
 RUN apt install -y --allow-unauthenticated liblzma-dev
 RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
 
-RUN pip install --upgrade protobuf==3.20.0
+RUN pip install --upgrade protobuf==3.19.0
 
 RUN conda install -c bioconda pysam
 
