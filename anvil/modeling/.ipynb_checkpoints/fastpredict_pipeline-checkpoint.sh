@@ -206,7 +206,7 @@ predict \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
-    --output-window-size 1000 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -221,7 +221,7 @@ predict \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
-    --output-window-size 1000 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -257,7 +257,7 @@ predict \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
-    --output-window-size 1000 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads\\
@@ -273,7 +273,7 @@ predict \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
-    --output-window-size 1000 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
@@ -310,7 +310,7 @@ predict \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
-    --output-window-size 1000 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -325,7 +325,7 @@ predict \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
-    --output-window-size 1000 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -352,7 +352,7 @@ predict \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
-    --output-window-size 1000 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -367,7 +367,7 @@ predict \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
-    --output-window-size 1000 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -384,7 +384,7 @@ predict \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
-    --output-window-size 1000 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
@@ -400,7 +400,7 @@ predict \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
-    --output-window-size 1000 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
@@ -417,7 +417,7 @@ predict \\
     --sequence-generator-name BPNet \\
     --input-seq-len 2114 \\
     --output-len 1000 \\
-    --output-window-size 1000 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -432,7 +432,7 @@ predict \
     --sequence-generator-name BPNet \
     --input-seq-len 2114 \
     --output-len 1000 \
-    --output-window-size 1000 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads

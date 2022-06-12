@@ -591,7 +591,7 @@ def predict(args, pred_dir):
                 pred_logcounts[cnt_batch_examples, j] = np.log(np.sum(np.reshape(\
                                                                                      profile_predictions,\
                                                                                      [args.output_len,2]\
-                                                                                    )[:,j]))                
+                                                                                    )[_start:_end,j]))                
             
                 # true profile
                 _true_profiles[cnt_batch_examples, :, j] = \
@@ -599,7 +599,7 @@ def predict(args, pred_dir):
                 
                 # true logcounts
                 _true_logcounts[cnt_batch_examples, j] = \
-                    true_logcounts[idx, j]
+                    np.log(np.sum(true_profiles[idx, _start:_end, j])+1)
 
                 metrics_update(
                     metrics_tracker,

@@ -20,7 +20,7 @@ task run_fastpredict {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 		
-		git clone --depth 1 --branch v1.3.3 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_smaller_window_metrics https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
@@ -92,14 +92,14 @@ task run_fastpredict {
 	}
 
 runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_smaller_window_metrics'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
 		nvidiaDriverVersion: "418.87.00"
-		maxRetries: 3 
+		maxRetries: 1 
 	}
 }
 
