@@ -30,7 +30,7 @@ task run_modelstats {
 	output {
 		Float alpha = read_float("alpha.txt")
 		Float beta = read_float("beta.txt")
-		Floas bias_term = read_float("bias_term.txt")
+		Float bias_term = read_float("bias_term.txt")
 	
 	}
 
