@@ -48,12 +48,11 @@ with CustomObjectScope({'MultichannelMultinomialNLL':lambda n=0: n, 'tf': tf,"Cu
                             'CustomModel': CustomModel}):
 
     model = load_model(args.model, compile=False)
-    
 
 with open(f'{args.output_dir}/alpha.txt', 'w') as f:
-    str(round(float(model.layers[-1].weights[0][[0]]),4))
+    f.write(str(round(float(model.layers[-1].weights[0][[0]]),4)))
 with open(f'{args.output_dir}/beta.txt', 'w') as f:
-    str(round(float(model.layers[-1].weights[0][[1]]),4))
+    f.write(str(round(float(model.layers[-1].weights[0][[1]]),4)))
 with open(f'{args.output_dir}/bias_term.txt', 'w') as f:
-    str(round(float(model.layers[-1].weights[1]),4))
+    f.write(str(round(float(model.layers[-1].weights[1]),4)))
 
