@@ -37,6 +37,6 @@ tee -a $logfile
 echo $( timestamp ): "python ./model_stats.py -m ${model_dir}/${experiment}_split000.h5 \\
 -o ${model_dir}" | tee -a $logfile 
 
-python ./model_stats.py -p ${model_dir}/${experiment}_split000.h5 \
+python ./model_stats.py -m ${model_dir}/${experiment}_split000.h5 \
 -o ${model_dir} | tee -a $logfile 
 
