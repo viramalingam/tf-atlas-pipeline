@@ -37,7 +37,7 @@ import argparse
 
 # need full paths!
 parser = argparse.ArgumentParser(description="save the alpha, beta and the bias terms from the bpnet model")
-parser.add_argument("-m", "--model-path", type=str, required=True, help="model file")
+parser.add_argument("-m", "--model", type=str, required=True, help="model file")
 
 parser.add_argument("-o", "--output-dir", type=str, default='.', help="output files directory path")
 
