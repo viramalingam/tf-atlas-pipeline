@@ -24,7 +24,7 @@ task run_modelstats {
 		cp -r /project/model/alpha.txt /cromwell_root/alpha.txt
 		cp -r /project/model/beta.txt /cromwell_root/beta.txt
 		cp -r /project/model/bias_term.txt /cromwell_root/bias_term.txt
-        #model_output=alpha(sequence)+beta(control)+bias_term
+		#model_output=alpha(sequence)+beta(control)+bias_term
 	}
 	
 	output {
