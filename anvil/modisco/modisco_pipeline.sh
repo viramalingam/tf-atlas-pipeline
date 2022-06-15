@@ -10,7 +10,8 @@ function timestamp {
 
 experiment=$1
 shap=$2
-number_of_cpus=$3
+max_seqlets=$3
+number_of_cpus=$4
 
 
 
@@ -58,26 +59,26 @@ motif_discovery \\
     --scores-path $shap_dir/profile_scores.h5 \\
     --output-directory $modisco_profile_dir \\
     --number-of-cpus $number_of_cpus
-    --max-seqlets-per-metacluster 20000" | tee -a $logfile
+    --max-seqlets-per-metacluster $max_seqlets" | tee -a $logfile
 
 motif_discovery \
     --scores-path $shap_dir/profile_scores.h5 \
     --output-directory $modisco_profile_dir \
     --number-of-cpus $number_of_cpus \
-    --max-seqlets-per-metacluster 20000
+    --max-seqlets-per-metacluster $max_seqlets
     
 echo $( timestamp ): "
 motif_discovery \\
     --scores-path $shap_dir/counts_scores.h5 \\
     --output-directory $modisco_counts_dir\\
     --number-of-cpus $number_of_cpus \\
-    --max-seqlets-per-metacluster 20000" | tee -a $logfile
+    --max-seqlets-per-metacluster $max_seqlets" | tee -a $logfile
 
 motif_discovery \
     --scores-path $shap_dir/counts_scores.h5 \
     --output-directory $modisco_counts_dir \
     --number-of-cpus $number_of_cpus \
-    --max-seqlets-per-metacluster 20000
+    --max-seqlets-per-metacluster $max_seqlets
 
 awk '$1=="Mem:"{print $3}' $logfile | sort -n | tail -n 1 > /cromwell_root/max_memory_gb.txt
 
