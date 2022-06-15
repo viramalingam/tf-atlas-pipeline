@@ -68,13 +68,13 @@ class CustomModel(Model):
                 total_poisson_loss += loss
             return total_poisson_loss
     
-        def mse_loss_function(y_log_true, y_log_pred):
+        def mse_loss_function(x_log_control,y_log_true, y_log_pred):
             # logcounts mse loss without sample weights
             mse_loss = keras.losses.mean_squared_error(
-                y_log_true, y_log_pred)
+                y_log_true-x_log_control, y_log_pred-x_log_control)
             return mse_loss
         
-        def _mse_loss_function(_y_log_true,_y_log_pred):
+        def _mse_loss_function(_x_log_control,_y_log_true,_y_log_pred):
             total_mse_loss = 0
             track_count_cuml = 0
             num_tasks_count_cuml = 0
@@ -84,7 +84,7 @@ class CustomModel(Model):
                 y_log_true = tf.reduce_logsumexp(_y_log_true[:,track_count_cuml:(track_count_cuml+num_of_tracks)],axis=1)
                 y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
                 
-                loss = mse_loss_function(y_log_true, y_log_pred)
+                loss = mse_loss_function(x['counts_bias_input_0'],y_log_true, y_log_pred)
                 track_count_cuml += num_of_tracks
                 num_tasks_count_cuml += 1
                 total_mse_loss += loss
