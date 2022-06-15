@@ -75,6 +75,7 @@ motif_discovery \
     --scores-path $shap_dir/counts_scores.h5 \
     --output-directory $modisco_counts_dir \
     --mmax_seqlets $max_seqlets
+    
 
 awk '$1=="Mem:"{print $3}' $logfile | sort -n | tail -n 1 > /cromwell_root/max_memory_gb.txt
 
