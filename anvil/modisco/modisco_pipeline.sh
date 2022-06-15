@@ -58,27 +58,23 @@ echo $( timestamp ): "
 motif_discovery \\
     --scores-path $shap_dir/profile_scores.h5 \\
     --output-directory $modisco_profile_dir \\
-    --number-of-cpus $number_of_cpus
-    --max-seqlets-per-metacluster $max_seqlets" | tee -a $logfile
+    --max_seqlets $max_seqlets" | tee -a $logfile
 
 motif_discovery \
     --scores-path $shap_dir/profile_scores.h5 \
     --output-directory $modisco_profile_dir \
-    --number-of-cpus $number_of_cpus \
-    --max-seqlets-per-metacluster $max_seqlets
+    --max_seqlets $max_seqlets
     
 echo $( timestamp ): "
 motif_discovery \\
     --scores-path $shap_dir/counts_scores.h5 \\
     --output-directory $modisco_counts_dir\\
-    --number-of-cpus $number_of_cpus \\
-    --max-seqlets-per-metacluster $max_seqlets" | tee -a $logfile
+    --max_seqlets $max_seqlets" | tee -a $logfile
 
 motif_discovery \
     --scores-path $shap_dir/counts_scores.h5 \
     --output-directory $modisco_counts_dir \
-    --number-of-cpus $number_of_cpus \
-    --max-seqlets-per-metacluster $max_seqlets
+    --mmax_seqlets $max_seqlets
 
 awk '$1=="Mem:"{print $3}' $logfile | sort -n | tail -n 1 > /cromwell_root/max_memory_gb.txt
 
