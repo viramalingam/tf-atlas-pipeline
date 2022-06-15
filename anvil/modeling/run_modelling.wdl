@@ -22,7 +22,7 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.3 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_loss_on_log_signal_control_ratio https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
@@ -95,7 +95,7 @@ task run_modelling {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_loss_on_log_signal_control_ratio'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
