@@ -4,6 +4,7 @@ task run_modisco {
 	input {
 		String experiment
 		Array [File] shap
+		Int? mem_gb
 		Int? max_seqlets        
 		Int? number_of_cpus
 
