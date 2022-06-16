@@ -393,7 +393,7 @@ def profile_bias_module(
 
     
 def counts_bias_module(counts_head, counts_bias_inputs, tasks_info, 
-                       name_prefix=None):
+                       name_prefix=None,kernelConstraint=None):
     """
         Apply bias correction to counts head
         
@@ -464,9 +464,14 @@ def counts_bias_module(counts_head, counts_bias_inputs, tasks_info,
             #     units=num_task_tracks, 
             #     name=name)(concat_with_counts_bias_input))
                 name = "logcounts_predictions_{}".format(i)
-            counts_outputs.append(layers.Dense(
-                units=num_tasks, 
-                name=name)(concat_with_counts_bias_input))
+            if kernelConstraint:
+                counts_outputs.append(layers.Dense(
+                    units=num_tasks, 
+                    name=name,kernelConstraint=kernelConstraint)(concat_with_counts_bias_input))
+            else:
+                counts_outputs.append(layers.Dense(
+                    units=num_tasks, 
+                    name=name)(concat_with_counts_bias_input))
 
     # counts output
     if len(counts_outputs) == 1:
@@ -605,7 +610,18 @@ def atac_dnase_bias_model(
     # outputs of the bias model
     return bias_model_def.outputs
     
+class FixLastTensorArrayValueAt(tf.keras.constraints.Constraint):
+    """Constrains one of the weights tensor to a `ref_value`."""
 
+    def __init__(self, ref_value):
+        self.ref_value = ref_value
+
+    def __call__(self, w):
+        w[-(len(ref_value)):]=ref_value
+        return w
+
+    def get_config(self):
+        return {'ref_value': self.ref_value}
 
     
 def BPNet(
@@ -792,11 +808,13 @@ def BPNet(
             kernel_sizes=profile_bias_module_params['kernel_sizes'], 
             name_prefix=name_prefix)
         
-    
+        #fix the log counts weight to slope
+        kernel_constraint = FixLastTensorArrayValueAt(1)
+        
         # Step 5.3 - account for counts bias
         logcounts_outputs = counts_bias_module(
             counts_head_out, counts_bias_inputs, tasks, 
-            name_prefix=name_prefix)
+            name_prefix=name_prefix,kernelConstraint=kernel_constraint)
     
     if use_attribution_prior:            
         # instantiate attribution prior Model with inputs and outputs
