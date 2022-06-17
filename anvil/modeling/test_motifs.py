@@ -180,141 +180,6 @@ def fix_sequence_length(sequence, length):
         sequence = sequence[:length]
 
     return sequence
-def jsd_min_max_bounds(profile):
-    """
-        Min Max bounds for the jsd metric
-        
-        Args:
-            profile (numpy.ndarray): true profile 
-            
-        Returns:
-            tuple: (min, max) bounds values
-    """
-    
-    # uniform distribution profile
-    uniform_profile = np.ones(len(profile)) * (1.0 / len(profile))
-
-    # profile as probabilities
-    profile_prob = profile / np.sum(profile)
-
-    # jsd of profile with uniform profile
-    max_jsd = jensenshannon(profile_prob, uniform_profile)
-
-    # jsd of profile with itself (upper bound)
-    min_jsd = 0.0
-
-    return (min_jsd, max_jsd)
-
-def min_max_normalize(metric_value, min_max_bounds, default=1.0):
-    """
-        Min Max normalize a metric value
-        
-        Args:
-            metric_value (float): unnormalized metric value
-            min_max_bounds (tuple): (min, max) bounds
-            default (float): the default value to return in case
-                of runtime exceptions
-    """
-    
-    min_bound = min_max_bounds[0]
-    max_bound = min_max_bounds[1]
-    
-    if (max_bound - min_bound) == 0:
-        return default
-    
-    norm_value = (metric_value - min_bound) / (max_bound - min_bound) 
-    
-    if norm_value < 0:
-        return 0
-    
-    if norm_value > 1:
-        return 1
-    
-    return norm_value
-
-def metrics_update(
-    metrics_tracker, example_idx, track_idx, true_profile, true_logcounts,
-    pred_profile, pred_logcounts, true_profile_smoothing=[7.0, 81]):
-    """
-        Update metrics with new true/predicted profile & counts
-        
-        Args:
-            metrics_tracker (dict): dictionary to track & update 
-                metrics info 
-            example_idx (int): index of the example to be updated
-            track_idx (int): index of the ith track to be updated
-            true_profile (numpy.ndarray): ground truth profile
-            true_counts (float): sum of true profile
-            pred_profile (numpy.ndarray): predicted profile output
-            pred_counts (float): predicted 
-            true_profile_smoothing (list): list of 2 values, sigma &
-                window size for gaussuan 1d smoothing
-            
-    
-    """
-    
-    # Step 1 - smooth true profile
-    sigma = true_profile_smoothing[0]
-    width = float(true_profile_smoothing[1])
-    truncate = (((width - 1)/2)-0.5)/sigma
-
-    # Step 2 - smooth true profile and convert profiles to 
-    # probabilities
-    if np.sum(true_profile) != 0 and np.sum(pred_profile) != 0:
-        # smoothing
-        true_profile_smooth = gaussian_filter1d(
-            true_profile, sigma=sigma, truncate=truncate)
-
-        # convert to probabilities
-        true_profile_smooth_prob = true_profile_smooth / np.sum(
-            true_profile_smooth)
-        pred_profile_prob = pred_profile / np.sum(pred_profile)
-        pred_profile_prob = _fix_sum_to_one(pred_profile_prob)
-
-        # metrics 
-        # profile pearson & spearman
-        # with pearson we need to check if either of the arrays
-        # has zero standard deviation (i.e having all same elements,
-        # a zero or any other value). Unfortunately np.std
-        # returns a very small non-zero value, so we'll use a 
-        # different approach to check if the array has the same value.
-        # If true then pearson correlation is undefined 
-        if np.unique(true_profile_smooth_prob).size == 1 or \
-            np.unique(pred_profile_prob).size == 1:
-            metrics_tracker['profile_pearsonrs'][example_idx, track_idx] = 0
-            metrics_tracker['profile_spearmanrs'][example_idx, track_idx] = 0
-        else:
-            metrics_tracker['profile_pearsonrs'][example_idx, track_idx] = \
-                pearsonr(true_profile_smooth_prob, pred_profile_prob)[0]
-
-            metrics_tracker['profile_spearmanrs'][example_idx, track_idx] = \
-                spearmanr(true_profile_smooth_prob, pred_profile_prob)[0]
-            
-        # mnll
-        _mnll = np.nan_to_num(mnll(true_profile, probs=pred_profile_prob))
-        _mnll = min_max_normalize(_mnll, mnll_min_max_bounds(true_profile))
-        metrics_tracker['profile_mnlls'][example_idx, track_idx] = _mnll
-
-        # cross entropy
-        metrics_tracker['profile_cross_entropys'][example_idx, track_idx] = \
-            min_max_normalize(
-                profile_cross_entropy(true_profile, probs=pred_profile_prob), 
-                cross_entropy_min_max_bounds(true_profile))
-
-        # jsd
-        metrics_tracker['profile_jsds'][example_idx, track_idx] = \
-            min_max_normalize(
-                jensenshannon(true_profile_smooth_prob, pred_profile_prob), 
-                jsd_min_max_bounds(true_profile))
-
-        # mse
-        metrics_tracker['profile_mses'][example_idx, track_idx] = \
-            np.square(np.subtract(true_profile, pred_profile)).mean()
-        
-    metrics_tracker['all_true_logcounts'][example_idx, track_idx] = \
-        true_logcounts
-    metrics_tracker['all_pred_logcounts'][example_idx, track_idx] = \
-        pred_logcounts
     
 
 def one_hot_encode(sequences, seq_length=2114):
@@ -448,8 +313,13 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))   
         
+        prediction_motif_profile = prediction_motif_sequences[0].reshape(-1,output_seq_len*2)
+        prediction_motif_profile = prediction_motif_profile/(np.sum(prediction_motif_profile,axis=1).reshape(prediction_motif_profile.shape[0],1))
         
-        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change})
+        prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
+        prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
+        jsd=jensenshannon(prediction_motif_profile,prediction_background_profile)
+        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change,'jsd':jsd})
         
     if not not_test_reverse_complement:
         
@@ -472,8 +342,14 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                                         output_seq_len = output_seq_len,
                                                         no_control_model=no_control_model)
 
-            median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
-            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change})
+            median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))
+            prediction_motif_profile = prediction_motif_sequences[0].reshape(-1,output_seq_len*2)
+            prediction_motif_profile = prediction_motif_profile/(np.sum(prediction_motif_profile,axis=1).reshape(prediction_motif_profile.shape[0],1))
+
+            prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
+            prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
+            jsd=jensenshannon(prediction_motif_profile,prediction_background_profile)
+            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change,'jsd':jsd})
     
     
     return fold_changes,rc_fold_changes
