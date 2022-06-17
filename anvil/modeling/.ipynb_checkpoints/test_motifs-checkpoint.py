@@ -343,12 +343,14 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                                         no_control_model=no_control_model)
 
             median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))
+
             prediction_motif_profile = prediction_motif_sequences[0].reshape(-1,output_seq_len*2)
-            prediction_motif_profile = prediction_motif_profile/(np.sum(prediction_motif_profile,axis=1).reshape(prediction_motif_profile.shape[0],1))
+            prediction_motif_profile = prediction_motif_profile/np.sum(prediction_motif_profile,axis=1,keepdims=True)
 
             prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
-            prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
+            prediction_background_profile = prediction_background_profile/np.sum(prediction_background_profile,axis=1,keepdims=True)
             jsd=jensenshannon(prediction_motif_profile,prediction_background_profile,axis=1)
+            print(jsd)
             rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change,'median_jsd':np.median(jsd)})
     
     
