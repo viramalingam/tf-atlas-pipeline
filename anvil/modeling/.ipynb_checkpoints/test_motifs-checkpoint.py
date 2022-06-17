@@ -9,6 +9,7 @@ import sys
 import tensorflow as tf
 import pysam
 import random
+from scipy.special import logsumexp
 
 from basepairmodels.cli import logger
 from basepairmodels.cli.exceptionhandler import NoTracebackException
