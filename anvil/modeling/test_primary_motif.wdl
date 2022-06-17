@@ -7,7 +7,7 @@ task test_primary_motif {
 		Array [File] model
 		File reference_file
 		File peaks
-		String? no_control_model=False
+		String? no_control_model='False'
 
 	}
 	command {
@@ -58,7 +58,7 @@ workflow test_primary_motif_workflow {
 		Array [File] model
 		File reference_file
 		File peaks
-		String? no_control_model=False
+		String? no_control_model='False'
 	}
 
 	call test_primary_motif {

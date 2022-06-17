@@ -7,7 +7,7 @@ task test_primary_motif {
 		Array [File] model
 		File reference_file
 		File peaks
-		String? no_control_model=False
+		String? no_control_model='False'
 
 	}
 	command {
@@ -22,7 +22,7 @@ task test_primary_motif {
 		#test_primary_motif
 
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${no_control_model}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${no_control_model}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${no_control_model		}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -58,7 +58,7 @@ workflow test_primary_motif_workflow {
 		Array [File] model
 		File reference_file
 		File peaks
-		String? no_control_model=False
+		String? no_control_model='False'
 	}
 
 	call test_primary_motif {
