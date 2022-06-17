@@ -328,7 +328,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         prediction_motif_profile = logits_to_profile(prediction_motif_sequences)
         prediction_motif_profile = prediction_motif_profile/np.sum(prediction_motif_profile,axis=1,keepdims=True)
         
-        prediction_background_profile = logits_to_profile((prediction_background_sequences)
+        prediction_background_profile = logits_to_profile(prediction_background_sequences)
         prediction_background_profile = prediction_background_profile/np.sum(prediction_background_profile,axis=1,keepdims=True)
         
         print('prediction_motif_profile:',prediction_motif_profile[:,495:505])
