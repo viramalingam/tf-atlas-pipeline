@@ -318,8 +318,8 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         
         prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
         prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
-        jsd=jensenshannon(prediction_motif_profile,prediction_background_profile)
-        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change,'jsd':jsd})
+        jsd=jensenshannon(prediction_motif_profile,prediction_background_profile,axis=1)
+        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change,'jsd':np.median(jsd)})
         
     if not not_test_reverse_complement:
         
@@ -348,8 +348,8 @@ def calculate_fold_change_in_predicted_signal(peak_path,
 
             prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
             prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
-            jsd=jensenshannon(prediction_motif_profile,prediction_background_profile)
-            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change,'jsd':jsd})
+            jsd=jensenshannon(prediction_motif_profile,prediction_background_profile,axis=1)
+            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change,'jsd':np.median(jsd)})
     
     
     return fold_changes,rc_fold_changes
