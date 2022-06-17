@@ -319,7 +319,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
         prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
         jsd=jensenshannon(prediction_motif_profile,prediction_background_profile,axis=1)
-        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change,'jsd':np.median(jsd)})
+        fold_changes.append({'motif':motif,'median_fold_change':median_fold_change,'median_jsd':np.median(jsd)})
         
     if not not_test_reverse_complement:
         
@@ -349,7 +349,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
             prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
             prediction_background_profile = prediction_background_profile/(np.sum(prediction_background_profile,axis=1).reshape(prediction_background_profile.shape[0],1))
             jsd=jensenshannon(prediction_motif_profile,prediction_background_profile,axis=1)
-            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change,'jsd':np.median(jsd)})
+            rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change,'median_jsd':np.median(jsd)})
     
     
     return fold_changes,rc_fold_changes
@@ -390,6 +390,21 @@ with open(f'{args.output_dir}/median_log2_fold_change_rc.txt', 'w') as f:
 with open(f'{args.output_dir}/all_log2_fold_changes_rc.txt', 'w') as f:
     all_log2_fold_changes_rc=';'.join([f"{fold_change['motif']}:{fold_change['median_fold_change']:.3f}" for fold_change in rc_fold_changes])
     f.write(all_log2_fold_changes_rc)
+    
+    
+with open(f'{args.output_dir}/median_jsd.txt', 'w') as f:
+    f.write(str(round(max(pd.DataFrame(fold_changes)['median_jsd']),3)))
+
+with open(f'{args.output_dir}/all_jsd.txt', 'w') as f:
+    all_jsd=';'.join([f"{fold_change['motif']}:{fold_change['median_jsd']:.3f}" for fold_change in fold_changes])
+    f.write(all_jsd)
+    
+with open(f'{args.output_dir}/median_jsd_rc.txt', 'w') as f:
+    f.write(str(round(max(pd.DataFrame(rc_fold_changes)['median_jsd']),3)))
+
+with open(f'{args.output_dir}/all_jsd_rc.txt', 'w') as f:
+    all_jsd_rc=';'.join([f"{fold_change['motif']}:{fold_change['median_jsd']:.3f}" for fold_change in rc_fold_changes])
+    f.write(all_jsd_rc)
 
 
     
