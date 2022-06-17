@@ -397,12 +397,13 @@ def get_suffled_peak_sequences(peak_path,fasta_path, input_seq_len = 2114,
 
 def predict_logits(model,encoded_inserted_sequences,no_control_model=False,output_seq_len = 1000,number_of_strands = 2):
     
-    if not no_control_model:
+    if no_control_model:
+        prediction = model.predict([encoded_inserted_sequences])   
+    else:
         prediction = model.predict([encoded_inserted_sequences,
                        np.zeros(output_seq_len*number_of_strands*encoded_inserted_sequences.shape[0]).reshape((encoded_inserted_sequences.shape[0],output_seq_len,number_of_strands)),    
                        np.zeros(encoded_inserted_sequences.shape[0]*number_of_strands).reshape((encoded_inserted_sequences.shape[0],number_of_strands))])
-    else:
-        prediction = model.predict([encoded_inserted_sequences])
+        
 
     return prediction
 
@@ -412,7 +413,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                                  motifs,
                                                  reference_genome,
                                                  number_of_backgrounds=1000,
-                                              no_control_model=False,
+                                                 no_control_model=False,
                                                  output_seq_len=1000,
                                                  input_seq_len=2114,
                                                  not_test_reverse_complement=False):
@@ -480,7 +481,8 @@ with CustomObjectScope({'MultichannelMultinomialNLL': lambda n='0':n,
                         "tf":tf,
                        "CustomModel":CustomModel}):
     model = load_model(args.h5model,compile=False)
-    
+
+print('not_test_reverse_complement:',args.not_test_reverse_complement)    
 fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak,
                                                           model=model,no_control_model=args.no_control_model,
                                                           motifs=args.motifs,
