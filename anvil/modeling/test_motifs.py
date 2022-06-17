@@ -467,8 +467,10 @@ def calculate_fold_change_in_predicted_signal(peak_path,
 
             one_hot_encoded_sequence = one_hot_encode(motif_inserted_sequences)
 
-            prediction_motif_sequences = predict_logits(model,encoded_inserted_sequences = one_hot_encoded_sequence,
-                                            output_seq_len = output_seq_len)
+            prediction_motif_sequences = predict_logits(model,
+                                                        encoded_inserted_sequences = one_hot_encoded_sequence,
+                                                        output_seq_len = output_seq_len,
+                                                        no_control_model=no_control_model)
 
             median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
             rc_fold_changes.append({'motif':rc_motif,'median_fold_change':median_fold_change})
