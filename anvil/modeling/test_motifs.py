@@ -482,7 +482,9 @@ with CustomObjectScope({'MultichannelMultinomialNLL': lambda n='0':n,
                        "CustomModel":CustomModel}):
     model = load_model(args.h5model,compile=False)
 
-print('not_test_reverse_complement:',args.not_test_reverse_complement)    
+print('not_test_reverse_complement:',args.not_test_reverse_complement) 
+print('no_control_model:',args.no_control_model) 
+
 fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak,
                                                           model=model,no_control_model=args.no_control_model,
                                                           motifs=args.motifs,
