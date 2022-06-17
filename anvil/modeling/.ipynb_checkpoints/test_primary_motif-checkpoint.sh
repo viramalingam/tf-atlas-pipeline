@@ -76,7 +76,7 @@ echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
 
-if [ $no_control_model == 'False' ]; then
+if [ $no_control_model -eq 'False' ]; then
     echo $( timestamp ): '
     python test_motifs.py \\
         --peak ${data_dir}/${experiment}_peaks.bed.gz \\
@@ -98,7 +98,7 @@ if [ $no_control_model == 'False' ]; then
         --input_seq_len 2114 \
         --output_len 1000
         
-elif [ $no_control_model == 'True' ];
+elif [ $no_control_model -eq 'True' ]; then
     echo $( timestamp ): '
     python test_motifs.py \\
         --peak ${data_dir}/${experiment}_peaks.bed.gz \\
