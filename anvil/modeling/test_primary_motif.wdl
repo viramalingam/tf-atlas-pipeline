@@ -7,7 +7,9 @@ task test_primary_motif {
 		Array [File] model
 		File reference_file
 		File peaks
-		String? no_control_model='False'
+		String? sep_training_input_json = 'False'
+		File? training_input_json
+
 
 	}
 	command {
@@ -20,9 +22,13 @@ task test_primary_motif {
 
 
 		#test_primary_motif
-
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${no_control_model}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${no_control_model}
+		if [ ${sep_training_input_json} = 'False' ]; then
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ''
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ''
+		else
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${training_input_json}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${training_input_json}
+		fi
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -42,7 +48,7 @@ task test_primary_motif {
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
 		memory: 16 + "GB"
-		bootDiskSizeGb: 50
+		bootDiskSizeGb: 20
 		disks: "local-disk 20 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
@@ -58,7 +64,8 @@ workflow test_primary_motif_workflow {
 		Array [File] model
 		File reference_file
 		File peaks
-		String? no_control_model='False'
+		String? sep_training_input_json = 'False'
+		File? training_input_json
 	}
 
 	call test_primary_motif {
@@ -68,7 +75,8 @@ workflow test_primary_motif_workflow {
 			model = model,
 			reference_file = reference_file,
 			peaks = peaks,
-			no_control_model = no_control_model
+			sep_training_input_json = sep_training_input_json,
+			training_input_json = training_input_json
 	}
 	output {
 		Float primary_log2_fold_change = test_primary_motif.primary_log2_fold_change

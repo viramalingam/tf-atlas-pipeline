@@ -13,14 +13,14 @@ motifs=$2
 model=$3
 reference_file=$4
 peaks=${5}
-no_control_model=${6}
+training_input=${6}
 
 echo $experiment
 echo "${motifs}"
 echo $model
 echo $reference_file
 echo $peaks
-echo $no_control_model
+echo $training_input
 
 mkdir /project
 project_dir=/project
@@ -75,30 +75,18 @@ cp $peaks ${data_dir}/${experiment}_peaks.bed.gz
 echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
+if [ $training_input = '' ]; then
+    cp ${model}/training_input.json $data_dir/training_input.json
+    echo $( timestamp ): "cp" ${model}/training_input.json $data_dir/training_input.json | tee -a $logfile 
+else
+    cp $training_input $data_dir/training_input.json
+    echo $( timestamp ): "cp" $training_input $data_dir/training_input.json | tee -a $logfile 
+fi
 
-if [ $no_control_model = 'False' ]; then
-    echo $( timestamp ): '
-    python test_motifs.py \\
-        --peak ${data_dir}/${experiment}_peaks.bed.gz \\
-        --h5model $model_dir/${1}_split000.h5 \\
-        --motifs "${motifs}" \\
-        --reference_genome $reference_dir/hg38.genome.fa \\
-        --number_of_backgrounds 1000 \\
-        --output_dir $predictions_dir \\
-        --input_seq_len 2114 \\
-        --output_len 1000' | tee -a $logfile 
+control_files=`jq '.["0"]["bias"]["source"] | join(" ")' $data_dir/training_input.json`
 
-    python test_motifs.py \
-        --peak ${data_dir}/${experiment}_peaks.bed.gz \
-        --h5model $model_dir/${1}_split000.h5 \
-        --motifs "${motifs}" \
-        --reference_genome $reference_dir/hg38.genome.fa \
-        --number_of_backgrounds 1000 \
-        --output_dir $predictions_dir \
-        --input_seq_len 2114 \
-        --output_len 1000
         
-elif [ $no_control_model = 'True' ]; then
+if [ $control_files = '' ]; then
     echo $( timestamp ): '
     python test_motifs.py \\
         --peak ${data_dir}/${experiment}_peaks.bed.gz \\
@@ -121,4 +109,27 @@ elif [ $no_control_model = 'True' ]; then
         --output_dir $predictions_dir \
         --input_seq_len 2114 \
         --output_len 1000
+        
+else
+    echo $( timestamp ): '
+    python test_motifs.py \\
+        --peak ${data_dir}/${experiment}_peaks.bed.gz \\
+        --h5model $model_dir/${1}_split000.h5 \\
+        --motifs "${motifs}" \\
+        --reference_genome $reference_dir/hg38.genome.fa \\
+        --number_of_backgrounds 1000 \\
+        --output_dir $predictions_dir \\
+        --input_seq_len 2114 \\
+        --output_len 1000' | tee -a $logfile 
+
+    python test_motifs.py \
+        --peak ${data_dir}/${experiment}_peaks.bed.gz \
+        --h5model $model_dir/${1}_split000.h5 \
+        --motifs "${motifs}" \
+        --reference_genome $reference_dir/hg38.genome.fa \
+        --number_of_backgrounds 1000 \
+        --output_dir $predictions_dir \
+        --input_seq_len 2114 \
+        --output_len 1000
+        
 fi
