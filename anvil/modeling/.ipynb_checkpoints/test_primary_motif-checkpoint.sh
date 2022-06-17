@@ -75,7 +75,7 @@ cp $peaks ${data_dir}/${experiment}_peaks.bed.gz
 echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
-if [ $training_input = '' ]; then
+if [ "$training_input" = "" ]; then
     cp ${model}/training_input.json $data_dir/training_input.json
     echo $( timestamp ): "cp" ${model}/training_input.json $data_dir/training_input.json | tee -a $logfile 
 else
@@ -86,7 +86,7 @@ fi
 control_files=`jq '.["0"]["bias"]["source"] | join(" ")' $data_dir/training_input.json`
 
         
-if [ $control_files = '' ]; then
+if [ "$control_files" = "" ]; then
     echo $( timestamp ): '
     python test_motifs.py \\
         --peak ${data_dir}/${experiment}_peaks.bed.gz \\
