@@ -275,7 +275,7 @@ def predict_logits(model,encoded_inserted_sequences,no_control_model=False,outpu
 def logits_to_profile(prediction,output_seq_len=1000):
     logcounts_prediction = prediction[1]         
 
-    pred_profile_logits = np.reshape(prediction[0],[-1,output_len*2])
+    pred_profile_logits = np.reshape(prediction[0],[-1,output_seq_len*2])
 
     profile_predictions = (np.exp(\
                                   pred_profile_logits - \
