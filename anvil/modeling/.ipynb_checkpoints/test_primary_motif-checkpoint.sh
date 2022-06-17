@@ -84,7 +84,7 @@ else
 fi
 
 control_files=`jq '.["0"]["bias"]["source"] | join(" ")' $data_dir/training_input.json`
-
+echo "control_files:" $control_files
         
 if [ "$control_files" = "" ]; then
     echo $( timestamp ): '
