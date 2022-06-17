@@ -29,6 +29,7 @@ import argparse
 parser = argparse.ArgumentParser(description="calculates fold changes in signal with the given motifs over GC shuffled peak regions for the given model. Returns a txt file with fold changes for all the motifs. Return a txt file with fold change for the motif with highest fold change. Also returns these txt files for the motifs in reverse complement.")
 parser.add_argument("-p", "--peak", type=str, required=True, help="peaks file")
 parser.add_argument("-h5", "--h5model", type=str, required=True, help="model file")
+parser.add_argument("--no_control_model", action='store_true', default=False, help='bool to indicate if the model was trained without control tracks')
 parser.add_argument("--motifs", type=str, required=True, help="motifs string. Mutiple motifs are seperated by a colon")
 parser.add_argument("--reference_genome", type=str,required=True, help="path the genome fasta")
 parser.add_argument("-n", "--number_of_backgrounds", type=int,default=1000, help="number of gc maintaining shuffled background regions to test.")
@@ -257,12 +258,14 @@ def get_suffled_peak_sequences(peak_path,fasta_path, input_seq_len = 2114,
     return sequences
 
 
-def predict_logits(model,encoded_inserted_sequences,output_seq_len = 1000,number_of_strands = 2):
+def predict_logits(model,encoded_inserted_sequences,no_control_model=False,output_seq_len = 1000,number_of_strands = 2):
     
-    prediction = model.predict([encoded_inserted_sequences,
-                   np.zeros(output_seq_len*number_of_strands*encoded_inserted_sequences.shape[0]).reshape((encoded_inserted_sequences.shape[0],output_seq_len,number_of_strands)),    
-                   np.zeros(encoded_inserted_sequences.shape[0]*number_of_strands).reshape((encoded_inserted_sequences.shape[0],number_of_strands))])
-
+    if not no_control_model:
+        prediction = model.predict([encoded_inserted_sequences,
+                       np.zeros(output_seq_len*number_of_strands*encoded_inserted_sequences.shape[0]).reshape((encoded_inserted_sequences.shape[0],output_seq_len,number_of_strands)),    
+                       np.zeros(encoded_inserted_sequences.shape[0]*number_of_strands).reshape((encoded_inserted_sequences.shape[0],number_of_strands))])
+    else:
+        prediction = model.predict([encoded_inserted_sequences])
 
     return prediction
 
@@ -272,6 +275,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
                                                  motifs,
                                                  reference_genome,
                                                  number_of_backgrounds=1000,
+                                              no_control_model=False,
                                                  output_seq_len=1000,
                                                  input_seq_len=2114,
                                                  not_test_reverse_complement=False):
@@ -297,7 +301,7 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         one_hot_encoded_sequence = one_hot_encode(motif_inserted_sequences)
         
         prediction_motif_sequences = predict_logits(model,encoded_inserted_sequences = one_hot_encoded_sequence,
-                                        output_seq_len = output_seq_len)
+                                        output_seq_len = output_seq_len,no_control_model=no_control_model)
         
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))    
         fold_changes.append({'motif':motif,'median_fold_change':median_fold_change})
@@ -335,7 +339,7 @@ with CustomObjectScope({'MultichannelMultinomialNLL': lambda n='0':n,
     model = load_model(args.h5model,compile=False)
     
 fold_changes,rc_fold_changes = calculate_fold_change_in_predicted_signal(peak_path=args.peak,
-                                                          model=model,
+                                                          model=model,no_control_model=args.no_control_model,
                                                           motifs=args.motifs,
                                                           number_of_backgrounds=args.number_of_backgrounds,
                                                           reference_genome = args.reference_genome,

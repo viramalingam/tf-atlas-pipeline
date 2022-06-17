@@ -13,13 +13,14 @@ motifs=$2
 model=$3
 reference_file=$4
 peaks=${5}
+no_control_model=${6}
 
 echo $experiment
 echo "${motifs}"
 echo $model
 echo $reference_file
 echo $peaks
-
+echo $no_control_model
 
 mkdir /project
 project_dir=/project
@@ -75,24 +76,49 @@ echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
 
-echo $( timestamp ): '
-python test_motifs.py \\
-    --peak ${data_dir}/${experiment}_peaks.bed.gz \\
-    --h5model $model_dir/${1}_split000.h5 \\
-    --motifs "${motifs}" \\
-    --reference_genome $reference_dir/hg38.genome.fa \\
-    --number_of_backgrounds 1000 \\
-    --output_dir $predictions_dir \\
-    --input_seq_len 2114 \\
-    --output_len 1000' | tee -a $logfile 
+if [ $no_control_model == 'False' ]; then
+    echo $( timestamp ): '
+    python test_motifs.py \\
+        --peak ${data_dir}/${experiment}_peaks.bed.gz \\
+        --h5model $model_dir/${1}_split000.h5 \\
+        --motifs "${motifs}" \\
+        --reference_genome $reference_dir/hg38.genome.fa \\
+        --number_of_backgrounds 1000 \\
+        --output_dir $predictions_dir \\
+        --input_seq_len 2114 \\
+        --output_len 1000' | tee -a $logfile 
 
-python test_motifs.py \
-    --peak ${data_dir}/${experiment}_peaks.bed.gz \
-    --h5model $model_dir/${1}_split000.h5 \
-    --motifs "${motifs}" \
-    --reference_genome $reference_dir/hg38.genome.fa \
-    --number_of_backgrounds 1000 \
-    --output_dir $predictions_dir \
-    --input_seq_len 2114 \
-    --output_len 1000
+    python test_motifs.py \
+        --peak ${data_dir}/${experiment}_peaks.bed.gz \
+        --h5model $model_dir/${1}_split000.h5 \
+        --motifs "${motifs}" \
+        --reference_genome $reference_dir/hg38.genome.fa \
+        --number_of_backgrounds 1000 \
+        --output_dir $predictions_dir \
+        --input_seq_len 2114 \
+        --output_len 1000
+        
+elif [ $no_control_model == 'True' ];
+    echo $( timestamp ): '
+    python test_motifs.py \\
+        --peak ${data_dir}/${experiment}_peaks.bed.gz \\
+        --h5model $model_dir/${1}_split000.h5 \\
+        --no_control_model \\
+        --motifs "${motifs}" \\
+        --reference_genome $reference_dir/hg38.genome.fa \\
+        --number_of_backgrounds 1000 \\
+        --output_dir $predictions_dir \\
+        --input_seq_len 2114 \\
+        --output_len 1000' | tee -a $logfile 
 
+    python test_motifs.py \
+        --peak ${data_dir}/${experiment}_peaks.bed.gz \
+        --h5model $model_dir/${1}_split000.h5 \
+        --no_control_model \
+        --motifs "${motifs}" \
+        --reference_genome $reference_dir/hg38.genome.fa \
+        --number_of_backgrounds 1000 \
+        --output_dir $predictions_dir \
+        --input_seq_len 2114 \
+        --output_len 1000
+fi

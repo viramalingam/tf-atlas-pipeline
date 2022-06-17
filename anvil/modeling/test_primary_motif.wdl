@@ -7,14 +7,14 @@ task test_primary_motif {
 		Array [File] model
 		File reference_file
 		File peaks
-
+		String? no_control_model=False
 
 	}
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.10 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.3.12 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -58,6 +58,7 @@ workflow test_primary_motif_workflow {
 		Array [File] model
 		File reference_file
 		File peaks
+		String? no_control_model=False
 	}
 
 	call test_primary_motif {
@@ -66,8 +67,9 @@ workflow test_primary_motif_workflow {
 			primary_motifs = primary_motifs,
 			model = model,
 			reference_file = reference_file,
-			peaks = peaks
- 	}
+			peaks = peaks,
+			no_control_model = no_control_model
+	}
 	output {
 		Float primary_log2_fold_change = test_primary_motif.primary_log2_fold_change
 		String all_log2_fold_changes = test_primary_motif.all_log2_fold_changes
