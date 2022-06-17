@@ -1,5 +1,5 @@
 version 1.0
-
+	
 task test_primary_motif {
 	input {
 		String experiment
@@ -9,8 +9,8 @@ task test_primary_motif {
 		File peaks
 		String? sep_training_input_json = 'False'
 		File? training_input_json
-
-
+	
+	
 	}
 	command {
 		#create data directories and download scripts
@@ -19,8 +19,8 @@ task test_primary_motif {
 		git clone --depth 1 --branch dev https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
-
-
+		
+		
 		#test_primary_motif
 		if [ ${sep_training_input_json} = 'False' ]; then
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ''
@@ -29,7 +29,7 @@ task test_primary_motif {
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh" ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${training_input_json}
 		/my_scripts/tf-atlas-pipeline/anvil/modeling/test_primary_motif.sh ${experiment} "${primary_motifs}" ${sep=',' model} ${reference_file} ${peaks} ${training_input_json}
 		fi
-
+		
 		echo "copying all files to cromwell_root folder"
 		
 		cp -r /project/prediction/median_log2_fold_change.txt /cromwell_root/median_log2_fold_change.txt
@@ -54,7 +54,7 @@ task test_primary_motif {
 		Float primary_jsd_rc = read_float("median_jsd_rc.txt")
 		String all_jsd_rc = read_string("all_jsd_rc.txt")
 	}
-
+	
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
 		memory: 16 + "GB"
@@ -66,7 +66,7 @@ task test_primary_motif {
 		maxRetries: 1
 	}
 }
-
+	
 workflow test_primary_motif_workflow {
 	input {
 		String experiment
@@ -77,7 +77,7 @@ workflow test_primary_motif_workflow {
 		String? sep_training_input_json = 'False'
 		File? training_input_json
 	}
-
+	
 	call test_primary_motif {
 		input:
 			experiment = experiment,
