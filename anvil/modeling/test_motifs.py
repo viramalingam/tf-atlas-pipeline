@@ -272,6 +272,18 @@ def predict_logits(model,encoded_inserted_sequences,no_control_model=False,outpu
 
     return prediction
 
+def logits_to_profile(prediction,output_seq_len=1000):
+    logcounts_prediction = prediction[1]         
+
+    pred_profile_logits = np.reshape(prediction[0],[-1,output_len*2])
+
+    profile_predictions = (np.exp(\
+                                  pred_profile_logits - \
+                                  logsumexp(pred_profile_logits,axis=1,keepdims=True) \
+                                 ) * (np.exp(logcounts_prediction))\
+                          )
+    return profile_predictions
+
 
 def calculate_fold_change_in_predicted_signal(peak_path,
                                                  model,
@@ -313,10 +325,10 @@ def calculate_fold_change_in_predicted_signal(peak_path,
         
         median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))   
         
-        prediction_motif_profile = prediction_motif_sequences[0].reshape(-1,output_seq_len*2)
+        prediction_motif_profile = logits_to_profile(prediction_motif_sequences)
         prediction_motif_profile = prediction_motif_profile/np.sum(prediction_motif_profile,axis=1,keepdims=True)
         
-        prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
+        prediction_background_profile = logits_to_profile((prediction_background_sequences)
         prediction_background_profile = prediction_background_profile/np.sum(prediction_background_profile,axis=1,keepdims=True)
         
         print('prediction_motif_profile:',prediction_motif_profile[:,495:505])
@@ -347,11 +359,11 @@ def calculate_fold_change_in_predicted_signal(peak_path,
 
             median_fold_change = np.median(np.log2(np.exp(prediction_motif_sequences[1]-prediction_background_sequences[1])))
 
-            prediction_motif_profile = prediction_motif_sequences[0].reshape(-1,output_seq_len*2)
+            prediction_motif_profile = logits_to_profile(prediction_motif_sequences)
             prediction_motif_profile = prediction_motif_profile/np.sum(prediction_motif_profile,axis=1,keepdims=True)
             
 
-            prediction_background_profile = prediction_background_sequences[0].reshape(-1,output_seq_len*2)
+            prediction_background_profile = logits_to_profile(prediction_background_sequences)
             prediction_background_profile = prediction_background_profile/np.sum(prediction_background_profile,axis=1,keepdims=True)
             
             print('prediction_motif_profile:',prediction_motif_profile[:,495:505])
