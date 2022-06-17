@@ -49,9 +49,9 @@ task test_primary_motif {
 		Float primary_log2_fold_change_rc = read_float("median_log2_fold_change_rc.txt")
 		String all_log2_fold_changes_rc = read_string("all_log2_fold_changes_rc.txt")
 		
-		Float primary_jsd_change = read_float("median_jsd.txt")
+		Float primary_jsd = read_float("median_jsd.txt")
 		String all_jsd = read_string("all_jsd.txt")
-		Float primary_jsd_change_rc = read_float("median_jsd_rc.txt")
+		Float primary_jsd_rc = read_float("median_jsd_rc.txt")
 		String all_jsd_rc = read_string("all_jsd_rc.txt")
 	}
 
