@@ -83,7 +83,7 @@ else
     echo $( timestamp ): "cp" $training_input $data_dir/training_input.json | tee -a $logfile 
 fi
 
-control_files=`jq '.["0"]["bias"]["source"] | join(" ")' $data_dir/training_input.json`
+control_files=`jq '.["0"]["bias"]["source"] | join(" ")' $data_dir/training_input.json | sed 's/"//g'`
 echo "control_files:" $control_files
         
 if [ "$control_files" = "" ]; then
