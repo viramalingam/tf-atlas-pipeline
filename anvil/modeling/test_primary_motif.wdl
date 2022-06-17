@@ -36,7 +36,7 @@ task test_primary_motif {
 		cp -r /project/prediction/all_log2_fold_changes.txt /cromwell_root/all_log2_fold_changes.txt
 		cp -r /project/prediction/median_log2_fold_change_rc.txt /cromwell_root/median_log2_fold_change_rc.txt
 		cp -r /project/prediction/all_log2_fold_changes_rc.txt /cromwell_root/all_log2_fold_changes_rc.txt
-        
+		
 		cp -r /project/prediction/median_jsd.txt /cromwell_root/median_jsd.txt
 		cp -r /project/prediction/all_jsd.txt /cromwell_root/all_jsd.txt
 		cp -r /project/prediction/median_jsd_rc.txt /cromwell_root/median_jsd_rc.txt
@@ -48,7 +48,7 @@ task test_primary_motif {
 		String all_log2_fold_changes = read_string("all_log2_fold_changes.txt")
 		Float primary_log2_fold_change_rc = read_float("median_log2_fold_change_rc.txt")
 		String all_log2_fold_changes_rc = read_string("all_log2_fold_changes_rc.txt")
-
+		
 		Float primary_jsd_change = read_float("median_jsd.txt")
 		String all_jsd = read_string("all_jsd.txt")
 		Float primary_jsd_change_rc = read_float("median_jsd_rc.txt")
@@ -93,7 +93,7 @@ workflow test_primary_motif_workflow {
 		String all_log2_fold_changes = test_primary_motif.all_log2_fold_changes
 		Float primary_log2_fold_change_rc = test_primary_motif.primary_log2_fold_change_rc
 		String all_log2_fold_changes_rc = test_primary_motif.all_log2_fold_changes_rc
-        
+		     
 		Float primary_jsd = test_primary_motif.primary_jsd
 		String all_jsd = test_primary_motif.all_jsd
 		Float primary_jsd_rc = test_primary_motif.primary_jsd_rc
