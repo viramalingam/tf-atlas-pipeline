@@ -76,8 +76,8 @@ echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
 
 if [ "$training_input" = "" ]; then
-    cp ${model}/training_input.json $data_dir/training_input.json
-    echo $( timestamp ): "cp" ${model}/training_input.json $data_dir/training_input.json | tee -a $logfile 
+    cp ${model_dir}/training_input.json $data_dir/training_input.json
+    echo $( timestamp ): "cp" ${model_dir}/training_input.json $data_dir/training_input.json | tee -a $logfile 
 else
     cp $training_input $data_dir/training_input.json
     echo $( timestamp ): "cp" $training_input $data_dir/training_input.json | tee -a $logfile 
