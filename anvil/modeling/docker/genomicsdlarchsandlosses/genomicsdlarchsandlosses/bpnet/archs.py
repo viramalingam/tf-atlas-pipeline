@@ -436,38 +436,9 @@ def counts_bias_module(counts_head, counts_bias_inputs, tasks_info,
         # increment the offset 
         task_offset += num_task_tracks
         
-        # if no bias tracks are found for this task, we directly append
-        # the slice of the counts_head corresponding to this task to
-        # counts_outputs
-        if counts_bias_inputs[i] is None:
-            counts_outputs.append(_counts_head)
-        else:
-            # concatenate counts head with slice of counts bias input
-            # for this task
-            
-            counts_bias_input_out_logcounts = layers.Lambda(
-                lambda x: tf.math.reduce_logsumexp(x, axis=-1, keepdims=True),
-                name="{}_logsumexp_counts_bias_{}".format(name_prefix, i))(counts_bias_inputs[i])
-            
-            concat_with_counts_bias_input = layers.concatenate(
-                [_counts_head, counts_bias_input_out_logcounts], 
-                name="{}_concat_with_counts_bias_{}".format(name_prefix, i),
-                axis=-1)
-
-            # single unit Dense layer to yield the counts output 
-            # prediction for this task
-            if num_tasks == 1:
-                name = "logcounts_predictions"
-            else:
-            #     name = "logcounts_predictions_{}".format(i)
-            # counts_outputs.append(layers.Dense(
-            #     units=num_task_tracks, 
-            #     name=name)(concat_with_counts_bias_input))
-                name = "logcounts_predictions_{}".format(i)
-            counts_outputs.append(layers.Dense(
-                units=num_tasks, 
-                name=name)(concat_with_counts_bias_input))
-
+        # no bias tracks are added in the loss on log(counts/control) scenerio
+        counts_outputs.append(_counts_head)
+    
     # counts output
     if len(counts_outputs) == 1:
         return counts_outputs[0]
