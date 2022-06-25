@@ -660,164 +660,166 @@ def BPNet(
         Returns:
             tensorflow.keras.layers.Model
     """
-    
-    # load params, override defaults
-    (input_len, 
-     output_profile_len, 
-     motif_module_params, 
-     syntax_module_params, 
-     profile_head_params, 
-     counts_head_params,
-     profile_bias_module_params,
-     counts_bias_module_params,
-     use_attribution_prior, 
-     attribution_prior_params, 
-     loss_weights,
-     counts_loss,
-     _) = load_params(bpnet_params)    
+    distribution = tf.distribute.MirroredStrategy()
+    with distribution.scope():
+        # load params, override defaults
+        (input_len, 
+         output_profile_len, 
+         motif_module_params, 
+         syntax_module_params, 
+         profile_head_params, 
+         counts_head_params,
+         profile_bias_module_params,
+         counts_bias_module_params,
+         use_attribution_prior, 
+         attribution_prior_params, 
+         loss_weights,
+         counts_loss,
+         _) = load_params(bpnet_params)    
 
-    # Step 1 - sequence input
-    if not initiliaze_as_bias_model:
-        one_hot_input = layers.Input(shape=(input_len, 4), name='sequence')
-    
-    # Step 2 - Motif module (one or more conv layers)
-    motif_module_out = motif_module(
-        one_hot_input, motif_module_params['filters'], 
-        motif_module_params['kernel_sizes'], motif_module_params['padding'], 
-        name_prefix=name_prefix)
-    
-    # Step 3 - Syntax module (all dilation layers)
-    syntax_module_out = syntax_module(
-        motif_module_out, syntax_module_params['num_dilation_layers'], 
-        syntax_module_params['filters'], syntax_module_params['kernel_size'],
-        syntax_module_params['padding'], 
-        syntax_module_params['pre_activation_residual_unit'], 
-        name_prefix=name_prefix)
+        # Step 1 - sequence input
+        if not initiliaze_as_bias_model:
+            one_hot_input = layers.Input(shape=(input_len, 4), name='sequence')
 
-    # Step 4.1 - Profile head (large conv kernel)
-    # Step 4.1.1 - get total number of output tracks across all tasks
-    num_tasks = len(list(tasks.keys()))
-    total_tracks = 0
-    tracks_for_each_task = []
-    for i in range(num_tasks):
-        total_tracks += len(tasks[i]['signal']['source'])
-        tracks_for_each_task.append(total_tracks)
-    
-    # Step 4.1.2 - conv layer to get pre bias profile prediction
-    profile_head_out = profile_head(
-        syntax_module_out, total_tracks, 
-        profile_head_params['kernel_size'], profile_head_params['padding'], 
-        name_prefix=name_prefix)
-    
-    # first let's figure out if bias input is required based on 
-    # tasks info, this also affects the naming of the profile head
-    # and counts head layers
-    # total number of bias tasks in the tasks_info dictionary
-    total_bias_tracks = 0
-    # number of bias tracks in each task
-    task_bias_tracks = {}
-    for i in range(num_tasks):
-        task_bias_tracks[i] = _get_num_bias_tracks_for_task(tasks[i])
-        total_bias_tracks += task_bias_tracks[i]
+        # Step 2 - Motif module (one or more conv layers)
+        motif_module_out = motif_module(
+            one_hot_input, motif_module_params['filters'], 
+            motif_module_params['kernel_sizes'], motif_module_params['padding'], 
+            name_prefix=name_prefix)
 
-    # Step 4.1.3 crop profile head to match output_len
-    if total_bias_tracks == 0 and initiliaze_as_bias_model:
-        profile_head_name = '{}_profile_predictions'.format(name_prefix)
-    elif total_bias_tracks == 0:
-        profile_head_name = 'profile_predictions'
-    else:
-        profile_head_name = '{}_profile_head_cropped'.format(name_prefix)
-        
-        
-    crop_size = int_shape(profile_head_out)[1] // 2 - output_profile_len // 2
-    profile_head_out = layers.Cropping1D(
-        crop_size, name=profile_head_name)(profile_head_out)
-    
-    # Step 4.2 - Counts head (global average pooling)
-    if total_bias_tracks == 0 and initiliaze_as_bias_model:
-        counts_head_name = '{}_logcounts_predictions'.format(name_prefix)
-    elif total_bias_tracks == 0:
-        counts_head_name = 'logcounts_predictions'
-    else:
-        counts_head_name = '{}_counts_head'.format(name_prefix)
-    # the units for the Dense layers
-    units = counts_head_params["units"]
-    # the last Dense layer's units are set to total tracks
-    if units[-1]==-1:
-        units[-1] = num_tasks
-    counts_head_out = counts_head(
-        syntax_module_out, counts_head_name, units, 
-        counts_head_params['dropouts'], counts_head_params['activations'],
-        name_prefix=name_prefix)
-    
-    # Step 5 - Bias Input
-    # if the tasks have no bias tracks then profile_head and 
-    # counts_head are the outputs of the model
-    inputs = [one_hot_input]
-    if total_bias_tracks == 0:
-        profile_outputs = profile_head_out
-        logcounts_outputs = counts_head_out  
-        
-    else:        
-        if num_tasks != len(profile_bias_module_params['kernel_sizes']):
-            raise NoTracebackException(
-                "Length on 'kernel_sizes' in profile_bias_module_params "
-                "must match #tasks")
-        
-        # Step 5.1 - Define the bias input layers 
-        profile_bias_inputs = []
-        counts_bias_inputs = []
+        # Step 3 - Syntax module (all dilation layers)
+        syntax_module_out = syntax_module(
+            motif_module_out, syntax_module_params['num_dilation_layers'], 
+            syntax_module_params['filters'], syntax_module_params['kernel_size'],
+            syntax_module_params['padding'], 
+            syntax_module_params['pre_activation_residual_unit'], 
+            name_prefix=name_prefix)
+
+        # Step 4.1 - Profile head (large conv kernel)
+        # Step 4.1.1 - get total number of output tracks across all tasks
+        num_tasks = len(list(tasks.keys()))
+        total_tracks = 0
+        tracks_for_each_task = []
         for i in range(num_tasks):
-            if task_bias_tracks[i] > 0:
-                # profile bias input for task i
-                profile_bias_inputs.append(layers.Input(
-                    shape=(output_profile_len, task_bias_tracks[i]),
-                    name="profile_bias_input_{}".format(i)))
+            total_tracks += len(tasks[i]['signal']['source'])
+            tracks_for_each_task.append(total_tracks)
 
-                # counts bias input for task i
-                counts_bias_inputs.append(layers.Input(
-                    shape=(task_bias_tracks[i]), 
-                    name="counts_bias_input_{}".format(i)))
-                
-                # append to inputs
-                inputs.append(profile_bias_inputs[i])
-                inputs.append(counts_bias_inputs[i])
-            else:
-                profile_bias_inputs.append(None)    
-                counts_bias_inputs.append(None)
-            
-        # Step 5.2 - account for profile bias
-        profile_outputs = profile_bias_module(
-            profile_head_out, profile_bias_inputs, tasks, 
-            kernel_sizes=profile_bias_module_params['kernel_sizes'], 
+        # Step 4.1.2 - conv layer to get pre bias profile prediction
+        profile_head_out = profile_head(
+            syntax_module_out, total_tracks, 
+            profile_head_params['kernel_size'], profile_head_params['padding'], 
             name_prefix=name_prefix)
-        
-    
-        # Step 5.3 - account for counts bias
-        logcounts_outputs = counts_bias_module(
-            counts_head_out, counts_bias_inputs, tasks, 
+
+        # first let's figure out if bias input is required based on 
+        # tasks info, this also affects the naming of the profile head
+        # and counts head layers
+        # total number of bias tasks in the tasks_info dictionary
+        total_bias_tracks = 0
+        # number of bias tracks in each task
+        task_bias_tracks = {}
+        for i in range(num_tasks):
+            task_bias_tracks[i] = _get_num_bias_tracks_for_task(tasks[i])
+            total_bias_tracks += task_bias_tracks[i]
+
+        # Step 4.1.3 crop profile head to match output_len
+        if total_bias_tracks == 0 and initiliaze_as_bias_model:
+            profile_head_name = '{}_profile_predictions'.format(name_prefix)
+        elif total_bias_tracks == 0:
+            profile_head_name = 'profile_predictions'
+        else:
+            profile_head_name = '{}_profile_head_cropped'.format(name_prefix)
+
+
+        crop_size = int_shape(profile_head_out)[1] // 2 - output_profile_len // 2
+        profile_head_out = layers.Cropping1D(
+            crop_size, name=profile_head_name)(profile_head_out)
+
+        # Step 4.2 - Counts head (global average pooling)
+        if total_bias_tracks == 0 and initiliaze_as_bias_model:
+            counts_head_name = '{}_logcounts_predictions'.format(name_prefix)
+        elif total_bias_tracks == 0:
+            counts_head_name = 'logcounts_predictions'
+        else:
+            counts_head_name = '{}_counts_head'.format(name_prefix)
+        # the units for the Dense layers
+        units = counts_head_params["units"]
+        # the last Dense layer's units are set to total tracks
+        if units[-1]==-1:
+            units[-1] = num_tasks
+        counts_head_out = counts_head(
+            syntax_module_out, counts_head_name, units, 
+            counts_head_params['dropouts'], counts_head_params['activations'],
             name_prefix=name_prefix)
-    
-    if use_attribution_prior:            
-        # instantiate attribution prior Model with inputs and outputs
-        return AttributionPriorModel(
-            attribution_prior_params['frequency_limit'],
-            attribution_prior_params['limit_softness'],
-            attribution_prior_params['grad_smooth_sigma'],     
-            attribution_prior_params['profile_grad_loss_weight'],
-            attribution_prior_params['counts_grad_loss_weight'],
-            inputs=inputs,
-            outputs=[profile_outputs, logcounts_outputs])
-        
-    else:
-        # instantiate keras Model with inputs and outputs
-        # print({'num_tasks':num_tasks,\
-        #        'tracks_for_each_task':tracks_for_each_task,\
-        #        'output_profile_len':output_profile_len,\
-        #        'loss_weights':loss_weights,\
-        #        'inputs':inputs, 'outputs':[profile_outputs, logcounts_outputs]})
-        return CustomModel(num_tasks,tracks_for_each_task,output_profile_len,loss_weights,counts_loss,
-            inputs=inputs, outputs=[profile_outputs, logcounts_outputs])
+
+        # Step 5 - Bias Input
+        # if the tasks have no bias tracks then profile_head and 
+        # counts_head are the outputs of the model
+        inputs = [one_hot_input]
+        if total_bias_tracks == 0:
+            profile_outputs = profile_head_out
+            logcounts_outputs = counts_head_out  
+
+        else:        
+            if num_tasks != len(profile_bias_module_params['kernel_sizes']):
+                raise NoTracebackException(
+                    "Length on 'kernel_sizes' in profile_bias_module_params "
+                    "must match #tasks")
+
+            # Step 5.1 - Define the bias input layers 
+            profile_bias_inputs = []
+            counts_bias_inputs = []
+            for i in range(num_tasks):
+                if task_bias_tracks[i] > 0:
+                    # profile bias input for task i
+                    profile_bias_inputs.append(layers.Input(
+                        shape=(output_profile_len, task_bias_tracks[i]),
+                        name="profile_bias_input_{}".format(i)))
+
+                    # counts bias input for task i
+                    counts_bias_inputs.append(layers.Input(
+                        shape=(task_bias_tracks[i]), 
+                        name="counts_bias_input_{}".format(i)))
+
+                    # append to inputs
+                    inputs.append(profile_bias_inputs[i])
+                    inputs.append(counts_bias_inputs[i])
+                else:
+                    profile_bias_inputs.append(None)    
+                    counts_bias_inputs.append(None)
+
+            # Step 5.2 - account for profile bias
+            profile_outputs = profile_bias_module(
+                profile_head_out, profile_bias_inputs, tasks, 
+                kernel_sizes=profile_bias_module_params['kernel_sizes'], 
+                name_prefix=name_prefix)
+
+
+            # Step 5.3 - account for counts bias
+            logcounts_outputs = counts_bias_module(
+                counts_head_out, counts_bias_inputs, tasks, 
+                name_prefix=name_prefix)
+
+        if use_attribution_prior:            
+            # instantiate attribution prior Model with inputs and outputs
+            return AttributionPriorModel(
+                attribution_prior_params['frequency_limit'],
+                attribution_prior_params['limit_softness'],
+                attribution_prior_params['grad_smooth_sigma'],     
+                attribution_prior_params['profile_grad_loss_weight'],
+                attribution_prior_params['counts_grad_loss_weight'],
+                inputs=inputs,
+                outputs=[profile_outputs, logcounts_outputs])
+
+        else:
+            # instantiate keras Model with inputs and outputs
+            # print({'num_tasks':num_tasks,\
+            #        'tracks_for_each_task':tracks_for_each_task,\
+            #        'output_profile_len':output_profile_len,\
+            #        'loss_weights':loss_weights,\
+            #        'inputs':inputs, 'outputs':[profile_outputs, logcounts_outputs]})
+
+            return CustomModel(num_tasks,tracks_for_each_task,output_profile_len,loss_weights,counts_loss,
+                inputs=inputs, outputs=[profile_outputs, logcounts_outputs]),distribution
 
 
 def BPNet_ATAC_DNase(tasks, bias_tasks, bpnet_params, bias_bpnet_params, 

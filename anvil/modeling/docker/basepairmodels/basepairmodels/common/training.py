@@ -68,6 +68,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
 from mseqgen import generators 
 from mseqgen import sequtils
+import tensorflow as tf
 
 
 def early_stopping_check(losses, patience=5, min_delta=1e-3):
@@ -385,7 +386,7 @@ def train_and_validate(
             tasks, bias_tasks, model_arch_params, bias_model_arch_params, 
             name_prefix="main")
     else:        
-        model = get_model(tasks, model_arch_params, name_prefix="main")
+        model,distribution = get_model(tasks, model_arch_params, name_prefix="main")
     
     # print out the model summary
     model.summary()
@@ -394,9 +395,10 @@ def train_and_validate(
     logging.debug("Compiling model")
     logging.info("loss weights - {}".format(model_arch_params['loss_weights']))
     logging.info("counts loss - {}".format(model_arch_params['counts_loss']))
-    model.compile(Adam(learning_rate=hyper_params['learning_rate']), 
-					  loss = None,
-                    loss_weights=model_arch_params['loss_weights'])
+    with distribution.scope():
+        model.compile(Adam(learning_rate=hyper_params['learning_rate']), 
+                          loss = None,
+                        loss_weights=model_arch_params['loss_weights'])
     
     # begin time for training
     t1 = time.time()
