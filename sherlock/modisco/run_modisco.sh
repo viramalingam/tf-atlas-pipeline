@@ -11,8 +11,8 @@ cd tf-atlas-pipeline/anvil/modisco/
 
 ##modisco
 
-echo "run /scratch/users/vir/my_scripts/tf-atlas-pipeline/anvil/modisco/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets}
-/scratch/users/vir/my_scripts/tf-atlas-pipeline/anvil/modisco/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets}
+echo "run /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets}
+/scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets}
 
 echo "copying all files to cromwell_root folder"
 
