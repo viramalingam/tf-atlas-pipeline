@@ -46,7 +46,7 @@ mkdir $modisco_counts_dir
 echo $( timestamp ): "cp" $shap ${shap_dir}/ |\
 tee -a $logfile 
 
-echo $shap | sed 's/,/ /g' | xargs cp -t $shap_dir/
+cp $shap/ $shap_dir/
 
 
 #Step 2: Run modisco on counts and profile
