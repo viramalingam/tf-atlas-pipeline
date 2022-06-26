@@ -47,10 +47,11 @@ mkdir $modisco_counts_dir
 echo $( timestamp ): "cp -r" $shap ${shap_dir}/ |\
 tee -a $logfile 
 
-cp -r $shap/ $shap_dir/
+cp -r ${shap}/ ${shap_dir}/
 
 ls $project_dir
 ls $shap
+ls $shap_dir
 
 
 #Step 2: Run modisco on counts and profile
