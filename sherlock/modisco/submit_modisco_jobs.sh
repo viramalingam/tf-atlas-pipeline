@@ -31,7 +31,7 @@ if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/sh
             -t 720 -c 10 --mem=60G \
             -o $modisco_dir/output_log.txt \
             -e $modisco_dir/error_log.txt \
-            run_modisco.sh  $experiment ${oak_dir}/shap/${round}/${experiment} 20000 $modisco_dir
+            singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/test.sif bash run_modisco.sh  $experiment ${oak_dir}/shap/${round}/${experiment} 20000 $modisco_dir
     fi
 else
     echo "do interpretation step first"
