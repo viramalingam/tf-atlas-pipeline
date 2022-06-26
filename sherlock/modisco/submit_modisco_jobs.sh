@@ -28,7 +28,7 @@ if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/sh
         sbatch --export=ALL --requeue \
             -J $experiment.modisco \
             -p owners,akundaje \
-            --time=600 \
+            --time="10:00:00" \
             -c 10 --mem=60G \
             -o $modisco_dir/output_log.txt \
             -e $modisco_dir/error_log.txt \
