@@ -1,7 +1,7 @@
 #!/bin/bash
 
 experiment=$1
-shap=$2
+shap_dir=$2
 max_seqlets=$3
 modisco_dir=$4
 
