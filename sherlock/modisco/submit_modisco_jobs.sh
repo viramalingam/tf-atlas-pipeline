@@ -14,9 +14,11 @@ if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/sh
     if [ -f $oak_dir/modisco/$round/$experiment/profile/modisco_results.h5 ] && [ -f $oak_dir/modisco/$round/$experiment/counts/modisco_results.h5 ] ; then
         echo "modisco run exists"
     else
-        mkdir $oak_dir/modisco/$round/$experiment
+        if ![[-f $oak_dir/modisco/$round/$experiment]]; then
+            mkdir $oak_dir/modisco/$round/$experiment
+        fi
         modisco_dir=$oak_dir/modisco/$round/$experiment
-
+        
         cores=10
         score_type=profile
         sbatch --export=ALL --requeue \

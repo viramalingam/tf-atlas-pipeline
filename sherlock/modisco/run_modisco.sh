@@ -1,3 +1,5 @@
+#!/bin/bash
+
 experiment=$1
 shap=$2
 max_seqlets=$3
