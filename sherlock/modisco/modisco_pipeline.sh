@@ -49,6 +49,9 @@ tee -a $logfile
 
 cp -r $shap/ $shap_dir/
 
+ls $project_dir
+ls $shap
+
 
 #Step 2: Run modisco on counts and profile
 
