@@ -3,7 +3,7 @@ shap=$2
 max_seqlets=$3
 modisco_dir=$4
 
-cd /scratch/users/vir/; mkdir my_scripts
+cd /scratch/users/vir/; rm -rf my_scripts; mkdir my_scripts
 cd /scratch/users/vir/my_scripts
 git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 chmod -R 777 tf-atlas-pipeline
