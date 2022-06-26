@@ -5,7 +5,7 @@ modisco_dir=$4
 
 cd /scratch/users/vir/; mkdir my_scripts
 cd /scratch/users/vir/my_scripts
-git clone --depth 1 --branch dev https://github.com/viramalingam/tf-atlas-pipeline.git
+git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 chmod -R 777 tf-atlas-pipeline
 cd tf-atlas-pipeline/anvil/modisco/
 
@@ -18,3 +18,5 @@ echo "copying all files to cromwell_root folder"
 
 cp -r /project/modisco_profile $modisco_dir/profile
 cp -r /project/modisco_counts $modisco_dir/counts
+
+rm -rf /scratch/users/vir/$experiment

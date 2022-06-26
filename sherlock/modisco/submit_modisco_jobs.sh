@@ -20,7 +20,7 @@ if [[ -d $oak_dir/$experiment ]] ; then
                 -t '12:00:00' -c 10 --mem=60G \
                 -o $modisco_dir/output_log.txt \
                 -e $modisco_dir/error_log.txt \
-                run_modisco.sh  $experiment $oak_dir/shap/$round/$experiment 20000 $modisco_dir
+                run_modisco.sh  $experiment $oak_dir/shap/$round/$experiment 20000 $modisco_dir /scratch/users/vir/$experiment/
         fi
     else
         echo "do interpretation step first"

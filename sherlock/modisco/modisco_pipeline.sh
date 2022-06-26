@@ -11,11 +11,10 @@ function timestamp {
 experiment=$1
 shap=$2
 max_seqlets=$3
+project_dir=$4
 
-
-
-mkdir /project
-project_dir=/project
+echo 'mkdir' $project_dir
+mkdir $project_dir
 
 # create the log file
 logfile=$project_dir/${1}_modisco.log
