@@ -13,6 +13,8 @@ shap=$2
 max_seqlets=$3
 project_dir=$4
 
+echo $1 $2 $3 $4
+
 echo 'mkdir' $project_dir
 mkdir $project_dir
 
