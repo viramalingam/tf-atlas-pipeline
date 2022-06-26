@@ -47,18 +47,12 @@ mkdir $modisco_counts_dir
 echo $( timestamp ): "cp -r" ${shap}/ ${shap_dir}/ |\
 tee -a $logfile 
 
-cp -r ${shap}/* ${shap_dir}/
+cp -r ${shap}/*.h5 ${shap_dir}/
 
-ls $project_dir
-ls $shap
-
-echo "shap_dir"
-ls $shap_dir
 
 
 #Step 2: Run modisco on counts and profile
 
-free -g -s 30 | tee -a $logfile &
 
 echo $( timestamp ): "
 motif_discovery \\

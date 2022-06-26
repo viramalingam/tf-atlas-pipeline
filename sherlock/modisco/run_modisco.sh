@@ -13,7 +13,7 @@ singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/test.sif
 
 echo "copying all files to cromwell_root folder"
 
-cp -r /project/modisco_profile $modisco_dir/profile
-cp -r /project/modisco_counts $modisco_dir/counts
+cp -r /scratch/users/vir/${experiment}/modisco_profile $modisco_dir/profile
+cp -r /scratch/users/vir/${experiment}/modisco_counts $modisco_dir/counts
 
 rm -rf /scratch/users/vir/$experiment
