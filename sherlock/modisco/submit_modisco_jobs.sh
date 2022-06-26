@@ -8,7 +8,7 @@ cd /scratch/users/vir/; rm -rf my_scripts; mkdir my_scripts
 cd /scratch/users/vir/my_scripts
 git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 chmod -R 777 tf-atlas-pipeline
-cd tf-atlas-pipeline/anvil/modisco/
+cd tf-atlas-pipeline/sherlock/modisco/
 
 if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/shap/$round/$experiment/counts_scores.h5 ] ; then
     if [ -f $oak_dir/modisco/$round/$experiment/profile/modisco_results.h5 ] && [ -f $oak_dir/modisco/$round/$experiment/counts/modisco_results.h5 ] ; then
