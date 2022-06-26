@@ -47,7 +47,7 @@ mkdir $modisco_counts_dir
 echo $( timestamp ): "cp -r" ${shap}/ ${shap_dir}/ |\
 tee -a $logfile 
 
-cp -r ${shap}/ ${shap_dir}/
+cp -r ${shap}/* ${shap_dir}/
 
 ls $project_dir
 ls $shap
