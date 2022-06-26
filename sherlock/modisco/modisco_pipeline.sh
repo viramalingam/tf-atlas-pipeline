@@ -44,13 +44,15 @@ mkdir $modisco_counts_dir
 
 #Step 1: Copy the shap files
 
-echo $( timestamp ): "cp -r" $shap ${shap_dir}/ |\
+echo $( timestamp ): "cp -r" ${shap}/ ${shap_dir}/ |\
 tee -a $logfile 
 
 cp -r ${shap}/ ${shap_dir}/
 
 ls $project_dir
 ls $shap
+
+echo "shap_dir"
 ls $shap_dir
 
 
