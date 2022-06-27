@@ -3,14 +3,12 @@ from ..affinitymat.core import MeanNormalizer
 from .core import (AbstractSeqletsToOnedEmbedder,
                    AbstractSeqletsToOnedEmbedderFactory)
 from .. import core as modiscocore
-from ..util import print_memory_use
 import itertools
 import numpy as np
 import sys
 from joblib import Parallel, delayed
 import scipy
 import time
-from matplotlib import pyplot as plt
 
 
 def fast_recursively_get_gappedkmersandimp(posbaseimptuples, max_k,
@@ -163,11 +161,11 @@ def prepare_gapped_kmer_from_seqlet_and_make_sparse_vec_dat(
         take_fwd=take_fwd, onehot_track_name=onehot_track_name,
         toscore_track_names_and_signs=toscore_track_names_and_signs)
 
-    #return gapped_kmer_to_totalseqimp
+    return gapped_kmer_to_totalseqimp
     #return list(gapped_kmer_to_totalseqimp.items())
-    return map_agkm_embedding_to_sparsevec(
-             gapped_kmer_to_totalseqimp=gapped_kmer_to_totalseqimp,
-             template_to_startidx=template_to_startidx)
+    #return map_agkm_embedding_to_sparsevec(
+    #         gapped_kmer_to_totalseqimp=gapped_kmer_to_totalseqimp,
+    #         template_to_startidx=template_to_startidx)
 
 
 class AdvancedGappedKmerEmbedderFactory(object):
@@ -229,110 +227,80 @@ class AdvancedGappedKmerEmbedder(AbstractSeqletsToOnedEmbedder):
 
     def __call__(self, seqlets, only_compute_fwd=False):
 
-        print("At the beginning of embedding call") 
-        print_memory_use()
-
         template_to_startidx, embedding_size =\
             get_template_to_startidx_and_embedding_size(
                 max_len=self.max_len, min_k=self.min_k,
                 max_k=self.max_k, alphabet_size=self.alphabet_size)
 
-        print("before computing embeddings fwd") 
-        print_memory_use()
-
-        sparse_agkm_embeddings_fwd_dataandcols = (
-            Parallel(n_jobs=self.n_jobs, verbose=True)(
-              delayed(prepare_gapped_kmer_from_seqlet_and_make_sparse_vec_dat)(
-                  seqlets[i],
-                  self.topn, self.min_k,
-                  self.max_k, self.max_gap,
-                  self.max_len,
-                  self.max_entries,
-                  True,
-                  self.onehot_track_name,
-                  self.toscore_track_names_and_signs,
-                  template_to_startidx)
-                 for i in range(len(seqlets)))
-        ) 
-
-        #advanced_gappedkmer_embeddings_fwd =\
+        #sparse_agkm_embeddings_fwd_dataandcols = (
         #    Parallel(n_jobs=self.n_jobs, verbose=True)(
-        #        delayed(prepare_gapped_kmer_from_seqlet)(
-        #            seqlets[i],
-        #            self.topn, self.min_k,
-        #            self.max_k, self.max_gap,
-        #            self.max_len,
-        #            self.max_entries,
-        #            True,
-        #            self.onehot_track_name,
-        #            self.toscore_track_names_and_signs)
-        #           for i in range(len(seqlets)))
+        #      delayed(prepare_gapped_kmer_from_seqlet_and_make_sparse_vec_dat)(
+        #          seqlets[i],
+        #          self.topn, self.min_k,
+        #          self.max_k, self.max_gap,
+        #          self.max_len, True,
+        #          self.onehot_track_name,
+        #          self.toscore_track_names_and_signs,
+        #          template_to_startidx)
+        #         for i in range(len(seqlets)))
+        #) 
 
-        print("after computing embeddings fwd") 
-        print_memory_use()
+        #sparse_agkm_embeddings_rev_dataandcols = (
+        #    Parallel(n_jobs=self.n_jobs, verbose=True)(
+        #      delayed(prepare_gapped_kmer_from_seqlet_and_make_sparse_vec_dat)(
+        #          seqlets[i],
+        #          self.topn, self.min_k,
+        #          self.max_k, self.max_gap,
+        #          self.max_len, False, #'False' determines doing rc
+        #          self.onehot_track_name,
+        #          self.toscore_track_names_and_signs,
+        #          template_to_startidx)
+        #         for i in range(len(seqlets)))
+        #) 
+
+        advanced_gappedkmer_embeddings_fwd =\
+            Parallel(n_jobs=self.n_jobs, verbose=True)(
+                delayed(prepare_gapped_kmer_from_seqlet)(
+                    seqlets[i],
+                    self.topn, self.min_k,
+                    self.max_k, self.max_gap,
+                    self.max_len,
+                    self.max_entries,
+                    True,
+                    self.onehot_track_name,
+                    self.toscore_track_names_and_signs)
+                   for i in range(len(seqlets)))
 
         revdata_present = (seqlets[0][self.onehot_track_name].rev is not None)
         if (only_compute_fwd):
             revdata_present = False
 
         if (revdata_present):
-
-            sparse_agkm_embeddings_rev_dataandcols = (
+            advanced_gappedkmer_embeddings_rev =\
                 Parallel(n_jobs=self.n_jobs, verbose=True)(
-                  delayed(prepare_gapped_kmer_from_seqlet_and_make_sparse_vec_dat)(
-                      seqlets[i],
-                      self.topn, self.min_k,
-                      self.max_k, self.max_gap,
-                      self.max_len,
-                      self.max_entries,
-                      False, #'False' determines doing rc
-                      self.onehot_track_name,
-                      self.toscore_track_names_and_signs,
-                      template_to_startidx)
-                     for i in range(len(seqlets)))
-            ) 
-            
-            #I switched from advanced_gappedkmer_embeddings_rev to
-            # sparse_agkm_embeddings_rev because it looks like the space
-            # needed to store the embeddings in list format (with the
-            # embeddings spelled out as strings) is quite large
-            #advanced_gappedkmer_embeddings_rev =\
-            #    Parallel(n_jobs=self.n_jobs, verbose=True)(
-            #        delayed(prepare_gapped_kmer_from_seqlet)(
-            #            seqlets[i],
-            #            self.topn, self.min_k,
-            #            self.max_k, self.max_gap,
-            #            self.max_len,
-            #            self.max_entries,
-            #            False,
-            #            self.onehot_track_name,
-            #            self.toscore_track_names_and_signs)
-            #           for i in range(len(seqlets)))
-            print("after computing embeddings rev") 
-            print_memory_use()
+                    delayed(prepare_gapped_kmer_from_seqlet)(
+                        seqlets[i],
+                        self.topn, self.min_k,
+                        self.max_k, self.max_gap,
+                        self.max_len,
+                        self.max_entries,
+                        False,
+                        self.onehot_track_name,
+                        self.toscore_track_names_and_signs)
+                       for i in range(len(seqlets)))
         else:
             advanced_gappedkmer_embeddings_rev = None 
 
-        print("before computing sparse embeddings fwd") 
-        print_memory_use()
         sparse_agkm_embeddings_fwd = get_sparse_mat_from_agkm_embeddings(
-            #agkm_embeddings=advanced_gappedkmer_embeddings_fwd,
-            agkm_embeddings=sparse_agkm_embeddings_fwd_dataandcols,
+            agkm_embeddings=advanced_gappedkmer_embeddings_fwd,
             template_to_startidx=template_to_startidx,
             embedding_size=embedding_size)
-        print("after computing sparse embeddings fwd") 
-        print_memory_use()
 
         if (revdata_present):
-            print("before computing sparse embeddings rev") 
-            print_memory_use()
             sparse_agkm_embeddings_rev = get_sparse_mat_from_agkm_embeddings(
-                #agkm_embeddings=advanced_gappedkmer_embeddings_rev,
-                agkm_embeddings=sparse_agkm_embeddings_rev_dataandcols,
+                agkm_embeddings=advanced_gappedkmer_embeddings_rev,
                 template_to_startidx=template_to_startidx,
                 embedding_size=embedding_size)
-            print("after computing sparse embeddings rev") 
-            print_memory_use()
         else:
             sparse_agkm_embeddings_rev = None
 
@@ -383,18 +351,13 @@ def map_agkm_embedding_to_sparsevec(gapped_kmer_to_totalseqimp,
 def get_sparse_mat_from_agkm_embeddings(agkm_embeddings,
                                         template_to_startidx,
                                         embedding_size):
-    ##not sure why, but parallelization doesn't help that much here?
-    ## so I am setting n_jobs to 1. I think it's because copying
-    ## template_to_startidx is more expensive than the job itself...
-    #all_agkm_data_and_cols = Parallel(n_jobs=1, verbose=True)(
-    #    delayed(map_agkm_embedding_to_sparsevec)(
-    #        agkm_embedding,
-    #        template_to_startidx)
-    #    for agkm_embedding in agkm_embeddings)
-    
-    #I switched it so that the data & cols format is what is passed in
-    # as it looks like storing the string names took up quite a bit of space..
-    all_agkm_data_and_cols = agkm_embeddings
+    #not sure why, but parallelization doesn't help that much here?
+    # so I am setting n_jobs to 1.
+    all_agkm_data_and_cols = Parallel(n_jobs=1, verbose=True)(
+        delayed(map_agkm_embedding_to_sparsevec)(
+            agkm_embedding,
+            template_to_startidx)
+        for agkm_embedding in agkm_embeddings)
     
     row_ind = []
     data = []

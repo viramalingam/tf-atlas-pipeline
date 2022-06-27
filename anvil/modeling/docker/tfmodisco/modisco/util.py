@@ -9,14 +9,13 @@ import scipy.sparse
 from sklearn.metrics import average_precision_score, precision_recall_curve
 from sklearn.isotonic import IsotonicRegression
 from joblib import Parallel, delayed
-from datetime import datetime
 
 
 def print_memory_use():
     import os
     import psutil
     process = psutil.Process(os.getpid())
-    print(datetime.now(),"MEMORY",process.memory_info().rss/1000000000)
+    print("MEMORY",process.memory_info().rss/1000000000)
 
 
 def load_patterns(grp, track_set):

@@ -39,7 +39,7 @@ task run_modisco {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.1'
 		memory: mem_gb + "GB"
 		cpu: number_of_cpus
 		bootDiskSizeGb: 50

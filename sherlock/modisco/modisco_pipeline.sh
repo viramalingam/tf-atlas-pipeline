@@ -50,7 +50,6 @@ tee -a $logfile
 cp -r ${shap}/*.h5 ${shap_dir}/
 
 
-
 #Step 2: Run modisco on counts and profile
 
 

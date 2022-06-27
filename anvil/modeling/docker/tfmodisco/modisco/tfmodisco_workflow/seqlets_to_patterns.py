@@ -79,7 +79,6 @@ class TfModiscoSeqletsToPatternsFactory(object):
 
     @legacy_tfmodiscoseqletstopatternsfactory
     def __init__(self, n_cores=4,
-                       n_cores_mainclustering=None,
                        min_overlap_while_sliding=0.7,
 
                        #init clusterer factory
@@ -90,7 +89,6 @@ class TfModiscoSeqletsToPatternsFactory(object):
                                         .AdvancedGappedKmerEmbedderFactory()),
 
                        nearest_neighbors_to_compute=500,
-                       use_pynnd=False,
 
                        affmat_correlation_threshold=0.15,
                        filter_beyond_first_round=False,
@@ -139,16 +137,12 @@ class TfModiscoSeqletsToPatternsFactory(object):
                      +" set use_louvain to False")
 
         #affinity_mat calculation
-        if (n_cores_mainclustering is None):
-            n_cores_mainclustering = n_cores
         self.n_cores = n_cores
-        self.n_cores_mainclustering = n_cores_mainclustering
         self.min_overlap_while_sliding = min_overlap_while_sliding
 
         self.embedder_factory = embedder_factory
 
         self.nearest_neighbors_to_compute = nearest_neighbors_to_compute
-        self.use_pynnd = use_pynnd
 
         self.affmat_correlation_threshold = affmat_correlation_threshold
         self.filter_beyond_first_round = filter_beyond_first_round
@@ -206,7 +200,6 @@ class TfModiscoSeqletsToPatternsFactory(object):
         to_return =  OrderedDict([
                 ('class_name', type(self).__name__),
                 ('n_cores', self.n_cores),
-                ('n_cores_mainclustering', self.n_cores_mainclustering),
                 ('initclusterer_factory',
                  self.initclusterer_factory.get_jsonable_config()),
                 ('min_overlap_while_sliding', self.min_overlap_while_sliding),
@@ -295,22 +288,14 @@ class TfModiscoSeqletsToPatternsFactory(object):
                 n_jobs=self.n_cores)
 
         #affinity matrix from embeddings
-        if (self.use_pynnd):
-            sparse_affmat_from_fwdnrev1dvecs = (
-             affinitymat.core.PynndSparseNumpyCosineSimFromFwdAndRevOneDVecs(
-                n_neighbors=self.nearest_neighbors_to_compute,
-                verbose=self.verbose,
-                n_jobs=self.n_cores))
-        else:
-            sparse_affmat_from_fwdnrev1dvecs =\
-                affinitymat.core.SparseNumpyCosineSimFromFwdAndRevOneDVecs(
-                        n_neighbors=self.nearest_neighbors_to_compute, 
-                        verbose=self.verbose)
         coarse_affmat_computer =\
-          affinitymat.core.SparseAffmatFromFwdAndRevSeqletEmbeddings(
-            seqlets_to_1d_embedder=seqlets_to_1d_embedder,
-            sparse_affmat_from_fwdnrev1dvecs=sparse_affmat_from_fwdnrev1dvecs,
-            verbose=self.verbose)
+            affinitymat.core.SparseAffmatFromFwdAndRevSeqletEmbeddings(
+                seqlets_to_1d_embedder=seqlets_to_1d_embedder,
+                sparse_affmat_from_fwdnrev1dvecs=\
+                    affinitymat.core.SparseNumpyCosineSimFromFwdAndRevOneDVecs(
+                        n_neighbors=self.nearest_neighbors_to_compute, 
+                        verbose=self.verbose),
+                verbose=self.verbose)
 
         affmat_from_seqlets_with_nn_pairs =\
             affinitymat.core.AffmatFromSeqletsWithNNpairs(
@@ -346,8 +331,7 @@ class TfModiscoSeqletsToPatternsFactory(object):
                     affinitymat.transformers.LouvainMembershipAverage(
                         n_runs=n_runs,
                         level_to_return=level_to_return,
-                        parallel_threads=self.n_cores_mainclustering,
-                        seed=self.seed))
+                        parallel_threads=self.n_cores, seed=self.seed))
             clusterer_r1 = cluster.core.LouvainCluster(
                 level_to_return=self.final_louvain_level_to_return,
                 affmat_transformer=affmat_transformer_r1,
@@ -355,7 +339,7 @@ class TfModiscoSeqletsToPatternsFactory(object):
                 verbose=self.verbose, seed=self.seed)
         else:
             clusterer_r1 = cluster.core.LeidenClusterParallel(
-                n_jobs=self.n_cores_mainclustering, 
+                n_jobs=self.n_cores, 
                 affmat_transformer=affmat_transformer_r1,
                 numseedstotry=self.contin_runs_r1,
                 n_leiden_iterations=self.n_leiden_iterations_r1,
@@ -373,8 +357,7 @@ class TfModiscoSeqletsToPatternsFactory(object):
                     affinitymat.transformers.LouvainMembershipAverage(
                         n_runs=n_runs,
                         level_to_return=level_to_return,
-                        parallel_threads=self.n_cores_mainclustering,
-                        seed=self.seed))
+                        parallel_threads=self.n_cores, seed=self.seed))
             clusterer_r2 = cluster.core.LouvainCluster(
                 level_to_return=self.final_louvain_level_to_return,
                 affmat_transformer=affmat_transformer_r2,
@@ -383,7 +366,7 @@ class TfModiscoSeqletsToPatternsFactory(object):
                 initclusters_weight=self.louvain_initclusters_weight)
         else:
             clusterer_r2 = cluster.core.LeidenClusterParallel(
-                n_jobs=self.n_cores_mainclustering, 
+                n_jobs=self.n_cores, 
                 affmat_transformer=affmat_transformer_r2,
                 numseedstotry=self.contin_runs_r2,
                 n_leiden_iterations=self.n_leiden_iterations_r2,

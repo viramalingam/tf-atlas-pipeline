@@ -11,8 +11,6 @@ import uuid
 import os, re
 import subprocess
 from joblib import Parallel, delayed
-from ..util import print_memory_use
-
 
 
 class ClusterResults(object):
@@ -107,7 +105,6 @@ class LeidenCluster(AbstractAffinityMatClusterer):
 
         if (self.verbose):
             print("Beginning preprocessing + Leiden")
-            print_memory_use()
             sys.stdout.flush()
         all_start = time.time()
         if (self.affmat_transformer is not None):
@@ -230,20 +227,14 @@ class LeidenClusterParallel(AbstractAffinityMatClusterer):
 
         if (self.verbose):
             print("Beginning preprocessing + Leiden")
-            print_memory_use()
             sys.stdout.flush()
-
         all_start = time.time()
-
         if (self.affmat_transformer is not None):
             affinity_mat = self.affmat_transformer(orig_affinity_mat)
-            if (self.verbose):
-                print("Affmat transformed")
-                print_memory_use()
-                sys.stdout.flush()
         else:
             affinity_mat = orig_affinity_mat
 
+        the_graph = get_igraph_from_adjacency(adjacency=affinity_mat)
         best_clustering = None
         best_quality = None
 
@@ -259,22 +250,16 @@ class LeidenClusterParallel(AbstractAffinityMatClusterer):
             if (initclusters is not None):
                 initclusters_to_try_list.append(True)
 
+
         #write out the contents of affinity_mat and initclusters if applicable
         uid = uuid.uuid1().hex
         
         sources, targets = affinity_mat.nonzero()
         weights = affinity_mat[sources, targets]
 
-        if (self.verbose):
-            print("sources, targets, weights extracted")
-            print_memory_use()
-            sys.stdout.flush()
-
         np.save(uid+"_sources.npy", sources)
         np.save(uid+"_targets.npy", targets)
         np.save(uid+"_weights.npy", weights.A1) #A1 is the same as ravel()
-
-        del sources, targets, weights
 
         if (initclusters is not None):
             np.save(uid+"_initclusters.npy", initclusters)
@@ -282,10 +267,7 @@ class LeidenClusterParallel(AbstractAffinityMatClusterer):
 
         for use_initclusters in initclusters_to_try_list:
 
-            if (self.verbose):
-                print("About to launch parallel Leiden runs")
-                print_memory_use()
-                sys.stdout.flush()
+            print("Affmat shape:",affinity_mat.shape[0])
 
             parallel_leiden_results = (
                 Parallel(n_jobs=self.n_jobs,
@@ -296,11 +278,6 @@ class LeidenClusterParallel(AbstractAffinityMatClusterer):
                                      self.n_leiden_iterations,
                                      seed*100, self.refine)
                  for seed in toiterover)) 
-
-            if (self.verbose):
-                print("Parallel Leiden runs finished")
-                print_memory_use()
-                sys.stdout.flush()
 
             for quality,membership in parallel_leiden_results:
                 if ((best_quality is None) or (quality > best_quality)):

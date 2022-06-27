@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.3.13] - 2022-06-26
+### Added
+1. **code for running modisco in sherlock and modisco version v0.5.15.0 in docker vivekramalingam/tf-atlas:gcp-modeling_v1.3.1**
+
+
 ## [v1.3.12] - 2022-06-17
 ### Added
 1. merged with dev branch for the **test_motifs scripts to work with models trained without control. Also test_motifs script export jsd between background regions and motif inserted sequences.**
@@ -97,3 +102,14 @@ merged branch dev_without_bias_prediction_metrics. We now also calculated metric
 ## [1.0.0] - 2022-05-22
 ### Added
 Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Started traking the github versions and pipeline scripts download a specific version. **Incomplete. Testing the tagging sytem.**
+
+# log of the docker builds
+
+## vivekramalingam/tf-atlas:gcp-modeling_v1.3.1 - 2022-06-26
+Same as the docker used for the modeling runs but the modisco repo is changed to v0.5.15.0
+- vivekramalingam_tf-atlas_gcp-modeling_v1.3.1.sif is build from this version.
+
+## vivekramalingam/tf-atlas:gcp-modeling_v1.3.0 - 
+Docker used for the modeling run-id-3. Has single multinomial and count loss for training and prediction.
+
+# log of dev branches
