@@ -97,7 +97,7 @@ def motif_discovery_main():
         seqlets_to_patterns_factory=\
         modisco.tfmodisco_workflow.seqlets_to_patterns
             .TfModiscoSeqletsToPatternsFactory(
-                n_cores=10,
+                n_cores=10,n_cores_mainclustering=4,
                 trim_to_window_size=20, 
                 initial_flank_to_add=5, 
                 final_min_cluster_size=20))
