@@ -21,11 +21,12 @@ if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/sh
         if ! [[ -d $oak_dir/modisco/$round/$experiment ]]; 
         then
             mkdir $oak_dir/modisco/$round/$experiment
+            mkdir $oak_dir/modisco/$round/$experiment/counts
+            mkdir $oak_dir/modisco/$round/$experiment/profile
         fi
         modisco_dir=$oak_dir/modisco/$round/$experiment
         
-        mkdir $modisco_dir/counts
-        mkdir $modisco_dir/profile
+        
         
         cores=10
         score_type=profile
