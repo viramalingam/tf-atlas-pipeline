@@ -7,6 +7,12 @@ RUN mkdir -p /tfatlas
 # Set the working directory
 WORKDIR /tfatlas
 
+RUN apt-key del 7fa2af80
+
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
+RUN apt-get update
+
+
 # Install some basic utilities
 RUN apt-get update --fix-missing && \
     apt-get install -y wget bzip2 ca-certificates curl git
@@ -43,10 +49,7 @@ RUN pip install imageio~=2.13.0
 
 # Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
 RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
-RUN apt-key del 7fa2af80
 
-RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
-RUN apt-get update
 RUN apt install -y --allow-unauthenticated libbz2-dev
 RUN apt install -y --allow-unauthenticated liblzma-dev
 RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
