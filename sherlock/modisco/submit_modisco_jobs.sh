@@ -3,6 +3,7 @@
 experiment=$1
 round=$2
 oak_dir=$3
+max_seqlets=$4
 
 if ! [[ -d /scratch/users/vir/my_scripts ]]; 
 then
@@ -34,7 +35,7 @@ if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/sh
             -t 1440 -c 10 --mem=32G \
             -o $modisco_dir/output_log.txt \
             -e $modisco_dir/error_log.txt \
-            run_modisco.sh  $experiment ${oak_dir}/shap/${round}/${experiment} 25000 $modisco_dir
+            run_modisco.sh  $experiment ${oak_dir}/shap/${round}/${experiment} $max_seqlets $modisco_dir
     fi
 else
     echo "do interpretation step first"
