@@ -31,7 +31,7 @@ if [ -f $oak_dir/shap/$round/$experiment/profile_scores.h5 ] && [ -f $oak_dir/sh
         score_type=profile
         sbatch --export=ALL --requeue \
             -J $experiment.modisco \
-            -p akundaje,owners,bigmem,normal \
+            -p akundaje,owners,normal \
             -t 1440 -c 10 --mem=32G \
             -o $modisco_dir/output_log.txt \
             -e $modisco_dir/error_log.txt \
