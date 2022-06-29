@@ -9,7 +9,7 @@ modisco_dir=$4
 
 echo "singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_v1.3.2.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/${experiment}
 
-singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/tvivekramalingam_tf-atlas_gcp-modeling_v1.3.2.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/${experiment}
+singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_v1.3.2.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/${experiment}
 
 echo "copying all files to cromwell_root folder"
 
