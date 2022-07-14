@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.4.0] - 2022-07-13
+### fixed
+1. **fixed code for the gc_matched negative. It was producing -1057 for the summit values instead of 1057.**
+
+
+
 ## [v1.3.13] - 2022-06-26
 ### Added
 1. **code for running modisco in sherlock and modisco version v0.5.15.0 in docker vivekramalingam/tf-atlas:gcp-modeling_v1.3.1**
