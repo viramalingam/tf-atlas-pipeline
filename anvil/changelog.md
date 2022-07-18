@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [v1.4.1] - 2022-07-13
+## [v1.4.2] - 2022-07-18
+### removed
+1.remove preemptible from modelling, shap
+
+## [v1.4.1] - 2022-07-18
 ### fixed
 1. added preemptible = 1 to the modelling and shap runs
 
