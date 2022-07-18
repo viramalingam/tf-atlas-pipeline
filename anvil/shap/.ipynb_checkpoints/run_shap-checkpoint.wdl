@@ -18,7 +18,7 @@ task run_shap {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.4 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.4.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/shap/
 
@@ -55,7 +55,8 @@ task run_shap {
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
 		nvidiaDriverVersion: "450.51.05" 
-  		maxRetries: 3
+		preemptible: 1        
+		maxRetries: 1
 	}
 }
 
