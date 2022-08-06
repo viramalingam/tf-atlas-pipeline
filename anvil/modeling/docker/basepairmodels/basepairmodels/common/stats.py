@@ -82,7 +82,7 @@ def get_recommended_counts_loss_weight(input_bigWigs, peaks,
     # average of the total counts
     n_obs = total_counts / float(total_peaks)
     
-    return (alpha / 2.0) * n_obs
+    return (alpha) * n_obs
 
             
         
