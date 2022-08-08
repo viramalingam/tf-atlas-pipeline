@@ -106,9 +106,9 @@ echo $( timestamp ): "cp" $bigwigs ${data_dir}/ |\
 tee -a $logfile 
 
 
-cp $model $model_dir/
+cp $model $model_dir/model_split000.h5
 
-echo $( timestamp ): "cp" $model ${model_dir}/ |\
+echo $( timestamp ): "cp" $model ${model_dir}/model_split000.h5 |\
 tee -a $logfile 
 
 
@@ -186,7 +186,7 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/model_split004.h5 \\
+    --model $model_dir/model_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
@@ -201,7 +201,7 @@ predict \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/model_split004.h5 \
+    --model $model_dir/model_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
@@ -238,7 +238,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/model_split004.h5 \\
+    --model $model_dir/model_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
@@ -253,7 +253,7 @@ predict \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/model_split004.h5 \
+    --model $model_dir/model_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
@@ -280,7 +280,7 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/model_split004.h5 \\
+    --model $model_dir/model_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --reference-genome $reference_dir/hg38.genome.fa \\
@@ -295,7 +295,7 @@ predict \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/model_split004.h5 \
+    --model $model_dir/model_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --reference-genome $reference_dir/hg38.genome.fa \
@@ -312,7 +312,7 @@ predict \
 
 echo $( timestamp ): "
 predict \\
-    --model $model_dir/model_split004.h5 \\
+    --model $model_dir/model_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --reference-genome $reference_dir/hg38.genome.fa \\
@@ -327,7 +327,7 @@ predict \\
     --threads $threads" | tee -a $logfile 
 
 predict \
-    --model $model_dir/model_split004.h5 \
+    --model $model_dir/model_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --reference-genome $reference_dir/hg38.genome.fa \
