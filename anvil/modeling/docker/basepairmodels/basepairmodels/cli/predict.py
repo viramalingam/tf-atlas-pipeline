@@ -511,6 +511,8 @@ def predict(args, pred_dir):
     all_chroms = []
     all_starts = []
     all_ends = []
+    
+    model.summary()
         
     # run predict on each batch separately
     for batch in tqdm(test_generator, desc='batch', total=num_batches):
@@ -520,6 +522,7 @@ def predict(args, pred_dir):
         true_logcounts = batch['true_logcounts']
 
         # predict on the batch
+        
         predictions = model.predict(batch)
         
         # arrays to hold required values for each batch before we 
