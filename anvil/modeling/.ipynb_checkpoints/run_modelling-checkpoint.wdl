@@ -139,7 +139,7 @@ workflow modelling {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions,
-			learning_rate = learning_rate
+			learning_rate = learning_rate,
 			seed = seed
 	}
 	output {
