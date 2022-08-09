@@ -67,8 +67,6 @@ from mseqgen import utils
 from queue import Queue
 from threading import Thread
 
-# set random seed
-random.seed(1234)
 
 
 class MSequenceGenerator:

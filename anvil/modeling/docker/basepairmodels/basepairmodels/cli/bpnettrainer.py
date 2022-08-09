@@ -30,10 +30,7 @@
 """
 
 # set random seed
-from numpy.random import seed
-seed(1234)
-from tensorflow.random import set_seed 
-set_seed(1234)
+
 
 import json
 import logging
@@ -45,11 +42,17 @@ from basepairmodels.cli.exceptionhandler import NoTracebackException
 from basepairmodels.common import training
 from genomicsdlarchsandlosses.bpnet import archs
 
+from numpy.random import seed
+from tensorflow.random import set_seed 
+
 
 def main():
     # parse the command line arguments
     parser = argparsers.training_argsparser()
     args = parser.parse_args()
+    
+    seed(args.random_seed)
+    set_seed(args.random_seed)
 
     # output params 
     output_params = {}

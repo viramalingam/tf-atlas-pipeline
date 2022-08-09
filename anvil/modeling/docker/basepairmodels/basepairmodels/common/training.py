@@ -69,6 +69,9 @@ from tensorflow.keras.optimizers import Adam
 from mseqgen import generators 
 from mseqgen import sequtils
 
+from numpy.random import seed
+from tensorflow.random import set_seed 
+
 
 def early_stopping_check(losses, patience=5, min_delta=1e-3):
     """
