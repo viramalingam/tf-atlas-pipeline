@@ -21,7 +21,7 @@ bigwigs=${10}
 peaks=${11}
 background_regions=${12}
 learning_rate=${13}
-seed={14}
+seed=${14}
 
 mkdir /project
 project_dir=/project
