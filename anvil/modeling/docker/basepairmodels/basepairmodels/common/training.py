@@ -40,9 +40,9 @@
 
 # set random seed
 from numpy.random import seed
-seed(1234)
+
 from tensorflow.random import set_seed 
-set_seed(1234)
+
 
 import copy
 import datetime

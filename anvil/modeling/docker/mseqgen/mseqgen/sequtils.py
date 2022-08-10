@@ -155,7 +155,7 @@ def getChromPositions(chroms, chrom_sizes, flank, mode='sequential',
     
 
 def getPeakPositions(tasks, chrom_sizes, flank, 
-                     chroms=None, 
+                     chroms=None, mode="train",
                      loci_keys=['loci', 'background_loci'], 
                      drop_duplicates=False, background_only=False, 
                      foreground_weight=1, background_weight=0):
@@ -176,6 +176,8 @@ def getPeakPositions(tasks, chrom_sizes, flank,
             flank (int): Buffer size before & after the position to  
                 ensure we dont fetch values at index < 0 & > chrom size
             chroms (list): The list of chromosomes to include
+            mode (str): train, test, val. In train the negative are shuffled. 
+                        In val negatives are not shuffles. In test option not used. 
             loci_keys (list): list of keys that specify the loci to
                 select from the input json for training/testing              
             drop_duplicates (boolean): True if duplicates should be
@@ -269,8 +271,12 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                             "The number of background loci supplied is "
                             "insufficent for the ratio specified")                    
                     else:
-                        peaks_df = peaks_df.sample(
-                            n=num_samples, replace=False)
+                        if mode == "train":
+                            peaks_df = peaks_df.sample(
+                                n=num_samples, replace=False)
+                        else:
+                            peaks_df = peaks_df.sample(
+                                n=num_samples, replace=False,random_state=1)
                 
                 # set weight of sample based on loci_key
                 if loci_key == 'loci':

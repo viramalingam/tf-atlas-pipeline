@@ -21,7 +21,7 @@ bigwigs=${10}
 peaks=${11}
 background_regions=${12}
 learning_rate=${13}
-
+random_seed=${14}
 
 mkdir /project
 project_dir=/project
@@ -211,7 +211,8 @@ train \\
     --threads $threads \\
     --batch-size 64 \\
     --reverse-complement-augmentation \\
-    --learning-rate $learning_rate" | tee -a $logfile 
+    --learning-rate $learning_rate \\
+    --random-seed $random_seed" | tee -a $logfile 
 
 train \
     --input-data $project_dir/training_input.json \
@@ -231,7 +232,8 @@ train \
     --threads $threads \
     --batch-size 64 \
     --reverse-complement-augmentation \
-    --learning-rate $learning_rate
+    --learning-rate $learning_rate \
+    --random-seed $random_seed
     
 # save the values used for training
 cp $project_dir/training_input.json $model_dir/

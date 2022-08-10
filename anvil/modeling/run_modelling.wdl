@@ -15,6 +15,7 @@ task run_modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
+		Int random_seed
 
 
   	}	
@@ -22,14 +23,14 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch dev_old_standspecific_multinomial https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_old_standspecific_multi_fixed_val_sampling_and_patience https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
 		##modelling
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -76,7 +77,7 @@ task run_modelling {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_old_standspecific_multinomial'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_old_standspecific_multi_fixed_val_sampling_and_patience'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
@@ -102,6 +103,7 @@ workflow modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
+		Int random_seed
 
 	}
 
@@ -119,7 +121,8 @@ workflow modelling {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions,
-			learning_rate = learning_rate
+			learning_rate = learning_rate,
+			random_seed = random_seed
  	}
 	output {
 		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json
