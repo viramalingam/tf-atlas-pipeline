@@ -155,7 +155,7 @@ def getChromPositions(chroms, chrom_sizes, flank, mode='sequential',
     
 
 def getPeakPositions(tasks, chrom_sizes, flank,  
-                     chroms=None, mode,
+                     chroms=None, mode='train',
                      loci_keys=['loci', 'background_loci'], 
                      drop_duplicates=False, background_only=False, 
                      foreground_weight=1, background_weight=0):
