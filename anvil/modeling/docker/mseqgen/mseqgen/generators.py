@@ -349,7 +349,7 @@ class MSequenceGenerator:
             peaks_df = sequtils.getPeakPositions(
                 self._tasks,
                 self._chrom_sizes_df[['chrom', 'size']], self._input_flank,
-                self._chroms,
+                self._chroms,mode=self_.mode,
                 loci_keys=loci_keys,
                 drop_duplicates=True, background_only=background_only, 
                 foreground_weight=foreground_weight, 

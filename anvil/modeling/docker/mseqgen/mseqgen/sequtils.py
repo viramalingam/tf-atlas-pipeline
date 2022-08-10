@@ -154,8 +154,8 @@ def getChromPositions(chroms, chrom_sizes, flank, mode='sequential',
     return positions    
     
 
-def getPeakPositions(tasks, chrom_sizes, flank, 
-                     chroms=None, 
+def getPeakPositions(tasks, chrom_sizes, flank,  
+                     chroms=None, mode,
                      loci_keys=['loci', 'background_loci'], 
                      drop_duplicates=False, background_only=False, 
                      foreground_weight=1, background_weight=0):
@@ -269,8 +269,12 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                             "The number of background loci supplied is "
                             "insufficent for the ratio specified")                    
                     else:
-                        peaks_df = peaks_df.sample(
-                            n=num_samples, replace=False)
+                        if mode == "train":
+                            peaks_df = peaks_df.sample(
+                                n=num_samples, replace=False)
+                        else:
+                            peaks_df = peaks_df.sample(
+                                n=num_samples, replace=False,random_state=1)
                 
                 # set weight of sample based on loci_key
                 if loci_key == 'loci':
