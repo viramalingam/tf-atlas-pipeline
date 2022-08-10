@@ -275,6 +275,7 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                         else:
                             peaks_df = peaks_df.sample(
                                 n=num_samples, replace=False,random_state=1)
+                            print(peaks_df)
                 
                 # set weight of sample based on loci_key
                 if loci_key == 'loci':
