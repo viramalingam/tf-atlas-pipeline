@@ -49,6 +49,9 @@ RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 # Install jq
 RUN apt-get install -y jq
 
+# Install jq
+RUN apt-get install -y vim
+
 # Install any remaining needed Python packages specified in requirements.txt
 COPY requirements.txt /tfatlas
 RUN pip install -r requirements.txt
@@ -56,7 +59,7 @@ RUN rm requirements.txt
 
 # Clean up after apt and conda
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN conda clean -tipsy
+RUN conda clean -tipy
 
 # Set environment variables for Python
 ENV LC_ALL=C.UTF-8
