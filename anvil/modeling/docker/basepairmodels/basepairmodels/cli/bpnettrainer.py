@@ -49,8 +49,8 @@ def main():
     parser = argparsers.training_argsparser()
     args = parser.parse_args()
     
-    seed(args.seed)
-    set_seed(args.seed)
+    seed(args.random_seed)
+    set_seed(args.random_seed)
 
     # output params 
     output_params = {}

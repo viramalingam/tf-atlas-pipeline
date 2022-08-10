@@ -15,7 +15,7 @@ def training_argsparser():
                         help="learning rate for Adam optimizer",
                         default=0.004)
     
-    parser.add_argument('--random-seed', type=Int,
+    parser.add_argument('--random-seed', type=int,
                         help="random seed",
                         default=1234)
 
