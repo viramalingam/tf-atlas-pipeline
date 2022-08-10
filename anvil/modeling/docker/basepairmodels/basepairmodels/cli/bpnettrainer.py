@@ -84,10 +84,9 @@ def main():
     hyper_params['batch_size'] = args.batch_size
     hyper_params['learning_rate'] = args.learning_rate
     hyper_params['min_learning_rate'] = args.min_learning_rate
-    hyper_params['early_stopping_patience'] = args.early_stopping_patience
+    hyper_params['early_stopping_patience'] = 10
     hyper_params['early_stopping_min_delta'] = args.early_stopping_min_delta
-    hyper_params['reduce_lr_on_plateau_patience'] = \
-        args.reduce_lr_on_plateau_patience
+    hyper_params['reduce_lr_on_plateau_patience'] = 5
     hyper_params['lr_reduction_factor'] = \
         args.lr_reduction_factor
     
