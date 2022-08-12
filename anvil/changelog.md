@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.5.0] - 2022-08-11
+### removed
+merged with the branch dev_fix_val_sampling
+1. fixed the validation sampling using a random seed
+2. changed the early stopping patience to 10 and reduce-lr-on-plateau-patience to 5
+
 ## [v1.4.2] - 2022-07-18
 ### removed
 1.remove preemptible from modelling, shap
@@ -121,11 +127,17 @@ Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Sta
 
 # log of the docker builds
 
+## vivekramalingam/tf-atlas:gcp-modeling_v1.5.0- 2022-08-11
+Has fixed validation sampling and adjusted early stopping patience to 10 and reduce-lr-on-plateau-patience to 5. Used joint multinomial as before.
+
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.3.1 - 2022-06-26
 Same as the docker used for the modeling runs but the modisco repo is changed to v0.5.15.0
 - vivekramalingam_tf-atlas_gcp-modeling_v1.3.1.sif is build from this version.
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.3.0 - 
 Docker used for the modeling run-id-3. Has single multinomial and count loss for training and prediction.
+
+
+
 
 # log of dev branches
