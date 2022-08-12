@@ -29,7 +29,7 @@ negs_df = pd.read_csv(args.neg_file,header=None,sep="\t")
 negs_df.columns=['chroms','start','end','name','label','strand','p','q','x','summit']
 negs_df['end']=(negs_df['start']+negs_df['summit'])+(args.output_length//2)
 negs_df['start']=(negs_df['start']+negs_df['summit'])-(args.output_length//2)
-peaks_df['label']=0
+negs_df['label']=0
 
 all_regions_df = pd.concat([negs_df,peaks_df]).reset_index(drop=True)
 
