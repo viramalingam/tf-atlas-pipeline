@@ -222,7 +222,9 @@ train \\
     --threads $threads \\
     --batch-size 64 \\
     --reverse-complement-augmentation \\
-    --learning-rate $learning_rate
+    --learning-rate $learning_rate \\
+    --early_stopping_patience 10 \\
+    --reduce_lr_on_plateau_patience 5 \\
     --random-seed $random_seed" | tee -a $logfile 
 
 train \
@@ -244,6 +246,8 @@ train \
     --batch-size 64 \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate \
+    --early_stopping_patience 10 \
+    --reduce_lr_on_plateau_patience 5 \
     --random-seed $random_seed
     
 # save the values used for training
