@@ -20,12 +20,19 @@ args = parser.parse_args()
 
 f = h5py.File(args.h5_file,'r')
 peaks_df = pd.read_csv(args.peak_file,header=None,sep="\t")
+peaks_df.columns=['chroms','start','end','name','label','strand','p','q','x','summit']
+peaks_df['end']=(peaks_df['start']+peaks_df['summit'])+(args.output_length//2)
+peaks_df['start']=(peaks_df['start']+peaks_df['summit'])-(args.output_length//2)
+peaks_df['label']=1
+
 negs_df = pd.read_csv(args.neg_file,header=None,sep="\t")
+negs_df.columns=['chroms','start','end','name','label','strand','p','q','x','summit']
+negs_df['end']=(negs_df['start']+negs_df['summit'])+(args.output_length//2)
+negs_df['start']=(negs_df['start']+negs_df['summit'])-(args.output_length//2)
+peaks_df['label']=0
 
 all_regions_df = pd.concat([negs_df,peaks_df]).reset_index(drop=True)
-all_regions_df.columns=['chroms','start','end','name','label','strand','p','q','x','summit']
-all_regions_df['end']=(all_regions_df['start']+all_regions_df['summit'])+(args.output_length//2)
-all_regions_df['start']=(all_regions_df['start']+all_regions_df['summit'])-(args.output_length//2)
+
 
 h5_df = pd.DataFrame({'chroms':f['coords']['coords_chrom'][()],
                      'start':f['coords']['coords_start'][()],
