@@ -193,9 +193,9 @@ predict \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 1346 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -208,9 +208,9 @@ predict \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 1346 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -224,7 +224,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len 500 \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
@@ -232,7 +232,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len 500 \
     --chroms $test_chromosome
 
 
@@ -245,9 +245,9 @@ predict \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 1346 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -260,9 +260,9 @@ predict \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 1346 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -287,9 +287,9 @@ predict \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 1346 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -302,9 +302,9 @@ predict \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 1346 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
@@ -319,9 +319,9 @@ predict \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 1346 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len 1122 \\
+    --output-len 500 \\
+    --output-window-size 500 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
@@ -334,9 +334,9 @@ predict \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 1346 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len 1122 \
+    --output-len 500 \
+    --output-window-size 500 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
