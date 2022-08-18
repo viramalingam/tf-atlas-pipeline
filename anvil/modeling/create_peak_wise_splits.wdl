@@ -52,7 +52,7 @@ workflow create_peak_wise_splits {
 		Int number_of_folds
 	}
 	
-	call run_modelling {
+	call peak_wise_splits {
 		input:
 			experiment = experiment,
 			bigwigs = bigwigs,
