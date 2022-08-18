@@ -26,12 +26,12 @@ task run_peak_wise_splits {
 		
 		echo "copying all files to cromwell_root folder"
 		
-		cp -r /project/indices_dir /cromwell_root/
+		cp -r /project/splits_indices /cromwell_root/
 
 	}
 	
 	output {
-		Array[File] peak_wise_splits = glob("indices_dir/*")
+		Array[File] peak_wise_splits = glob("splits_indices/*")
 	
 	}
 
