@@ -9,7 +9,7 @@ function timestamp {
 }
 
 experiment=$1
-bigwig=$2 
+bigwigs=$2 
 peaks=$3
 nonpeaks=$4
 number_of_folds=$5
