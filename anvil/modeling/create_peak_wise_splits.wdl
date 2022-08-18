@@ -1,6 +1,6 @@
 version 1.0
 
-task peak_wise_splits {
+task run_peak_wise_splits {
 	input {
 		String experiment
 		Array[File] bigwigs 
@@ -52,7 +52,7 @@ workflow create_peak_wise_splits {
 		Int number_of_folds
 	}
 	
-	call peak_wise_splits {
+	call run_peak_wise_splits {
 		input:
 			experiment = experiment,
 			bigwigs = bigwigs,
@@ -61,7 +61,7 @@ workflow create_peak_wise_splits {
 			number_of_folds = number_of_folds
 	}
 	output {
-		Array[File] peak_wise_splits = peak_wise_splits.peak_wise_splits
+		Array[File] peak_wise_splits = run_peak_wise_splits.peak_wise_splits
 		
 	}
 }
