@@ -164,6 +164,10 @@ def training_argsparser():
     
     return parser
 
+def none_or_str(value):
+    if value == 'None':
+        return None
+    return value
 
 def fastpredict_argsparser():
     """ Command line arguments for the predict script
@@ -196,8 +200,12 @@ def fastpredict_argsparser():
                         help="path to chromosome sizes file")
     
     # input data params
-    parser.add_argument('--chroms', nargs='+', required=True,
+    parser.add_argument('--chroms', nargs='+', default=None, type=none_or_str,
                         help="list of chromosomes for prediction")
+    
+    parser.add_argument('--test-indices', type=str,
+                        help="path to indices file to filter for prediction. Not used"
+                        "when chroms is given", default='')
         
     parser.add_argument('--input-data', type=str, required=True,
                         help="path to json file containing task information")

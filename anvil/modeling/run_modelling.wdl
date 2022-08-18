@@ -16,6 +16,7 @@ task run_modelling {
 		File background_regions
 		Float learning_rate
 		Int random_seed
+		Array [File]? indices_files
 	}
 	
 	command {
@@ -28,8 +29,8 @@ task run_modelling {
 		
 		##modelling
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed} ${train_indices_files} ${val_indices_files} ${test_indices_files}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed} ${sep=',' indices_files}
 		
 		echo "copying all files to cromwell_root folder"
 		
@@ -122,6 +123,7 @@ workflow modelling {
 		File background_regions
 		Float learning_rate
 		Int random_seed
+		Array [File]? indices_files
 	}
 	
 	call run_modelling {
@@ -139,7 +141,8 @@ workflow modelling {
 			peaks = peaks,
 			background_regions = background_regions,
 			learning_rate = learning_rate,
-			random_seed = random_seed
+			random_seed = random_seed,
+			indices_files = indices_files
 	}
 	output {
 		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json

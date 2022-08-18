@@ -174,7 +174,9 @@ def adjust_bias_logcounts(bias_model, seqs, cts, logcounts_layer_name):
 def train_and_validate(
     input_data, model_arch_name, model_arch_params_json, output_params, 
     genome_params, batch_gen_params, hyper_params, parallelization_params, 
-    train_chroms, val_chroms, model_dir, bias_input_data=None, 
+    train_chroms, val_chroms, train_indices=None, 
+    val_indices=None, background_train_indices=None, 
+    background_val_indices=None, model_dir, bias_input_data=None, 
     bias_model_arch_params_json=None, adjust_bias_model_logcounts=False, 
     is_background_model=False, mnll_loss_sample_weight=1.0, 
     mnll_loss_background_sample_weight=0.0, suffix_tag=None):
@@ -210,12 +212,24 @@ def train_and_validate(
             
             parallelization_params (dict): dictionary containing
                 parameters for parallelization options
+                
+            model_dir (str): the path to the output directory
             
             train_chroms (list): list of training chromosomes
             
             val_chroms (list): list of validation chromosomes
             
-            model_dir (str): the path to the output directory
+            train_indices (list): list of indices that index to 
+                 training peaks from the signal peaks file
+                 
+            val_indices (list): list of indices that index to 
+                 validation peaks from the singal peaks file
+             
+            background_train_indices (list): list of indices that index to 
+                 training peaks from the background peaks file
+                 
+            background_val_indices (list): list of indices that index to 
+                 validation peaks from the background peaks file
             
             bias_input_data (str): path to the bias tasks json file
 
@@ -346,7 +360,8 @@ def train_and_validate(
     train_gen = BatchGenerator(input_data, train_batch_gen_params, 
                                genome_params['reference_genome'], 
                                genome_params['chrom_sizes'],
-                               train_chroms, 
+                               train_chroms,loci_indices=train_indices,
+                               background_loci_indices=background_train_indices,
                                num_threads=parallelization_params['threads'], 
                                batch_size=hyper_params['batch_size'], 
                                background_only=is_background_model,
@@ -358,7 +373,8 @@ def train_and_validate(
     val_gen = BatchGenerator(input_data, val_batch_gen_params, 
                              genome_params['reference_genome'], 
                              genome_params['chrom_sizes'],
-                             val_chroms, 
+                             val_chroms,loci_indices=val_indices,
+                             background_loci_indices=background_val_indices, 
                              num_threads=parallelization_params['threads'], 
                              batch_size=hyper_params['batch_size'], 
                              background_only=is_background_model,
@@ -739,24 +755,94 @@ def train_and_validate_ksplits(
         logger.init_logger(logfname)
     
         # train & validation chromosome split
-        if 'val' not in splits[str(i)]:
-            logging.error("KeyError: 'val' required for split {}".format(i))
-            return
-        val_chroms = splits[str(i)]['val']
-        # if 'train' key is present
-        if 'train' in splits[str(i)]:
-            train_chroms = splits[str(i)]['train']
-        # if 'test' key is present but train is not
-        elif 'test' in splits[str(i)]:
-            test_chroms = splits[str(i)]['test']
-            # take the set difference of the whole list of
-            # chroms with the union of val and test
-            train_chroms = list(chroms.difference(
-                set(val_chroms + test_chroms)))
-        else:
-            # take the set difference of the whole list of
-            # chroms with val
-            train_chroms = list(chroms.difference(val_chroms))
+        
+        # we'll make val or val_indices_file the starting point
+        train_chroms = None
+        val_chroms = None
+        train_indices = None
+        val_indices = None
+        background_train_indices=None
+        background_val_indices=None
+        if 'val' in splits[str(i)]:
+            val_chroms = splits[str(i)]['val']
+            if 'train' in splits[str(i)]:
+                train_chroms = splits[str(i)]['train']
+            # if 'test' key is present but train is not
+            elif 'test' in splits[str(i)]:
+                test_chroms = splits[str(i)]['test']
+                # take the set difference of the whole list of
+                # chroms with the union of val and test
+                train_chroms = list(chroms.difference(
+                    set(val_chroms + test_chroms)))
+            else:
+                # take the set difference of the whole list of
+                # chroms with val
+                train_chroms = list(chroms.difference(val_chroms))
+                
+            logging.info("Train chroms: {}".format(train_chroms))
+            logging.info("Val chroms: {}".format(val_chroms))
+        elif 'val_indices_file' in splits[str(i)]:
+            val_indices_file = splits[str(i)]['val_indices_file']
+            train_indices_file = splits[str(i)]['train_indices_file']
+            
+            # make sure the val_indices_file file exists
+            if not os.path.isfile(val_indices_file):
+                raise NoTracebackException(
+                    "File not found: {} ".format(val_indices_file))
+            
+            # make sure the train_indices_file file exists
+            if not os.path.isfile(train_indices_file):
+                raise NoTracebackException(
+                    "File not found: {} ".format(train_indices_file))
+
+            # load val_indices
+            f = open(val_indices_file)
+            lines = f.readlines()
+            val_indices = [int(line.rstrip('\r').rstrip('\n')) for line in lines]
+            f.close()
+            
+            # load val_indices
+            f = open(train_indices_file)
+            lines = f.readlines()
+            train_indices = [int(line.rstrip('\r').rstrip('\n')) for line in lines]
+            f.close()
+        
+            logging.info("Train indices length: {}".format(len(train_indices)))
+            logging.info("Val indices length: {}".format(len(val_indices)))
+
+            if 'background_val_indices_file' in splits[str(i)]:
+                background_val_indices_file = splits[str(i)]['background_val_indices_file']
+                background_train_indices_file = splits[str(i)]['background_train_indices_file']
+
+                # make sure the background_val_indices_file file exists
+                if not os.path.isfile(background_val_indices_file):
+                    raise NoTracebackException(
+                        "File not found: {} ".format(background_val_indices_file))
+
+                # make sure the background_train_indices_file file exists
+                if not os.path.isfile(background_train_indices_file):
+                    raise NoTracebackException(
+                        "File not found: {} ".format(background_train_indices_file))    
+            
+                # load background_val_indices
+                f = open(background_val_indices_file)
+                lines = f.readlines()
+                background_val_indices = [int(line.rstrip('\r').rstrip('\n'))
+                                          for line in lines]
+                f.close()
+
+                # load background_train_indices
+                f = open(background_train_indices_file)
+                lines = f.readlines()
+                background_train_indices = [int(line.rstrip('\r').rstrip('\n'))
+                                            for line in lines]
+                f.close()
+
+                logging.info("Background Train indices length: {}".format(
+                    len(background_train_indices)))
+                logging.info("Background Val indices length: {}".format(
+                    len(background_val_indices)))
+
         
         logging.info("Split #{}".format(i))
         logging.info("Train: {}".format(train_chroms))
@@ -772,7 +858,8 @@ def train_and_validate_ksplits(
             target=train_and_validate, 
             args=[input_data, model_arch_name, model_arch_params_json,
                   output_params, genome_params, batch_gen_params, hyper_params,
-                  parallelization_params, train_chroms, val_chroms, model_dir,
+                  parallelization_params, train_chroms, val_chroms, train_indices, val_indices, 
+                  background_train_indices, background_val_indices, model_dir,
                   bias_input_data, bias_model_arch_params_json, 
                   adjust_bias_model_logcounts, is_background_model, 
                   mnll_loss_sample_weight, mnll_loss_background_sample_weight,

@@ -398,10 +398,11 @@ def predict(args, pred_dir):
         batch_gen_params['sequence_generator_name'])
     logging.info("SEQGEN Class Name: {}".format(sequence_generator_class_name))
     BatchGenerator = getattr(generators, sequence_generator_class_name)
-
+    if args.test_indices=="":
+        loci_indices = None
     test_gen = BatchGenerator(
         args.input_data, batch_gen_params, args.reference_genome, 
-        args.chrom_sizes, args.chroms, num_threads=args.threads, 
+        args.chrom_sizes, args.chroms, loci_indices=loci_indices, num_threads=args.threads, 
         batch_size=args.batch_size, epochs=1, set_bias_as_zero=args.set_bias_as_zero)
 
     # testing generator function
