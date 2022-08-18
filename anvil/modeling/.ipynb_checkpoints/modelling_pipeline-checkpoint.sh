@@ -177,7 +177,7 @@ $project_dir/splits.json | tee -a $logfile
 cp $splits_json $project_dir/splits.json
 
 # cp train val test indices files
-if [[ $indices_files!='' ]]
+if [[ $indices_files!='' ]];then
     echo $indices_files | sed 's/,/ /g' | xargs cp -t $indices_dir/
     echo $( timestamp ): "cp" $indices_files ${indices_dir}/ |\
     tee -a $logfile 
@@ -272,19 +272,17 @@ cp $splits_dir/* $model_dir/
 
 #get the test chromosome
 
-if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; 
+if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; then 
 
-then 
+    test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
 
-test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
-
-echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
+    echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
 
 else
 
-test_chromosome='None'
+    test_chromosome='None'
 
-echo "test_chromosome=$test_chromosome"
+    echo "test_chromosome=$test_chromosome"
 
 fi
 
@@ -297,21 +295,21 @@ echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testin
 sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
 
 
-if [[ indices_files != '' ]];
-seq 0 `wc -l ${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
+if [[ indices_files != '' ]];then
+    seq 0 `wc -l ${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
 
-cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
+    cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
 
-sed -i -e "s/test_indices_file.txt/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
+    sed -i -e "s/test_indices_file.txt/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
 
-seq 0 `wc -l ${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
-sed -i -e "s/test_indices_file.txt/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
+    seq 0 `wc -l ${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
+    sed -i -e "s/test_indices_file.txt/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
 
 
-test_peaks_test_chroms_indices_file=$indices_dir/test_peaks_test_chroms_indices.txt
-test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
-all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
-all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
+    test_peaks_test_chroms_indices_file=$indices_dir/test_peaks_test_chroms_indices.txt
+    test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
+    all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
+    all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
 
 fi
 
