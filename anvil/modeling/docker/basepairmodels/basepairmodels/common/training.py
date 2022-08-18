@@ -173,10 +173,10 @@ def adjust_bias_logcounts(bias_model, seqs, cts, logcounts_layer_name):
 
 def train_and_validate(
     input_data, model_arch_name, model_arch_params_json, output_params, 
-    genome_params, batch_gen_params, hyper_params, parallelization_params, 
+    genome_params, batch_gen_params, hyper_params, parallelization_params, model_dir,
     train_chroms, val_chroms, train_indices=None, 
     val_indices=None, background_train_indices=None, 
-    background_val_indices=None, model_dir, bias_input_data=None, 
+    background_val_indices=None, bias_input_data=None, 
     bias_model_arch_params_json=None, adjust_bias_model_logcounts=False, 
     is_background_model=False, mnll_loss_sample_weight=1.0, 
     mnll_loss_background_sample_weight=0.0, suffix_tag=None):
@@ -722,9 +722,7 @@ def train_and_validate_ksplits(
                 background sample for computing mnll loss
     """
     
-    # list of chromosomes after removing the excluded chromosomes
-    chroms = set(genome_params['chroms']).difference(
-        set(genome_params['exclude_chroms']))
+    chroms = genome_params['chroms']
         
     # list of models from all of the splits
     models = []
@@ -858,8 +856,8 @@ def train_and_validate_ksplits(
             target=train_and_validate, 
             args=[input_data, model_arch_name, model_arch_params_json,
                   output_params, genome_params, batch_gen_params, hyper_params,
-                  parallelization_params, train_chroms, val_chroms, train_indices, val_indices, 
-                  background_train_indices, background_val_indices, model_dir,
+                  parallelization_params, model_dir, train_chroms, val_chroms, train_indices,
+                  val_indices, background_train_indices, background_val_indices,
                   bias_input_data, bias_model_arch_params_json, 
                   adjust_bias_model_logcounts, is_background_model, 
                   mnll_loss_sample_weight, mnll_loss_background_sample_weight,
