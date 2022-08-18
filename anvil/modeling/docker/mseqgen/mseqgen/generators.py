@@ -951,6 +951,9 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
                 
             loci_indices (list): list of indices to filter rows from
                  the 'loci' peaks file
+                 
+            background_loci_indices (list): list of indices to filter rows from
+                 the 'loci' background file
                 
             num_threads (int): number of parallel threads for batch
                 generation, default = 10
@@ -974,7 +977,8 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
     """
 
     def __init__(self, tasks_json, batch_gen_params, reference_genome, 
-                 chrom_sizes, chroms=None, loci_indices=None, num_threads=10, batch_size=64, 
+                 chrom_sizes, chroms=None, loci_indices=None,
+                 background_loci_indices=None, num_threads=10, batch_size=64, 
                  epochs=100, background_only=False, foreground_weight=1, 
                  background_weight=0, set_bias_as_zero=False):
         
@@ -982,10 +986,11 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         self.name = "BPNet"
         
         # call base class constructor
-        super().__init__(tasks_json, batch_gen_params, reference_genome, 
-                         chrom_sizes, chroms, num_threads, batch_size, 
-                         epochs, background_only, foreground_weight, 
-                         background_weight, set_bias_as_zero)
+        uper().__init__(tasks_json, batch_gen_params, reference_genome, 
+                         chrom_sizes, chroms, loci_indices, 
+                         background_loci_indices, num_threads, 
+                         batch_size, epochs, background_only, 
+                         foreground_weight, background_weight, set_bias_as_zero)
         
     def get_name(self):
         """ 
