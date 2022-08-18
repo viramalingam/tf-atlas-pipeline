@@ -15,7 +15,6 @@ task run_modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
-		Int random_seed
 		Array [File]? indices_files
 	}
 	
@@ -29,8 +28,8 @@ task run_modelling {
 		
 		##modelling
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed} ${sep=',' indices_files}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${random_seed} ${sep=',' indices_files}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${sep=',' indices_files}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${sep=',' indices_files}
 		
 		echo "copying all files to cromwell_root folder"
 		
@@ -122,7 +121,6 @@ workflow modelling {
 		File peaks
 		File background_regions
 		Float learning_rate
-		Int random_seed
 		Array [File]? indices_files
 	}
 	
@@ -141,7 +139,6 @@ workflow modelling {
 			peaks = peaks,
 			background_regions = background_regions,
 			learning_rate = learning_rate,
-			random_seed = random_seed,
 			indices_files = indices_files
 	}
 	output {

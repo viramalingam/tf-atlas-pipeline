@@ -21,8 +21,7 @@ bigwigs=${10}
 peaks=${11}
 background_regions=${12}
 learning_rate=${13}
-random_seed=${14}
-indices_files=${15}
+indices_files=${14}
 
 mkdir /project
 project_dir=/project
@@ -235,8 +234,7 @@ train \\
     --reverse-complement-augmentation \\
     --learning-rate $learning_rate \\
     --early-stopping-patience 10 \\
-    --reduce-lr-on-plateau-patience 5 \\
-    --random-seed $random_seed" | tee -a $logfile 
+    --reduce-lr-on-plateau-patience 5" | tee -a $logfile 
 
 train \
     --input-data $project_dir/training_input.json \
@@ -258,8 +256,7 @@ train \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate \
     --early-stopping-patience 10 \
-    --reduce-lr-on-plateau-patience 5 \
-    --random-seed $random_seed
+    --reduce-lr-on-plateau-patience 5
     
 # save the values used for training
 cp $project_dir/training_input.json $model_dir/

@@ -155,7 +155,9 @@ def getChromPositions(chroms, chrom_sizes, flank, mode='sequential',
     
 
 def getPeakPositions(tasks, chrom_sizes, flank,  
-                     chroms=None, mode='train',
+                     chroms=None,  
+                     loci_indices=None,
+                     background_loci_indices=None, mode='train',
                      loci_keys=['loci', 'background_loci'], 
                      drop_duplicates=False, background_only=False, 
                      foreground_weight=1, background_weight=0):
@@ -179,8 +181,8 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                  precedence over loci_indices. Applies to both loci
                  and background_loci
             loci_indices (list): list of indices to filter loci peaks.
-                 Does not apply to background_loci. Set chroms to None,
-                 otherwise this is parameter is ignored
+            background_loci_indices (list): list of indices to filter 
+                background loci peaks.
             loci_keys (list): list of keys that specify the loci to
                 select from the input json for training/testing              
             drop_duplicates (boolean): True if duplicates should be

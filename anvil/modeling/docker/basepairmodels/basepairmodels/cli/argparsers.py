@@ -13,11 +13,7 @@ def training_argsparser():
 
     parser.add_argument('--learning-rate', '-L', type=float,
                         help="learning rate for Adam optimizer",
-                        default=0.004)
-    parser.add_argument('--random-seed', type=int,
-                        help="random seed to fix the generator and training",
-                        default=1234)
-    
+                        default=0.004)    
 
     parser.add_argument('--min-learning-rate', '-l', type=float,
                         help="min learning rate for Adam optimizer",

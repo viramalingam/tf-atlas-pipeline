@@ -21,8 +21,7 @@ bigwigs=${10}
 peaks=${11}
 background_regions=${12}
 learning_rate=${13}
-random_seed=${14}
-indices_files=${15}
+indices_files=${14}
 
 mkdir /project
 project_dir=/project
@@ -235,8 +234,7 @@ train \\
     --reverse-complement-augmentation \\
     --learning-rate $learning_rate \\
     --early-stopping-patience 10 \\
-    --reduce-lr-on-plateau-patience 5 \\
-    --random-seed $random_seed" | tee -a $logfile 
+    --reduce-lr-on-plateau-patience 5" | tee -a $logfile 
 
 train \
     --input-data $project_dir/training_input.json \
@@ -258,8 +256,7 @@ train \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate \
     --early-stopping-patience 10 \
-    --reduce-lr-on-plateau-patience 5 \
-    --random-seed $random_seed
+    --reduce-lr-on-plateau-patience 5
     
 # save the values used for training
 cp $project_dir/training_input.json $model_dir/
@@ -296,21 +293,7 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 
 if [[ indices_files != '' ]];then
-    seq 0 `wc -l ${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
-
-    cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
-
-    sed -i -e "s/test_indices_file.txt/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
-
-    seq 0 `wc -l ${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
-    sed -i -e "s/test_indices_file.txt/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
-
-
-    test_peaks_test_chroms_indices_file=$indices_dir/test_peaks_test_chroms_indices.txt
-    test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
-    all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
-    all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
-
+az
 fi
 
 

@@ -67,6 +67,8 @@ from mseqgen import utils
 from queue import Queue
 from threading import Thread
 
+random.seed(1234)
+
 
 
 class MSequenceGenerator:
@@ -986,7 +988,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
         self.name = "BPNet"
         
         # call base class constructor
-        uper().__init__(tasks_json, batch_gen_params, reference_genome, 
+        super().__init__(tasks_json, batch_gen_params, reference_genome, 
                          chrom_sizes, chroms, loci_indices, 
                          background_loci_indices, num_threads, 
                          batch_size, epochs, background_only, 
