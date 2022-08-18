@@ -64,6 +64,11 @@
 
 """
 
+import random
+random.seed(1234)
+
+
+
 import glob
 import logging
 import numpy as np
@@ -72,6 +77,7 @@ import pandas as pd
 
 from collections import OrderedDict
 from mseqgen.exceptionhandler import NoTracebackException
+
 
 
 def getChromPositions(chroms, chrom_sizes, flank, mode='sequential',
@@ -237,9 +243,19 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                     # applies both to loci and background_loci
                     peaks_df = peaks_df[peaks_df['chrom'].isin(chroms)]
                 elif loci_key == 'loci' and loci_indices != None:
-                        peaks_df = peaks_df.loc[peaks_df.index[loci_indices]]
+                    print(loci_indices)
+                    print("peaks before filtering for loci_indices")
+                    print(peaks_df)
+                    peaks_df = peaks_df.loc[peaks_df.index[loci_indices]]
+                    print("peaks after filtering for loci_indices")
+                    print(peaks_df)
                 elif loci_key == 'background_loci' and background_loci_indices != None:
-                        peaks_df = peaks_df.loc[peaks_df.index[background_loci_indices]]
+                    print(background_loci_indices)
+                    print("peaks before filtering for background_loci_indices")
+                    print(peaks_df)
+                    peaks_df = peaks_df.loc[peaks_df.index[background_loci_indices]]
+                    print("peaks after filtering for background_loci_indices")
+                    print(peaks_df)
 
                 # create new column for peak pos
                 peaks_df['pos'] = peaks_df['st'] + peaks_df['summit']

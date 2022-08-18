@@ -49,6 +49,8 @@
     IGNORE_FOR_SPHINX_DOCS:
 
 """
+import random
+random.seed(1234)
 
 import json
 import logging
@@ -58,7 +60,7 @@ import os
 import pandas as pd 
 import pyBigWig
 import pyfaidx
-import random
+
 import re
 
 from mseqgen import sequtils
@@ -67,7 +69,7 @@ from mseqgen import utils
 from queue import Queue
 from threading import Thread
 
-random.seed(1234)
+
 
 
 

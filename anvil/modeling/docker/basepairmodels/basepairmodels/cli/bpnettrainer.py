@@ -30,9 +30,11 @@
 """
 
 # set random seed
-from numpy.random import seed
-from tensorflow.random import set_seed 
 
+from numpy.random import seed
+seed(1234)
+from tensorflow.random import set_seed 
+set_seed(1234)
 
 import json
 import logging
@@ -44,10 +46,7 @@ from basepairmodels.cli.exceptionhandler import NoTracebackException
 from basepairmodels.common import training
 from genomicsdlarchsandlosses.bpnet import archs
 
-from numpy.random import seed
-seed(1234)
-from tensorflow.random import set_seed 
-set_seed(1234)
+
 
 
 def main():

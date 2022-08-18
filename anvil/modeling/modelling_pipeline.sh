@@ -265,7 +265,7 @@ cp ${data_dir}/${experiment}_background_regions.bed $model_dir/
 cp ${data_dir}/${experiment}_combined.bed $model_dir/
 cp $project_dir/bpnet_params.json $model_dir/
 cp $project_dir/splits.json $model_dir/
-cp $splits_dir/* $model_dir/
+cp -r $indices_dir $model_dir/
 
 #get the test chromosome
 
@@ -293,8 +293,22 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 
 if [[ indices_files != '' ]];then
-az
-fi
+ seq 0 `wc -l ${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
+
+ cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
+
+ sed -i -e "s/test_indices_file.txt/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
+
+ seq 0 `wc -l ${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
+ sed -i -e "s/test_indices_file.txt/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
+
+
+ test_peaks_test_chroms_indices_file=$indices_dir/test_peaks_test_chroms_indices.txt
+ test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
+ all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
+ all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
+
+ fi
 
 
 
