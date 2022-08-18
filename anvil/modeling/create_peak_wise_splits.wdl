@@ -19,7 +19,7 @@ task peak_wise_splits {
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
-		##modelling
+		##peak_wise_splits
 		
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits_pipeline.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${nonpeaks} ${number_of_folds}
 		/my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits_pipeline.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${nonpeaks} ${number_of_folds}
@@ -62,7 +62,6 @@ workflow create_peak_wise_splits {
 			number_of_folds = number_of_folds
 	}
 	output {
-		File bpnet_params_updated_json = peak_wise_splits.bpnet_params_updated_json
 		Array[File] peak_wise_splits = peak_wise_splits.peak_wise_splits
 		
 	}
