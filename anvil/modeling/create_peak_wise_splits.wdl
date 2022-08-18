@@ -56,7 +56,6 @@ workflow create_peak_wise_splits {
 		input:
 			experiment = experiment,
 			bigwigs = bigwigs,
-			testing_input_json = testing_input_json,
 			peaks = peaks,
 			nonpeaks = nonpeaks,
 			number_of_folds = number_of_folds
