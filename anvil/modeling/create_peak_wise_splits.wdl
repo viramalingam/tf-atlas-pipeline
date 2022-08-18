@@ -62,8 +62,8 @@ workflow create_peak_wise_splits {
 			number_of_folds = number_of_folds
 	}
 	output {
-		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json
-		Array[File] peak_wise_splits = run_modelling.peak_wise_splits
+		File bpnet_params_updated_json = peak_wise_splits.bpnet_params_updated_json
+		Array[File] peak_wise_splits = peak_wise_splits.peak_wise_splits
 		
 	}
 }
