@@ -233,7 +233,7 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                 peaks_df = pd.read_csv(
                     peaks_file, sep='\t', header=None, 
                     names=['chrom', 'st', 'end', 'name', 'weight', 'strand', 
-                           'signal', 'p', 'q', 'summit'])
+                           'signal', 'p', 'q', 'summit'])                               
 
                 # keep only those rows corresponding to the required 
                 # chromosomes
@@ -243,19 +243,10 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                     # applies both to loci and background_loci
                     peaks_df = peaks_df[peaks_df['chrom'].isin(chroms)]
                 elif loci_key == 'loci' and loci_indices != None:
-                    print(loci_indices)
-                    print("peaks before filtering for loci_indices")
-                    print(peaks_df)
                     peaks_df = peaks_df.loc[peaks_df.index[loci_indices]]
-                    print("peaks after filtering for loci_indices")
-                    print(peaks_df)
                 elif loci_key == 'background_loci' and background_loci_indices != None:
-                    print(background_loci_indices)
-                    print("peaks before filtering for background_loci_indices")
-                    print(peaks_df)
                     peaks_df = peaks_df.loc[peaks_df.index[background_loci_indices]]
-                    print("peaks after filtering for background_loci_indices")
-                    print(peaks_df)
+
 
                 # create new column for peak pos
                 peaks_df['pos'] = peaks_df['st'] + peaks_df['summit']

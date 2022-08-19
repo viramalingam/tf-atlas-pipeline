@@ -5,7 +5,7 @@
     
     MSequenceGenerator - The main base class for all generators.
      
-    Multi task batch data generation for training deep neural networks
+    Multi task batch data generation for training deep nural networks
     on high-throughput sequencing data of various geonmics assays
     
 

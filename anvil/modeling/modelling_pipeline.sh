@@ -289,6 +289,7 @@ if [[ indices_files != '' ]];then
  
  background_test_indices_file=$(jq '.["0"]["background_test_indices_file"]' $project_dir/splits.json)
  number_of_peaks=$(wc -l ${data_dir}/${experiment}_peaks.bed)
+ awk -v var="$number_of_peaks" '{print ($1 + var)}' $background_test_indices_file
  awk -v var="$number_of_peaks" '{print ($1 + var)}' $background_test_indices_file > $indices_dir/background_test_indices_file_global_index.txt
  
  cat $test_peaks_test_chroms_indices_file $indices_dir/background_test_indices_file_global_index.txt > $indices_dir/all_peaks_test_chroms_indices.txt

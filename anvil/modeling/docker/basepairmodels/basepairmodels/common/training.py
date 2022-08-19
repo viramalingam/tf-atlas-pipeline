@@ -779,28 +779,28 @@ def train_and_validate_ksplits(
                 
             logging.info("Train chroms: {}".format(train_chroms))
             logging.info("Val chroms: {}".format(val_chroms))
-        elif 'val_indices_file' in splits[str(i)]:
-            val_indices_file = splits[str(i)]['val_indices_file']
-            train_indices_file = splits[str(i)]['train_indices_file']
+        elif 'loci_val_indices_file' in splits[str(i)]:
+            loci_val_indices_file = splits[str(i)]['loci_val_indices_file']
+            loci_train_indices_file = splits[str(i)]['loci_train_indices_file']
             
             # make sure the val_indices_file file exists
-            if not os.path.isfile(val_indices_file):
+            if not os.path.isfile(loci_val_indices_file):
                 raise NoTracebackException(
-                    "File not found: {} ".format(val_indices_file))
+                    "File not found: {} ".format(loci_val_indices_file))
             
             # make sure the train_indices_file file exists
-            if not os.path.isfile(train_indices_file):
+            if not os.path.isfile(loci_train_indices_file):
                 raise NoTracebackException(
-                    "File not found: {} ".format(train_indices_file))
+                    "File not found: {} ".format(loci_train_indices_file))
 
             # load val_indices
-            f = open(val_indices_file)
+            f = open(loci_val_indices_file)
             lines = f.readlines()
             val_indices = [int(line.rstrip('\r').rstrip('\n')) for line in lines]
             f.close()
             
             # load val_indices
-            f = open(train_indices_file)
+            f = open(loci_train_indices_file)
             lines = f.readlines()
             train_indices = [int(line.rstrip('\r').rstrip('\n')) for line in lines]
             f.close()

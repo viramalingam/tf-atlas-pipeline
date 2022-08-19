@@ -199,9 +199,9 @@ def fastpredict_argsparser():
     parser.add_argument('--chroms', nargs='+', default=None, type=none_or_str,
                         help="list of chromosomes for prediction")
     
-    parser.add_argument('--test-indices', type=str,
+    parser.add_argument('--test-indices', type=none_or_str,
                         help="path to indices file to filter for prediction. Not used"
-                        "when chroms is given", default='')
+                        "when chroms is given", default=None)
         
     parser.add_argument('--input-data', type=str, required=True,
                         help="path to json file containing task information")
