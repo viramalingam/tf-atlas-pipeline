@@ -278,6 +278,12 @@ sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $lo
 echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
 sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
 
+# default values for the test_indices files; will be overwritten with acutall values if present
+test_peaks_test_chroms_indices_file='None'
+test_peaks_all_chroms_indices_file='None'
+all_peaks_all_chroms_indices_file='None'
+all_peaks_test_chroms_indices_file='None'
+
 if [[ -v $indices_files ]];then
     if [[ indices_files != '' ]];then
 
