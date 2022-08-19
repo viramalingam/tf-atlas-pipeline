@@ -176,7 +176,7 @@ $project_dir/splits.json | tee -a $logfile
 cp $splits_json $project_dir/splits.json
 
 # cp train val test indices files
-if [[ -v $indices_files ]]
+if [[ -v $indices_files ]];then
     if [[ $indices_files!='' ]];then
         echo $indices_files | sed 's/,/ /g' | xargs cp -t $indices_dir/
         echo $( timestamp ): "cp" $indices_files ${indices_dir}/ |\
@@ -278,7 +278,7 @@ sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $lo
 echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
 sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
 
-if [[ -v $indices_files ]]
+if [[ -v $indices_files ]];then
     if [[ indices_files != '' ]];then
 
 
