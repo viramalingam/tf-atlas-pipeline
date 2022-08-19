@@ -278,14 +278,14 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 
 if [[ indices_files != '' ]];then
- seq 0 `wc -l ${data_dir}/${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
+ seq 0 $(wc -l ${data_dir}/${experiment}_peaks.bed)> $indices_dir/test_peaks_all_chroms_indices.txt
 
  #cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
  #cp $project_dir/splits.json $project_dir/splits_all_peaks_all_chroms_indices.json
 
  # sed -i -e "s/loci_test_indices_fold[0-9]/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
 
- seq 0 `wc -l ${data_dir}/${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
+ seq 0 $(wc -l ${data_dir}/${experiment}_background_regions.bed)> $indices_dir/all_peaks_all_chroms_indices.txt
  # sed -i -e "s/loci_test_indices_fold[0-9]/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
  
  background_test_indices_file=$(jq '.["0"]["background_test_indices_file"]' $project_dir/splits.json)
