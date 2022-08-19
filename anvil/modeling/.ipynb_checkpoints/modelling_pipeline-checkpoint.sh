@@ -289,12 +289,15 @@ if [[ indices_files != '' ]];then
  
  background_test_indices_file=$(jq '.["0"]["background_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
  number_of_peaks=$(wc -l ${data_dir}/${experiment}_peaks.bed)
- cat $background_test_indices_file | awk -v var="$number_of_peaks" '{print ($1 + var)}'
  awk -v var="$number_of_peaks" '{print ($1 + var)}' $background_test_indices_file > $indices_dir/background_test_indices_file_global_index.txt
  
  cat $test_peaks_test_chroms_indices_file $indices_dir/background_test_indices_file_global_index.txt > $indices_dir/all_peaks_test_chroms_indices.txt
-
- test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json)
+ 
+ echo $project_dir/splits.json
+ jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json
+ 
+ 
+ test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
  test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
  all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
  all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
