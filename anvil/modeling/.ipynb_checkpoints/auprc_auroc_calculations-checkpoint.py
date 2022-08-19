@@ -54,8 +54,8 @@ if args.test_indices_file!=None:
         test_indices = [int(line.rstrip('\r').rstrip('\n'))
                                   for line in lines]
         f.close()
-    else:
-        test_indices = None
+else:
+    test_indices = None
     
             
 if args.chroms == ['None']:
