@@ -175,6 +175,7 @@ echo $( timestamp ): "cp" $splits_json \
 $project_dir/splits.json | tee -a $logfile 
 cp $splits_json $project_dir/splits.json
 
+echo "indices_files:" $indices_files
 # cp train val test indices files
 if [[ $indices_files!='' ]];then
     echo $indices_files | sed 's/,/ /g' | xargs cp -t $indices_dir/
