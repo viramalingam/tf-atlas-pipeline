@@ -294,7 +294,7 @@ if [[ indices_files != '' ]];then
  cat $test_peaks_test_chroms_indices_file $indices_dir/background_test_indices_file_global_index.txt > $indices_dir/all_peaks_test_chroms_indices.txt
  
  echo $project_dir/splits.json
- jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json
+ jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g'
  
  
  test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
