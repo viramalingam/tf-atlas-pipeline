@@ -178,6 +178,7 @@ cp $splits_json $project_dir/splits.json
 echo $indices_files
 # cp train val test indices files
 if [[ -v $indices_files ]];then
+    echo "indices variable set"
     if [[ $indices_files!='' ]];then
         echo $indices_files | sed 's/,/ /g' | xargs cp -t $indices_dir/
         echo $( timestamp ): "cp" $indices_files ${indices_dir}/ |\
