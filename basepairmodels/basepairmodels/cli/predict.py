@@ -399,7 +399,7 @@ def predict(args, pred_dir):
     logging.info("SEQGEN Class Name: {}".format(sequence_generator_class_name))
     BatchGenerator = getattr(generators, sequence_generator_class_name)
     
-    if args.test_indices_file!="":
+    if args.test_indices_file!=None:
         # make sure the background_train_indices_file file exists
         if not os.path.isfile(args.test_indices_file):
             raise NoTracebackException(
