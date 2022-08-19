@@ -339,7 +339,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
-    --test-indices $all_peaks_test_chroms_indices_file \\
+    --test-indices-file $all_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -355,7 +355,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
-    --test-indices $all_peaks_test_chroms_indices_file \
+    --test-indices-file $all_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
@@ -392,7 +392,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
-    --test-indices $all_peaks_test_chroms_indices_file \\
+    --test-indices-file $all_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_all.json \\
@@ -409,7 +409,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
-    --test-indices $all_peaks_test_chroms_indices_file \
+    --test-indices-file $all_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_all.json \
@@ -447,7 +447,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
-    --test-indices $all_peaks_all_chroms_indices_file \\
+    --test-indices-file $all_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -463,7 +463,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
-    --test-indices $all_peaks_all_chroms_indices_file \\
+    --test-indices-file $all_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
@@ -491,7 +491,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
-    --test-indices $test_peaks_test_chroms_indices_file \\
+    --test-indices-file $test_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -507,7 +507,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
-    --test-indices $test_peaks_test_chroms_indices_file \
+    --test-indices-file $test_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
@@ -525,7 +525,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
-    --test-indices $test_peaks_test_chroms_indices_file \\
+    --test-indices-file $test_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -542,7 +542,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
-    --test-indices $test_peaks_test_chroms_indices_file \
+    --test-indices-file $test_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_peaks.json \
@@ -560,7 +560,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
-    --test-indices $test_peaks_all_chroms_indices_file \\
+    --test-indices-file $test_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -576,7 +576,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
-    --test-indices $test_peaks_all_chroms_indices_file \
+    --test-indices-file $test_peaks_all_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
