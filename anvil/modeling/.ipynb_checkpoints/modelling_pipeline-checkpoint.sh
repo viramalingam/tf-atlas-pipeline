@@ -177,7 +177,7 @@ cp $splits_json $project_dir/splits.json
 
 echo $indices_files
 # cp train val test indices files
-if [[ -v $indices_files ]];then
+if [[ -e ${indices_files?} ]];then
     echo "indices variable set"
     if [[ $indices_files!='' ]];then
         echo $indices_files | sed 's/,/ /g' | xargs cp -t $indices_dir/
@@ -186,7 +186,9 @@ if [[ -v $indices_files ]];then
     fi
 fi
 
+echo "/project/data/"
 ls /project/data/
+echo '$project_dir/training_input.json'
 cat $project_dir/training_input.json
 
 # compute the counts loss weight to be used for this experiment
