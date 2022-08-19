@@ -267,21 +267,6 @@ cp $project_dir/bpnet_params.json $model_dir/
 cp $project_dir/splits.json $model_dir/
 cp -r $indices_dir $model_dir/
 
-#get the test chromosome
-
-if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; then 
-
-    test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
-
-    echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
-
-else
-
-    test_chromosome='None'
-
-    echo "test_chromosome=$test_chromosome"
-
-fi
 
 # modify the testing_input json for prediction
 cp $project_dir/testing_input.json $project_dir/testing_input_all.json
@@ -293,30 +278,69 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 
 if [[ indices_files != '' ]];then
- seq 0 `wc -l ${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
+ seq 0 `wc -l ${data_dir}/${experiment}_peaks.bed`> $indices_dir/test_peaks_all_chroms_indices.txt
 
- cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
+ #cp $project_dir/splits.json $project_dir/splits_test_peaks_all_chroms_indices.json
+ #cp $project_dir/splits.json $project_dir/splits_all_peaks_all_chroms_indices.json
 
- sed -i -e "s/test_indices_file.txt/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
+ # sed -i -e "s/loci_test_indices_fold[0-9]/test_peaks_all_chroms_indices.txt/g" $project_dir/splits_test_peaks_all_chroms_indices.json | tee -a $logfile
 
- seq 0 `wc -l ${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
- sed -i -e "s/test_indices_file.txt/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
+ seq 0 `wc -l ${data_dir}/${experiment}_background_regions.bed`> $indices_dir/all_peaks_all_chroms_indices.txt
+ # sed -i -e "s/loci_test_indices_fold[0-9]/all_peaks_all_chroms_indices.txt/g" $project_dir/splits_all_peaks_all_chroms_indices.json | tee -a $logfile
+ 
+ background_test_indices_file=$(jq '.["0"]["background_test_indices_file"]' $project_dir/splits.json)
+ number_of_peaks=$(wc -l ${data_dir}/${experiment}_peaks.bed)
+ awk -v var="$number_of_peaks" '{print ($1 + var)}' $background_test_indices_file > $indices_dir/background_test_indices_file_global_index.txt
+ 
+ cat $test_peaks_test_chroms_indices_file $indices_dir/background_test_indices_file_global_index.txt > $indices_dir/all_peaks_test_chroms_indices.txt
 
-
- test_peaks_test_chroms_indices_file=$indices_dir/test_peaks_test_chroms_indices.txt
+ test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json)
  test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
  all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
  all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
 
- fi
+fi
+
+#get the test chromosome for chromosome wise training regime
+
+if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; then 
+
+    test_chromosome='None'
+
+    echo "test_chromosome=$test_chromosome"
+
+else
+    
+    test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
+
+    echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
+
+fi
 
 
+#set all chromosomes as test chromosomes for some calculations for chromosome wise training regime
+
+if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; then 
+
+    
+    test_all_chromosome='None'
+
+    echo "test_chromosome=$test_chromosome"
+
+else
+    
+    test_all_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)
+
+    echo 'test_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)'
+
+fi
 
 echo $( timestamp ): "
 predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test_indices $all_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -332,6 +356,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test_indices $all_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
@@ -368,6 +393,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test_indices $all_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_all.json \\
@@ -384,6 +410,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test_indices $all_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_all.json \
@@ -420,7 +447,8 @@ echo $( timestamp ): "
 predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+    --chroms $test_all_chromosome \\
+    --test_indices $all_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -435,7 +463,8 @@ predict \\
 predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+    --chroms $test_all_chromosome \
+    --test_indices $all_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
@@ -463,6 +492,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test_indices $test_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -478,6 +508,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test_indices $test_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
@@ -495,6 +526,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test_indices $test_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -511,6 +543,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test_indices $test_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_peaks.json \
@@ -527,7 +560,8 @@ echo $( timestamp ): "
 predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+    --chroms $test_all_chromosome \\
+    --test_indices $test_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -542,7 +576,8 @@ predict \\
 predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+    --chroms $test_all_chromosome \
+    --test_indices $test_peaks_all_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
