@@ -278,9 +278,14 @@ sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -
 
 
 if [[ indices_files != '' ]];then
- `seq 0 $(wc -l ${data_dir}/${experiment}_peaks.bed | awk '{print $1}')> $indices_dir/test_peaks_all_chroms_indices.txt`
  
- `seq 0 $(wc -l ${data_dir}/${experiment}_background_regions.bed | awk '{print $1}')> $indices_dir/all_peaks_all_chroms_indices.txt`
+ echo ${data_dir}/${experiment}_peaks.bed
+ 
+ echo $(wc -l ${data_dir}/${experiment}_peaks.bed | awk '{print $1}')
+ 
+ seq 0 $(wc -l ${data_dir}/${experiment}_peaks.bed | awk '{print $1}')> $indices_dir/test_peaks_all_chroms_indices.txt
+ 
+ seq 0 $(wc -l ${data_dir}/${experiment}_background_regions.bed | awk '{print $1}')> $indices_dir/all_peaks_all_chroms_indices.txt
  
  background_test_indices_file=$(jq '.["0"]["background_test_indices_file"]' $project_dir/splits.json)
  number_of_peaks=$(wc -l ${data_dir}/${experiment}_peaks.bed)
