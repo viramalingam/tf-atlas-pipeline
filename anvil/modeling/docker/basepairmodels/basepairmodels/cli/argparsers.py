@@ -161,7 +161,7 @@ def training_argsparser():
     return parser
 
 def none_or_str(value):
-    if value == 'None':
+    if value == "None":
         return None
     return value
 
@@ -196,10 +196,10 @@ def fastpredict_argsparser():
                         help="path to chromosome sizes file")
     
     # input data params
-    parser.add_argument('--chroms', nargs='+', default=None, type=none_or_str,
+    parser.add_argument('--chroms', nargs='+', default=None,
                         help="list of chromosomes for prediction")
     
-    parser.add_argument('--test-indices', type=none_or_str,
+    parser.add_argument('--test-indices-file', type=none_or_str,
                         help="path to indices file to filter for prediction. Not used"
                         "when chroms is given", default=None)
         

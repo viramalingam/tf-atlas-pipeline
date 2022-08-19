@@ -398,10 +398,28 @@ def predict(args, pred_dir):
         batch_gen_params['sequence_generator_name'])
     logging.info("SEQGEN Class Name: {}".format(sequence_generator_class_name))
     BatchGenerator = getattr(generators, sequence_generator_class_name)
+    
+    if args.test_indices_file!="":
+        # make sure the background_train_indices_file file exists
+        if not os.path.isfile(args.test_indices_file):
+            raise NoTracebackException(
+                "File not found: {} ".format(test_indices_file))    
 
+        # load test_indices
+        f = open(args.test_indices_file)
+        lines = f.readlines()
+        test_indices = [int(line.rstrip('\r').rstrip('\n'))
+                                  for line in lines]
+        f.close()
+    else:
+        test_indices = None
+            
+    if args.chroms == ['None']:
+        args.chroms = None
+    
     test_gen = BatchGenerator(
         args.input_data, batch_gen_params, args.reference_genome, 
-        args.chrom_sizes, args.chroms, loci_indices=loci_indices, num_threads=args.threads, 
+        args.chrom_sizes, args.chroms, loci_indices=test_indices, num_threads=args.threads, 
         batch_size=args.batch_size, epochs=1, set_bias_as_zero=args.set_bias_as_zero)
 
     # testing generator function
@@ -664,13 +682,18 @@ def predict(args, pred_dir):
         # read the chrom sizes file into a pandas dataframe
         chrom_sizes_df = pd.read_csv(
             args.chrom_sizes, sep='\t', header=None, names=['chrom', 'size']) 
+        
+        if args.chroms!=None:
+            chroms = args.chroms[:]
+        else:
+            chroms = chrom_sizes_df['chrom'].to_list()
         chrom_sizes_df = chrom_sizes_df.set_index('chrom')
 
         # construct header for the bigWig file
         header = []
         # sort chromosomes, to be consistent with how pandas sorts
         # chromosomes ... for e.g. chrom21 is < chrom8
-        chroms = args.chroms[:]
+        
         chroms.sort()
         for chrom in chroms:
             size = chrom_sizes_df.at[chrom, 'size']
