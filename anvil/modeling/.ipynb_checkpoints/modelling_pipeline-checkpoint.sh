@@ -293,10 +293,6 @@ if [[ indices_files != '' ]];then
  
  cat $test_peaks_test_chroms_indices_file $indices_dir/background_test_indices_file_global_index.txt > $indices_dir/all_peaks_test_chroms_indices.txt
  
- echo $project_dir/splits.json
- jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g'
- 
- 
  test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
  test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
  all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
@@ -306,7 +302,7 @@ fi
 
 #get the test chromosome for chromosome wise training regime
 
-if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; then 
+if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
 
     test_chromosome='None'
 
@@ -323,7 +319,7 @@ fi
 
 #set all chromosomes as test chromosomes for some calculations for chromosome wise training regime
 
-if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json` ]]; then 
+if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
 
     
     test_all_chromosome='None'
