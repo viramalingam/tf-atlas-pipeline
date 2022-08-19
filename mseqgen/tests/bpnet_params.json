@@ -1,5 +1,0 @@
-{
-    "name": "BPNet",
-    "filters": 64,
-    "control_smoothing": [[7.5, 80]]
-}
