@@ -288,7 +288,7 @@ test_peaks_all_chroms_indices_file='None'
 all_peaks_all_chroms_indices_file='None'
 all_peaks_test_chroms_indices_file='None'
 
-if [[ -v $indices_files ]];then
+if [[ -n "${indices_files}" ]];then
     if [[ indices_files != '' ]];then
 
 
