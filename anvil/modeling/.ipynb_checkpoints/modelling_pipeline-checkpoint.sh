@@ -298,6 +298,9 @@ if [[ -n "${indices_files}" ]];then
 
 
      test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
+     
+     echo "test_peaks_test_chroms_indices_file:" $test_peaks_test_chroms_indices_file
+     
      test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
      all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
 
