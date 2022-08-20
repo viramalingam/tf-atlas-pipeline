@@ -686,7 +686,7 @@ def predict(args, pred_dir):
         if args.chroms!=None:
             chroms = args.chroms[:]
         else:
-            chroms = chrom_sizes_df['chrom'].to_list()
+            chroms = all_chroms.unique()
         chrom_sizes_df = chrom_sizes_df.set_index('chrom')
 
         # construct header for the bigWig file
