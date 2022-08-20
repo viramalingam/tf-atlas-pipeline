@@ -314,35 +314,34 @@ fi
 
 #get the test chromosome for chromosome wise training regime
 
-if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
+if [[ -n `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
 
-    test_chromosome='None'
-
-    echo "test_chromosome=$test_chromosome"
-
-else
-    
     test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
 
     echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
+
+else
+    
+    test_chromosome='None'
+
+    echo "test_chromosome=$test_chromosome"
 
 fi
 
 
 #set all chromosomes as test chromosomes for some calculations for chromosome wise training regime
 
-if [[ `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
-
-    
-    test_all_chromosome='None'
-
-    echo "test_chromosome=$test_chromosome"
-
-else
+if [[ -n `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
     
     test_all_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)
 
-    echo 'test_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)'
+    echo 'test_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)'  
+
+else
+
+    test_all_chromosome='None'
+
+    echo "test_chromosome=$test_chromosome"
 
 fi
 
