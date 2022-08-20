@@ -289,7 +289,7 @@ all_peaks_all_chroms_indices_file='None'
 all_peaks_test_chroms_indices_file='None'
 
 if [[ -n "${indices_files}" ]];then
-    if [[ indices_files != '' ]];then
+    if [[ ${indices_files} != '' ]];then
 
 
      seq 0 $(wc -l ${data_dir}/${experiment}_peaks.bed | awk '{print $1-1}')> $indices_dir/test_peaks_all_chroms_indices.txt
