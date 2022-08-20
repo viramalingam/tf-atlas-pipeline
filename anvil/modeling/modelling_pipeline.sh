@@ -314,7 +314,7 @@ fi
 
 #get the test chromosome for chromosome wise training regime
 
-if [[ -n `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
+if [[ -n "$(jq '.["0"]["test"] // empty' $project_dir/splits.json)" ]]; then 
 
     test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
 
@@ -331,7 +331,7 @@ fi
 
 #set all chromosomes as test chromosomes for some calculations for chromosome wise training regime
 
-if [[ -n `jq '.["0"]["test"] // empty' $project_dir/splits.json`=="" ]]; then 
+if [[ -n "$(jq '.["0"]["test"] // empty' $project_dir/splits.json)" ]]; then 
     
     test_all_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)
 
