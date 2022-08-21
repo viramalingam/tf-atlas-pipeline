@@ -6,6 +6,7 @@ import random
 import pandas as pd
 import numpy as np
 import pyBigWig
+from plotnine import *
 
 NARROWPEAK_SCHEMA = ["chr", "start", "end", "1", "2", "3", "4", "5", "6", "summit"]
 
@@ -137,7 +138,6 @@ def main():
             peak_regions_df.iloc[peak_indices,0:10].to_csv(f"{supplemental_output_path}/peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
         print("\n")
 
-    from plotnine import *
     group_df["log_groupcounts"]=np.log10(group_df["group_counts"]+1)
     for fold in range(number_of_folds):
         print("fold:",fold)
