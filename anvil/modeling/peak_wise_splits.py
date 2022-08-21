@@ -18,14 +18,15 @@ def main():
     parser.add_argument("-j", "--max_jitter", type=int, default=128, help="Maximum jitter applied on either side of region")
     parser.add_argument("--number-of-folds", type=int, default=5, help="number of folds 5, 10 etc")
     parser.add_argument("-o", "--output_path", type=str, required=True, help="Path to store the fold information")
+    parser.add_argument("--supplemental_output_path",  type=str, required=True, help="Path to store the upplemental_outputs such as the counts histgram pngs and the split beds")
     args = parser.parse_args()
 
     
     peak_regions_df = pd.read_csv(args.peaks, sep='\t', names=NARROWPEAK_SCHEMA)
-    peak_regions_df['group']='peak'
+    peak_regions_df['region']='peak'
     peak_regions_df['ind']=range(len(peak_regions_df))
     nonpeak_regions_df = pd.read_csv(args.nonpeaks, sep='\t', names=NARROWPEAK_SCHEMA)
-    nonpeak_regions_df['group']='nonpeak'
+    nonpeak_regions_df['region']='nonpeak'
     nonpeak_regions_df['ind']=range(len(nonpeak_regions_df))
 
 
@@ -78,51 +79,75 @@ def main():
     group_df.sort_values(by='group_counts', inplace=True)
 
     
-    group_fold_dict = {}
-    for fold in range(args.number_of_folds):
-        group_fold_dict[f"fold{fold}"]=[]
+        # split the data into x number of chuncks for x folds. allocate the chuncks to train, test, valid folds in unique ways
+    # across folds
+    chuncksets_dict={}
+    for fold in range(number_of_folds):
+        chuncksets_dict[f"chuncksets_{fold}"]=list(range(fold,len(group_df),number_of_folds))
+
+    val_chuncks = list(range(0,number_of_folds))
+    print("val_chuncks:",val_chuncks)
+    
+    test_chuncks = list(range(1,number_of_folds))+[0]
+    print("test_chuncks:",test_chuncks)
+
+    group_fold_df=pd.DataFrame(index=np.arange(len(group_df)))
+    
+    for fold in range(number_of_folds):
+        group_fold_df[f"fold{fold}"]='train'
+        group_fold_df[f"fold{fold}"][chuncksets_dict[f"chuncksets_{val_chuncks[fold]}"]] = 'valid'
+        group_fold_df[f"fold{fold}"][chuncksets_dict[f"chuncksets_{test_chuncks[fold]}"]] = 'test'
+        
+    print(group_fold_df)
+
+    for fold in range(number_of_folds):
+        print("fold:",fold)
+        len(group_fold_df[group_fold_df[f"fold{fold}"]=="train"])/len(group_fold_df)
+
+        len(group_fold_df[group_fold_df[f"fold{fold}"]=="test"])/len(group_fold_df)
+
+        len(group_fold_df[group_fold_df[f"fold{fold}"]=="valid"])/len(group_fold_df)
 
 
+    for fold in range(number_of_folds):
+        group_df['fold' + str(fold)] = group_fold_df['fold' + str(fold)]
 
-    count = 0
-    valid_used = []
-
-    for index,row in group_df.iterrows():
-        if index % 10000 == 0:
-            print(index)
-        if count % 2 == 0:
-            test_or_valid = 'valid'
-        else:
-            test_or_valid = 'test'
-        test_or_valid_fold = random.choice([i for i in range(args.number_of_folds) if i not in valid_used])
-        for fold in range(args.number_of_folds):
-            if fold != test_or_valid_fold:
-                group_fold_dict[f"fold{fold}"].append('train')
-            else:
-                group_fold_dict[f"fold{fold}"].append(test_or_valid)
-        count += 1
-        valid_used.append(test_or_valid_fold)
-        if len(valid_used) == args.number_of_folds:
-            valid_used = []
-
-
-    for fold in range(args.number_of_folds):
-        group_df['fold' + str(fold)] = group_fold_dict['fold' + str(fold)]
-
+    group_df
+    output_path ="."
     print("Saving Splits")
-    for fold in range(args.number_of_folds):
+    for fold in range(number_of_folds):
+        print("fold:",fold)
         for split in ['valid','train','test']:
             temp_lst = [group_dict.get(key) for key in group_df['groups'][group_df[f"fold{fold}"]==split]] 
-            peak_indices = [i['ind'] for b in map(lambda x:[x] if not isinstance(x, list) else x, temp_lst) for i in b if i['group']=='peak']
-            nonpeak_indices = [i['ind'] for b in map(lambda x:[x] if not isinstance(x, list) else x, temp_lst) for i in b if i['group']=='nonpeak']
-            f = open(f"{args.output_path}/loci_{split}_indices_fold{fold}.txt", "w")
+            peak_indices = [i['ind'] for b in map(lambda x:[x] if not isinstance(x, list) else x, temp_lst) for i in b if i['region']=='peak']
+            nonpeak_indices = [i['ind'] for b in map(lambda x:[x] if not isinstance(x, list) else x, temp_lst) for i in b if i['region']=='nonpeak']
+            print("split:",split)
+            print("proportion of peaks:",len(peak_indices)/len(peak_regions_df))
+            print("length of nonpeaks:",len(nonpeak_indices)/len(nonpeak_regions_df))
+
+            f = open(f"{output_path}/loci_{split}_indices_fold{fold}.txt", "w")
             for items in peak_indices:
                 f.writelines(str(items)+'\n')
             f.close()
-            f = open(f"{args.output_path}/background_{split}_indices_fold{fold}.txt", "w")
+            f = open(f"{output_path}/background_{split}_indices_fold{fold}.txt", "w")
             for items in nonpeak_indices:
                 f.writelines(str(items)+'\n')
             f.close()
+            nonpeak_regions_df.iloc[nonpeak_indices,0:10].to_csv(f"{supplemental_output_path}/background_peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
+            peak_regions_df.iloc[peak_indices,0:10].to_csv(f"{supplemental_output_path}/peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
+        print("\n")
+
+    from plotnine import *
+    group_df["log_groupcounts"]=np.log10(group_df["group_counts"]+1)
+    for fold in range(number_of_folds):
+        print("fold:",fold)
+        plot = (ggplot(group_df,aes("log_groupcounts"))
+                        +facet_wrap(f"fold{fold}")
+                        +geom_histogram(bins=30)
+                        +theme_classic()
+               )
+        plot.save(f'{supplemental_output_path}/fold{fold}_counts_histogram_plot.png')
+    
 
 if __name__=="__main__":
     main()

@@ -32,6 +32,11 @@ indices_dir=$project_dir/splits_indices
 echo $( timestamp ): "mkdir" $indices_dir | tee -a $logfile
 mkdir $indices_dir
 
+# create indices directory
+supplemental_outputs=$project_dir/supplemental_outputs
+echo $( timestamp ): "mkdir" $supplemental_outputs | tee -a $logfile
+mkdir $supplemental_outputs
+
 #Copy the bigwig files
 
 echo $bigwigs | sed 's/,/ /g' | xargs cp -t $data_dir/
@@ -49,7 +54,8 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits.py \
     --inputlen 2114 \
     -j 128 \
     --number-of-folds $number_of_folds \
-    -o $indices_dir" | tee -a $logfile 
+    -o $indices_dir\
+    --supplemental_output_path $supplemental_outputs" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits.py \
     --bigwig ${data_dir}/${experiment}_plus.bigWig \
@@ -58,4 +64,5 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits.py \
     --inputlen 2114 \
     -j 128 \
     --number-of-folds $number_of_folds \
-    -o $indices_dir
+    -o $indices_dir \
+    --supplemental_output_path $supplemental_outputs

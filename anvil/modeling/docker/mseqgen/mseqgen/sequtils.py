@@ -66,9 +66,11 @@
 
 import random
 random.seed(1234)
+from numpy.random import seed
+seed(1234)
 
-
-
+import pandas as pd
+import hashlib
 import glob
 import logging
 import numpy as np
@@ -287,11 +289,16 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                     # the number of samples to randomly select
                     num_samples = int(num_foreground * \
                         tasks[task][loci_key]['ratio'][idx])
-                        
+                    
+                    
+                    print("before sample hash:",
+                          int(hashlib.sha256(str(peaks_df).encode('utf-8')).hexdigest(), 16))
+  
                     if num_samples > len(peaks_df):                    
                         raise NoTracebackException(
                             "The number of background loci supplied is "
-                            "insufficent for the ratio specified")                    
+                            "insufficent for the ratio specified") 
+                                           
                     else:
                         if mode == "train":
                             peaks_df = peaks_df.sample(
@@ -299,7 +306,9 @@ def getPeakPositions(tasks, chrom_sizes, flank,
                         else:
                             peaks_df = peaks_df.sample(
                                 n=num_samples, replace=False,random_state=1)
-                
+                            
+                    print("after sample hash:",
+                          int(hashlib.sha256(str(peaks_df).encode('utf-8')).hexdigest(), 16))                
                 # set weight of sample based on loci_key
                 if loci_key == 'loci':
                     peaks_df['weight'] = foreground_weight
