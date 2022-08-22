@@ -44,7 +44,7 @@ echo $bigwigs | sed 's/,/ /g' | xargs cp -t $data_dir/
 echo $( timestamp ): "cp" $bigwigs ${data_dir}/ |\
 tee -a $logfile 
 
-
+echo "indices_dir:$indices_dir"
 
 echo $( timestamp ): "
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits.py \
