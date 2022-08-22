@@ -124,7 +124,7 @@ def main():
             nonpeak_indices = [i['ind'] for b in map(lambda x:[x] if not isinstance(x, list) else x, temp_lst) for i in b if i['region']=='nonpeak']
             print("split:",split)
             print("proportion of peaks:",len(peak_indices)/len(peak_regions_df))
-            print("length of nonpeaks:",len(nonpeak_indices)/len(nonpeak_regions_df))
+            print("proportion of nonpeaks:",len(nonpeak_indices)/len(nonpeak_regions_df))
 
             f = open(f"{args.output_path}/loci_{split}_indices_fold{fold}.txt", "w")
             for items in peak_indices:
