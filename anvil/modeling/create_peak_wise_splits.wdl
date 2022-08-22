@@ -33,7 +33,7 @@ task run_peak_wise_splits {
 	output {
 		Array[File] peak_wise_splits = glob("splits_indices/*")
 		Array[File] supplemental_outputs = glob("supplemental_outputs/*")
-		File group_df_csv = "splits_indices/group_df.csv"
+		File group_df_csv = "supplemental_outputs/group_df.csv"
 	
 	}
 
