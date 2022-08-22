@@ -110,7 +110,7 @@ def main():
         len(group_fold_df[group_fold_df[f"fold{fold}"]=="valid"])/len(group_fold_df)
 
 
-    for fold in range(number_of_folds):
+    for fold in range(args.number_of_folds):
         group_df['fold' + str(fold)] = group_fold_df['fold' + str(fold)]
 
     group_df
