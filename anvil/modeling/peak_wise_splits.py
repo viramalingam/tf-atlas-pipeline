@@ -134,8 +134,8 @@ def main():
             for items in nonpeak_indices:
                 f.writelines(str(items)+'\n')
             f.close()
-            nonpeak_regions_df.iloc[nonpeak_indices,0:10].to_csv(f"{supplemental_output_path}/background_peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
-            peak_regions_df.iloc[peak_indices,0:10].to_csv(f"{supplemental_output_path}/peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
+            nonpeak_regions_df.iloc[nonpeak_indices,0:10].to_csv(f"{args.supplemental_output_path}/background_peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
+            peak_regions_df.iloc[peak_indices,0:10].to_csv(f"{args.supplemental_output_path}/peaks_{split}_fold{fold}.bed",sep="\t",header=False,index=False)
         print("\n")
 
     group_df["log_groupcounts"]=np.log10(group_df["group_counts"]+1)
