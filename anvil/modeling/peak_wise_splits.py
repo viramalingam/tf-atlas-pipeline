@@ -146,7 +146,7 @@ def main():
                         +geom_histogram(bins=30)
                         +theme_classic()
                )
-        plot.save(f'{supplemental_output_path}/fold{fold}_counts_histogram_plot.png')
+        plot.save(f'{args.supplemental_output_path}/fold{fold}_counts_histogram_plot.png')
     
 
 if __name__=="__main__":
