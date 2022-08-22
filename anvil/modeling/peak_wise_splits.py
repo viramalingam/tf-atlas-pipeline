@@ -84,7 +84,7 @@ def main():
     # across folds
     chuncksets_dict={}
     for fold in range(args.number_of_folds):
-        chuncksets_dict[f"chuncksets_{fold}"]=list(range(fold,len(group_df),number_of_folds))
+        chuncksets_dict[f"chuncksets_{fold}"]=list(range(fold,len(group_df),args.number_of_folds))
 
     val_chuncks = list(range(0,args.number_of_folds))
     print("val_chuncks:",val_chuncks)
