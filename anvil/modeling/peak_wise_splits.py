@@ -148,6 +148,8 @@ def main():
                )
         plot.save(f'{args.supplemental_output_path}/fold{fold}_counts_histogram_plot.png')
     
+    group_df.to_csv(f"{args.supplemental_output_path}/group_df.csv",index=False)
+
 
 if __name__=="__main__":
     main()

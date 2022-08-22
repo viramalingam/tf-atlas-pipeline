@@ -33,6 +33,7 @@ task run_peak_wise_splits {
 	output {
 		Array[File] peak_wise_splits = glob("splits_indices/*")
 		Array[File] supplemental_outputs = glob("supplemental_outputs/*")
+		File group_df_csv = splits_indices/group_df.csv
 	
 	}
 
@@ -64,6 +65,7 @@ workflow create_peak_wise_splits {
 	output {
 		Array[File] peak_wise_splits = run_peak_wise_splits.peak_wise_splits
 		Array[File] supplemental_outputs = run_peak_wise_splits.supplemental_outputs
+		File group_df_csv = run_peak_wise_splits.group_df_csv
 		
 	}
 }
