@@ -83,25 +83,25 @@ def main():
         # split the data into x number of chuncks for x folds. allocate the chuncks to train, test, valid folds in unique ways
     # across folds
     chuncksets_dict={}
-    for fold in range(number_of_folds):
+    for fold in range(args.number_of_folds):
         chuncksets_dict[f"chuncksets_{fold}"]=list(range(fold,len(group_df),number_of_folds))
 
-    val_chuncks = list(range(0,number_of_folds))
+    val_chuncks = list(range(0,args.number_of_folds))
     print("val_chuncks:",val_chuncks)
     
-    test_chuncks = list(range(1,number_of_folds))+[0]
+    test_chuncks = list(range(1,args.number_of_folds))+[0]
     print("test_chuncks:",test_chuncks)
 
     group_fold_df=pd.DataFrame(index=np.arange(len(group_df)))
     
-    for fold in range(number_of_folds):
+    for fold in range(args.number_of_folds):
         group_fold_df[f"fold{fold}"]='train'
         group_fold_df[f"fold{fold}"][chuncksets_dict[f"chuncksets_{val_chuncks[fold]}"]] = 'valid'
         group_fold_df[f"fold{fold}"][chuncksets_dict[f"chuncksets_{test_chuncks[fold]}"]] = 'test'
         
     print(group_fold_df)
 
-    for fold in range(number_of_folds):
+    for fold in range(args.number_of_folds):
         print("fold:",fold)
         len(group_fold_df[group_fold_df[f"fold{fold}"]=="train"])/len(group_fold_df)
 
@@ -116,7 +116,7 @@ def main():
     group_df
     output_path ="."
     print("Saving Splits")
-    for fold in range(number_of_folds):
+    for fold in range(args.number_of_folds):
         print("fold:",fold)
         for split in ['valid','train','test']:
             temp_lst = [group_dict.get(key) for key in group_df['groups'][group_df[f"fold{fold}"]==split]] 
@@ -139,7 +139,7 @@ def main():
         print("\n")
 
     group_df["log_groupcounts"]=np.log10(group_df["group_counts"]+1)
-    for fold in range(number_of_folds):
+    for fold in range(args.number_of_folds):
         print("fold:",fold)
         plot = (ggplot(group_df,aes("log_groupcounts"))
                         +facet_wrap(f"fold{fold}")

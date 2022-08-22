@@ -93,3 +93,6 @@ RUN pip install -e /genomicsdlarchsandlosses
 # Install BPNet repo
 COPY basepairmodels /basepairmodels
 RUN pip install -e /basepairmodels
+
+# Install plotnine
+RUN pip install plotnine
