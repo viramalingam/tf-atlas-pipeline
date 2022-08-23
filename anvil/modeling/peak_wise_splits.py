@@ -70,7 +70,11 @@ def main():
         groups.append(group)
         sum = 0
         for element in group_dict[group]:
-            labels = bw.values(element['chr'], int(element['pos'] - (args.inputlen // 2)), int(element['pos'] + (args.inputlen // 2)))
+            try:
+                labels = bw.values(element['chr'], int(element['pos']) - (args.inputlen // 2), int(element['pos']) + (args.inputlen // 2))
+            except:
+                labels = np.zeros((args.inputlen,))
+                print("warning: unable to fetch values for ",element['chr'], int(element['pos']) - (args.inputlen // 2), int(element['pos']) + (args.inputlen // 2))
             labels = np.array(labels)
             labels = np.nan_to_num(labels)
             labels = np.sum(labels)
