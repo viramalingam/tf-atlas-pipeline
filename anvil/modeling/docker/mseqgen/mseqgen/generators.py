@@ -123,6 +123,9 @@ class MSequenceGenerator:
             
             loci_indices (list): list of indices to filter rows from
                  the 'loci' peaks file
+            
+            background_loci_indices (list): list of indices to filter rows from
+                 the 'loci' backgrounds file
 
             num_threads (int): number of parallel threads for batch
                 generation, default = 10
