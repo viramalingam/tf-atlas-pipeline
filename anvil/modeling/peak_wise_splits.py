@@ -141,11 +141,10 @@ def main():
     group_df["log_groupcounts"]=np.log10(group_df["group_counts"]+1)
     for fold in range(args.number_of_folds):
         print("fold:",fold)
-        plot = (ggplot(group_df,aes("log_groupcounts"))
-                        +facet_wrap(f"fold{fold}")
-                        +geom_histogram(bins=30)
-                        +theme_classic()
-               )
+        plot = (ggplot(group_df,aes("log_groupcounts",color=f"fold{fold}"))
+                    +stat_ecdf()
+                    +theme_classic()
+           )
         plot.save(f'{args.supplemental_output_path}/fold{fold}_counts_histogram_plot.png')
     
     group_df.to_csv(f"{args.supplemental_output_path}/group_df.csv",index=False)
