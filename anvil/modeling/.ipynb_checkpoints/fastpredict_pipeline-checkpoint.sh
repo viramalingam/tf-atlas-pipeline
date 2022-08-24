@@ -19,6 +19,7 @@ chroms_txt=$8
 bigwigs=${9}
 peaks=${10}
 background_regions=${11}
+indices_files=${12}
 
 echo $experiment
 echo $model
@@ -31,6 +32,7 @@ echo $chroms_txt
 echo $bigwigs
 echo $peaks
 echo $background_regions
+echo $indices_files
 
 
 mkdir /project
@@ -54,6 +56,11 @@ mkdir $reference_dir
 model_dir=$project_dir/model
 echo $( timestamp ): "mkdir" $model_dir | tee -a $logfile
 mkdir $model_dir
+
+# create indices directory
+indices_dir=$project_dir/splits_indices
+echo $( timestamp ): "mkdir" $indices_dir | tee -a $logfile
+mkdir $indices_dir
 
 # create the predictions directory with all peaks and all chromosomes
 predictions_dir_all_peaks_all_chroms=$project_dir/predictions_and_metrics_all_peaks_all_chroms
@@ -167,6 +174,17 @@ echo $( timestamp ): "cp" $splits_json \
 $project_dir/splits.json | tee -a $logfile 
 cp $splits_json $project_dir/splits.json
 
+echo $indices_files
+# cp train val test indices files
+if [[ -n "${indices_files}" ]];then
+    echo "indices variable set"
+    if [[ $indices_files!='' ]];then
+        echo $indices_files | sed 's/,/ /g' | xargs cp -t $indices_dir/
+        echo $( timestamp ): "cp" $indices_files ${indices_dir}/ |\
+        tee -a $logfile 
+    fi
+fi
+
 
 #set threads based on number of peaks
 
@@ -176,17 +194,8 @@ else
     threads=4
 fi
 
-#get the test chromosome
 
-echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
-
-test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
-
-
-# modify he input json for the testing
-
-
-# modify the testing_input json for 
+# modify the testing_input json for prediction
 cp $project_dir/testing_input.json $project_dir/testing_input_all.json
 echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
 sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
@@ -194,12 +203,78 @@ sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $lo
 echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
 sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
 
+# default values for the test_indices files; will be overwritten with acutall values if present
+test_peaks_test_chroms_indices_file='None'
+test_peaks_all_chroms_indices_file='None'
+all_peaks_all_chroms_indices_file='None'
+all_peaks_test_chroms_indices_file='None'
+
+if [[ -n "${indices_files}" ]];then
+    if [[ ${indices_files} != '' ]];then
+
+
+     seq 0 $(wc -l ${data_dir}/${experiment}_peaks.bed | awk '{print $1-1}')> $indices_dir/test_peaks_all_chroms_indices.txt
+
+     seq 0 $(wc -l ${data_dir}/${experiment}_combined.bed | awk '{print $1-1}')> $indices_dir/all_peaks_all_chroms_indices.txt
+
+
+     test_peaks_test_chroms_indices_file=$(jq '.["0"]["loci_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
+     
+     echo "test_peaks_test_chroms_indices_file:" $test_peaks_test_chroms_indices_file
+     
+     test_peaks_all_chroms_indices_file=$indices_dir/test_peaks_all_chroms_indices.txt
+     all_peaks_all_chroms_indices_file=$indices_dir/all_peaks_all_chroms_indices.txt
+
+     background_test_indices_file=$(jq '.["0"]["background_test_indices_file"]' $project_dir/splits.json | sed 's/"//g')
+     number_of_peaks=$(wc -l ${data_dir}/${experiment}_peaks.bed)
+     awk -v var="$number_of_peaks" '{print ($1 + var)}' $background_test_indices_file > $indices_dir/background_test_indices_file_global_index.txt
+     cat $test_peaks_test_chroms_indices_file $indices_dir/background_test_indices_file_global_index.txt > $indices_dir/all_peaks_test_chroms_indices.txt
+
+     all_peaks_test_chroms_indices_file=$indices_dir/all_peaks_test_chroms_indices.txt
+
+
+    fi
+fi
+
+#get the test chromosome for chromosome wise training regime
+
+if [[ -n "$(jq '.["0"]["test"] // empty' $project_dir/splits.json)" ]]; then 
+
+    test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
+
+    echo 'test_chromosome=jq .["0"]["test"] | join(" ") $project_dir/splits.json | sed s/"//g'
+
+else
+    
+    test_chromosome='None'
+
+    echo "test_chromosome=$test_chromosome"
+
+fi
+
+
+#set all chromosomes as test chromosomes for some calculations for chromosome wise training regime
+
+if [[ -n "$(jq '.["0"]["test"] // empty' $project_dir/splits.json)" ]]; then 
+    
+    test_all_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)
+
+    echo 'test_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)'  
+
+else
+
+    test_all_chromosome='None'
+
+    echo "test_chromosome=$test_chromosome"
+
+fi
 
 echo $( timestamp ): "
 predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test-indices-file $all_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -215,6 +290,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test-indices-file $all_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
@@ -251,6 +327,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test-indices-file $all_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_all.json \\
@@ -267,6 +344,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test-indices-file $all_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_all.json \
@@ -303,7 +381,8 @@ echo $( timestamp ): "
 predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+    --chroms $test_all_chromosome \\
+    --test-indices-file $all_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -318,7 +397,8 @@ predict \\
 predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+    --chroms $test_all_chromosome \
+    --test-indices-file $all_peaks_all_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
@@ -331,7 +411,7 @@ predict \
     --threads $threads
 
 
-# modify the testing_input json for 
+# modify the testing_input json for prediction
 cp $project_dir/testing_input.json $project_dir/testing_input_peaks.json
 echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json 
 sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_peaks.json | tee -a $logfile 
@@ -346,6 +426,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test-indices-file $test_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -361,6 +442,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test-indices-file $test_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
@@ -378,6 +460,7 @@ predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
+    --test-indices-file $test_peaks_test_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -394,6 +477,7 @@ predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
+    --test-indices-file $test_peaks_test_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_peaks.json \
@@ -410,7 +494,8 @@ echo $( timestamp ): "
 predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+    --chroms $test_all_chromosome \\
+    --test-indices-file $test_peaks_all_chroms_indices_file \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
@@ -425,7 +510,8 @@ predict \\
 predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+    --chroms $test_all_chromosome \
+    --test-indices-file $test_peaks_all_chroms_indices_file \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
@@ -436,4 +522,3 @@ predict \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads
-

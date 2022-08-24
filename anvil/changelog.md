@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.6.0] - 2022-08-23
+merged with the branch dev_peak_wise_training
+1. fixed the random seed issue
+2. code supports peak_wise training
+
+
+
 ## [v1.5.0] - 2022-08-11
 ### removed
 merged with the branch dev_fix_val_sampling

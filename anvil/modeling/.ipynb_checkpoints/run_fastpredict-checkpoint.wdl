@@ -13,6 +13,7 @@ task run_fastpredict {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
+		Array [File]? indices_files
 		
 	}
 	command {
@@ -20,14 +21,14 @@ task run_fastpredict {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 		
-		git clone --depth 1 --branch v1.5.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.6.0 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
 		##fastpredict
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' indices_files}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' indices_files}
 		
 		
 		echo "copying all files to cromwell_root folder"
@@ -92,7 +93,7 @@ task run_fastpredict {
 	}
 
 runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.5.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.6.0'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
@@ -116,6 +117,7 @@ workflow fastpredict {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
+		Array [File]? indices_files
 		
 	}
 	
@@ -131,7 +133,8 @@ workflow fastpredict {
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,
 			peaks = peaks,
-			background_regions = background_regions
+			background_regions = background_regions,
+			indices_files = indices_files
 	}
 	output {
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = run_fastpredict.predictions_and_metrics_all_peaks_test_chroms
