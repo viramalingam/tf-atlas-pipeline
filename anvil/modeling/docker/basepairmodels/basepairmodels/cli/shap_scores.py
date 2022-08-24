@@ -229,8 +229,8 @@ def shap_scores(args, shap_dir):
                 # read the values from the control bigWigs
                 for i in range(len(control_bigWigs)):
                     try:
-                    vals = np.nan_to_num(
-                        control_bigWigs[i].values(row['chrom'], start, end))
+                        vals = np.nan_to_num(
+                            control_bigWigs[i].values(row['chrom'], start, end))
                     except RuntimeError:
                         print("Invalid interval bounds", row['chrom'], start, end)
                         continue
