@@ -172,15 +172,19 @@ def shap_scores(args, shap_dir):
                     smoothing.append(smoothing_val)
                     
             
-    # log of sum of counts of the control track
-    # if multiple control files are specified this would be
-    # log(sum(position_wise_sum_from_all_files))
-    bias_counts_input = np.zeros((num_peaks, 
-                                  len(control_bigWigs) + len(smoothing)))
+    bias_counts_input = None
+    bias_profile_input = None
+    # if bias is part of the model then model inputs will be a list
+    if isinstance(model.input, list):
+        # log of sum of counts of the control track
+        # if multiple control files are specified this would be
+        # log(sum(position_wise_sum_from_all_files))
+        bias_counts_input = np.zeros((num_peaks, 
+                                      len(control_bigWigs) + len(smoothing)))
 
-    # the control profile and the smoothed version of the control 
-    bias_profile_input = np.zeros((num_peaks, args.control_len, 
-                                   len(control_bigWigs) + len(smoothing)))
+        # the control profile and the smoothed version of the control 
+        bias_profile_input = np.zeros((num_peaks, args.control_len, 
+                                       len(control_bigWigs) + len(smoothing)))
     
     ## IF NO CONTROL BIGWIGS ARE SPECIFIED THEN THE TWO NUMPY ARRAYS
     ## bias_counts_input AND bias_profile_input WILL REMAIN ZEROS
@@ -215,28 +219,33 @@ def shap_scores(args, shap_dir):
             seq = 'N'*args.input_seq_len     
         
         # fetch control values
-        if len(control_bigWigs) > 0:
-            # a different start and end for controls since control_len
-            # is usually not the same as input_seq_len
-            start = row['st'] + row['summit'] - (args.control_len // 2)
-            end =  row['st'] + row['summit'] + (args.control_len // 2)
+        if bias_counts_input is not None and bias_profile_input is not None:
+            if len(control_bigWigs) > 0:
+                # a different start and end for controls since control_len
+                # is usually not the same as input_seq_len
+                start = row['st'] + row['summit'] - (args.control_len // 2)
+                end =  row['st'] + row['summit'] + (args.control_len // 2)
 
-            # read the values from the control bigWigs
-            for i in range(len(control_bigWigs)):
-                vals = np.nan_to_num(
-                    control_bigWigs[i].values(row['chrom'], start, end))
-                bias_counts_input[idx, i] = np.log(np.sum(vals) + 1)
-                bias_profile_input[idx, :, i] = vals
-            
+                # read the values from the control bigWigs
+                for i in range(len(control_bigWigs)):
+                    try:
+                    vals = np.nan_to_num(
+                        control_bigWigs[i].values(row['chrom'], start, end))
+                    except RuntimeError:
+                        print("Invalid interval bounds", row['chrom'], start, end)
+                        continue
+                    bias_counts_input[idx, i] = np.log(np.sum(vals) + 1)
+                    bias_profile_input[idx, :, i] = vals
 
-            # compute the smoothed control profile
-            start_idx = len(control_bigWigs)
-            for i in range(len(smoothing)):
-                sigma = float(smoothing[i][0])
-                window_width = int(smoothing[i][1])
-                bias_profile_input[idx, :, start_idx + i] = \
-                    gaussian1D_smoothing(
-                        bias_profile_input[idx, :, i], sigma, window_width)
+
+                # compute the smoothed control profile
+                start_idx = len(control_bigWigs)
+                for i in range(len(smoothing)):
+                    sigma = float(smoothing[i][0])
+                    window_width = int(smoothing[i][1])
+                    bias_profile_input[idx, :, start_idx + i] = \
+                        gaussian1D_smoothing(
+                            bias_profile_input[idx, :, i], sigma, window_width)
 
         # append to the list of sequences
         sequences.append(seq)
@@ -275,9 +284,21 @@ def shap_scores(args, shap_dir):
         
         return dinucs
     
-    # shap explainer for the counts head
+    if bias_counts_input is None and bias_profile_input is None:
+        counts_explainer_inputs = [model.input]
+        profile_explainer_inputs =[model.input]
+        
+        counts_shap_inputs = [X]
+        profile_shap_inputs = [X]
+    else:
+        counts_explainer_inputs = [model.input[0], model.input[2]]
+        profile_explainer_inputs = [model.input[0], model.input[1]]
+        
+        counts_shap_inputs = [X, bias_counts_input]
+        profile_shap_inputs = [X, bias_profile_input]
+
     profile_model_counts_explainer = shap.explainers.deep.TFDeepExplainer(
-        ([model.input[0], model.input[2]], 
+        (counts_explainer_inputs, 
          tf.reduce_sum(model.outputs[1], axis=-1)),
         data_func, 
         combine_mult_and_diffref=combine_mult_and_diffref)
@@ -285,10 +306,13 @@ def shap_scores(args, shap_dir):
     # explainer for the profile head
     weightedsum_meannormed_logits = get_weightedsum_meannormed_logits(
         model, task_id=args.task_id, stranded=True)
+    
     profile_model_profile_explainer = shap.explainers.deep.TFDeepExplainer(
-        ([model.input[0], model.input[1]], weightedsum_meannormed_logits),
+        (profile_explainer_inputs, weightedsum_meannormed_logits),
         data_func, 
         combine_mult_and_diffref=combine_mult_and_diffref)
+    
+
 
     logging.info("Generating 'counts' shap scores")
     counts_shap_scores = profile_model_counts_explainer.shap_values(
