@@ -102,24 +102,6 @@ tee -a $logfile
 gunzip ${data_dir}/${experiment}_peaks.bed.gz
 
 
-echo $( timestamp ): "cp" $background_regions ${data_dir}/${experiment}_background_regions.bed.gz |\
-tee -a $logfile 
-
-cp $background_regions ${data_dir}/${experiment}_background_regions.bed.gz
-
-
-echo $( timestamp ): "gunzip" ${data_dir}/${experiment}_background_regions.bed.gz |\
-tee -a $logfile 
-
-gunzip ${data_dir}/${experiment}_background_regions.bed.gz
-
-
-echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed ">" ${data_dir}/${experiment}_combined.bed.gz |\
-tee -a $logfile 
-
-cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed > ${data_dir}/${experiment}_combined.bed
-
-
 # cp input json template
 
 echo $( timestamp ): "cp" $testing_input_json \

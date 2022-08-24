@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.6.2] - 2022-08-24
+1. shap pipeline now handles experiments with no control.
+
+## [v1.6.1] - 2022-08-24
+1. changed wdl file for shap
+
 ## [v1.6.0] - 2022-08-23
 merged with the branch dev_peak_wise_training
 1. fixed the random seed issue
@@ -133,6 +139,13 @@ merged branch dev_without_bias_prediction_metrics. We now also calculated metric
 Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Started traking the github versions and pipeline scripts download a specific version. **Incomplete. Testing the tagging sytem.**
 
 # log of the docker builds
+
+## vivekramalingam/tf-atlas:gcp-modeling_v1.6.2- 2022-08-23
+Shap pipeline supports experiments with no control.
+
+## vivekramalingam/tf-atlas:gcp-modeling_v1.6.0- 2022-08-23
+Modelling now supports peak-wise training schema . Used joint multinomial as before.
+
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.5.0- 2022-08-11
 Has fixed validation sampling and adjusted early stopping patience to 10 and reduce-lr-on-plateau-patience to 5. Used joint multinomial as before.

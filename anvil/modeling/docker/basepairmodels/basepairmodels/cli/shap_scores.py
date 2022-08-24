@@ -284,6 +284,8 @@ def shap_scores(args, shap_dir):
         
         return dinucs
     
+    print('bias_counts_input:',bias_counts_input)
+    print('bias_profile_input:',bias_profile_input)
     if bias_counts_input is None and bias_profile_input is None:
         counts_explainer_inputs = [model.input]
         profile_explainer_inputs =[model.input]
@@ -316,7 +318,7 @@ def shap_scores(args, shap_dir):
 
     logging.info("Generating 'counts' shap scores")
     counts_shap_scores = profile_model_counts_explainer.shap_values(
-        [X, bias_counts_input], progress_message=100)
+        counts_shap_inputs, progress_message=100)
     
     # save the dictionary in HDF5 formnat
     logging.info("Saving 'counts' scores")
@@ -328,7 +330,7 @@ def shap_scores(args, shap_dir):
     
     logging.info("Generating 'profile' shap scores")
     profile_shap_scores = profile_model_profile_explainer.shap_values(
-        [X, bias_profile_input], progress_message=100)
+        profile_shap_inputs, progress_message=100)
     
     # save the dictionary in HDF5 formnat
     logging.info("Saving 'profile' scores")
