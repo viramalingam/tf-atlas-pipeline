@@ -81,7 +81,7 @@ def main():
             sum += labels
         group_counts.append(sum)
     group_df = pd.DataFrame({'groups': groups, 'group_counts': group_counts})
-    group_df.sort_values(by='group_counts', inplace=True)
+    group_df = group_df.sort_values(by='group_counts').reset_index(drop=True)
 
     
         # split the data into x number of chuncks for x folds. allocate the chuncks to train, test, valid folds in unique ways
