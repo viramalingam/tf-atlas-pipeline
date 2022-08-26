@@ -16,7 +16,7 @@ setup(
                       "tensorflow-probability==0.12.2", "tqdm", "scikit-learn",
                       "scipy", "scikit-image", "scikit-learn", 
                       "numpy", "deepdish", "pandas", "matplotlib", "plotly", 
-                      "deeptools", "pyfaidx", "deeplift"
+                      "deeptools", "pyfaidx", "deeplift", "hdf5plugin"
                       ],
     extras_require={"dev": ["pytest", "pytest-cov"]},
     license="MIT license",
