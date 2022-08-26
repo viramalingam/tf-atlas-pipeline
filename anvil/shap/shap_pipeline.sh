@@ -102,6 +102,7 @@ tee -a $logfile
 gunzip ${data_dir}/${experiment}_peaks.bed.gz
 
 
+
 # cp input json template
 
 echo $( timestamp ): "cp" $testing_input_json \

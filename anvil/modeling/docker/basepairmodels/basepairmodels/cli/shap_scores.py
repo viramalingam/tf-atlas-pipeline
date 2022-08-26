@@ -92,6 +92,7 @@ def save_scores(peaks_df, one_hot_sequences, hyp_shap_scores, output_fname):
     
     f.close()
     
+    
 
 def shap_scores(args, shap_dir):
     # load the model
