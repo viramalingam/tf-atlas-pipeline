@@ -62,31 +62,31 @@ def save_scores(peaks_df, one_hot_sequences, hyp_shap_scores, output_fname):
     coords_chrom_dset = f.create_dataset(
         "coords_chrom", (num_examples,),
         dtype=h5py.string_dtype(encoding="ascii"), 
-        compression = hdf5plugin.Blosc()
+        **hdf5plugin.Blosc()
     )
     coords_chrom_dset[:] = coords_chrom
     
     coords_start_dset = f.create_dataset(
         "coords_start", (num_examples,), dtype=int, 
-        compression = hdf5plugin.Blosc()
+        **hdf5plugin.Blosc()
     )
     coords_start_dset[:] = coords_start
     
     coords_end_dset = f.create_dataset(
         "coords_end", (num_examples,), dtype=int, 
-        compression = hdf5plugin.Blosc()
+        **hdf5plugin.Blosc()
     )
     coords_end_dset[:] = coords_end
         
     hyp_scores_dset = f.create_dataset(
         "hyp_scores", (num_examples, seq_len, 4), 
-        compression = hdf5plugin.Blosc()
+        **hdf5plugin.Blosc()
     )
     hyp_scores_dset[:, :, :] = hyp_shap_scores
 
     input_seqs_dset = f.create_dataset(
         "input_seqs", (num_examples, seq_len, 4), 
-        compression = hdf5plugin.Blosc()
+        **hdf5plugin.Blosc()
     )
     input_seqs_dset[:, :, :] = one_hot_sequences
     
