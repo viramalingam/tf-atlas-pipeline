@@ -3,7 +3,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 from collections import OrderedDict
-import deepdish
 import modisco.visualization
 from modisco.visualization import viz_sequence
 import h5py
