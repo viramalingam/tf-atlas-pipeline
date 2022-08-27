@@ -3,6 +3,7 @@ import pyBigWig
 import numpy as np
 import h5py
 import gzip
+import hdf5plugin
 
 # need full paths!
 parser = argparse.ArgumentParser(description="Convery importance scores in hdf5 format to bigwig. PROVIDE ABSOLUTE PATHS!")
