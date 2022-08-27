@@ -30,6 +30,8 @@ from modisco.tfmodisco_workflow.workflow import TfModiscoWorkflow
 from modisco.visualization import viz_sequence
 
 
+import hdf5plugin
+
 def save_plot(weights, dst_fname):
     """
     
