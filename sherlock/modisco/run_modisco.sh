@@ -16,9 +16,9 @@ then
 fi
 
 
-echo "singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_dev2.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment}
+echo "singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_v1.6.5.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment}
 
-singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_dev2.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment}
+singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_v1.6.5.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment}
 
 echo "copying all files to cromwell_root folder"
 
