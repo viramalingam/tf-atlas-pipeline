@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.6.6] - 2022-09-04
+1. changed branch version in wdl for performance reports
+
+## [v1.6.5] - 2022-08-29
+1. merged with dev branch which supports saving shap scores with blosc compression and opening these shap scores for modisco.
+
+## [v1.6.4] - 2022-08-25
+1. bug fix for peak wise training. group_df.sort_values(by='group_counts').reset_index(drop=True)
+
+## [v1.6.3] - 2022-08-24
+1. bug fix for shap --branch v1.6.2
+
 ## [v1.6.2] - 2022-08-24
 1. shap pipeline now handles experiments with no control.
 
@@ -139,6 +151,10 @@ merged branch dev_without_bias_prediction_metrics. We now also calculated metric
 Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Started traking the github versions and pipeline scripts download a specific version. **Incomplete. Testing the tagging sytem.**
 
 # log of the docker builds
+
+## vivekramalingam/tf-atlas:gcp-modeling_v1.6.5- 2022-08-23
+- hdf5plugin to support blosc compression for shap saving and opening in motif discovery
+- vivekramalingam_tf-atlas_gcp-modeling_v1.6.5.sif is build from this version.
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.6.2- 2022-08-23
 Shap pipeline supports experiments with no control.
