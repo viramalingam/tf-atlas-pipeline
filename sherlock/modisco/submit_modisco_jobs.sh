@@ -26,9 +26,7 @@ if [ -f $oak_dir/shap/$round/$fold/$experiment/profile_scores.h5 ] && [ -f $oak_
         fi
         modisco_dir=$oak_dir/modisco/$round/$fold/$experiment
         
-        
-        cores=10
-        score_type=profile
+
         sbatch --export=ALL --requeue \
             -J $experiment.modisco \
             -p akundaje,owners,normal \

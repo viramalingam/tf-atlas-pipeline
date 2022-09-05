@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+#SBATCH --job-name=calculate_mean_shap
+#SBATCH --output=calculate_mean_shap.%j.out
+#SBATCH --error=calculate_mean_shap.%j.err
+#SBATCH --time=24:00:00
+#SBATCH -p akundaje
+#SBATCH -c 12
+#SBATCH --mem=160GB
+#SBATCH --qos=high_p
+singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_gcp-modeling_v1.6.5.sif bash -c "python /oak/stanford/groups/akundaje/vir/tfatlas/shap/production_run_1/mean_shap/calculate_mean_shap.py"

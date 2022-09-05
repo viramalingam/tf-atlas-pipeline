@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gpu-job
+  namespace: kundajelab
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fs-container
+        image: vivekramalingam/tf-atlas:gcp-modeling
+        command: ["/bin/bash"]
+        args: ["-c", "chmod 777 /my_data"]
+        args: ["-c", "echo 'helloworld' > /mydata/test4.txt"]
+        args: ["-c", "nvidia-smi >> /mydata/test4.txt"]
+        resources:
+          requests:
+             cpu: 10
+             memory: 32Gi
+             nvidia.com/gpu: 1
+          limits:
+             cpu: 10
+             memory: 32Gi
+             nvidia.com/gpu: 1 
+        volumeMounts:
+        - name: tf-atlas
+          mountPath: /mydata
+      restartPolicy: Never
+      volumes:
+        - name: tf-atlas
+          persistentVolumeClaim:
+            claimName: tf-atlas
