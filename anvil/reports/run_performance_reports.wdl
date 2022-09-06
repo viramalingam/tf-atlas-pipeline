@@ -4,8 +4,8 @@ task run_performance_reports{
 	input {
 		String experiment
 		File peaks
-		Array [File] predictions_test_chrom
-		Array [File] predictions_all_chrom
+		Array [File] predictions_test_peaks
+		Array [File] predictions_all_peaks
 		File splits_json
 
 
@@ -20,8 +20,8 @@ task run_performance_reports{
 
 		##reports
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
-		/my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_peaks} ${sep=',' predictions_all_peaks} ${splits_json}
+		/my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_peaks} ${sep=',' predictions_all_peaks} ${splits_json}
 
 		echo "copying all files to cromwell_root folder"
 		
