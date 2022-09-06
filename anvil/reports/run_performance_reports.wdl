@@ -53,8 +53,8 @@ workflow performance_reports {
 	input {
 		String experiment
 		File peaks
-		Array [File] predictions_test_chrom
-		Array [File] predictions_all_chrom
+		Array [File] predictions_test_peaks
+		Array [File] predictions_all_peaks
 		File splits_json
 
 	}
@@ -63,8 +63,8 @@ workflow performance_reports {
 		input:
 			experiment = experiment,
 			peaks = peaks,
-			predictions_test_chrom = predictions_test_chrom,
-			predictions_all_chrom = predictions_all_chrom,
+			predictions_test_peaks = predictions_test_peaks,
+			predictions_all_peaks = predictions_all_peaks,
 			splits_json = splits_json
 	}
 	output {
