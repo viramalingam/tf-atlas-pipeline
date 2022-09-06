@@ -9,7 +9,7 @@ task run_performance_reports{
 		File splits_json
 
 
-  	}	
+	}	
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
@@ -21,7 +21,7 @@ task run_performance_reports{
 		##reports
 
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
-            /my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
+		/my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -45,7 +45,7 @@ task run_performance_reports{
 		memory: 4 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
-  		maxRetries: 1
+		maxRetries: 1
 	}
 }
 
@@ -66,7 +66,7 @@ workflow performance_reports {
 			predictions_test_chrom = predictions_test_chrom,
 			predictions_all_chrom = predictions_all_chrom,
 			splits_json = splits_json
- 	}
+	}
 	output {
 		File performance_reports_peak_only = run_performance_reports.performance_reports_peak_only
 		File performance_reports_all_regions = run_performance_reports.performance_reports_all_regions
