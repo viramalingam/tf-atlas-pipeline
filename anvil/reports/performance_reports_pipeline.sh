@@ -103,6 +103,8 @@ echo 'test_chromosome=jq .["0"]["test"][0] | join(" ") $project_dir/splits.json 
 
 test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
 
+echo "test_chromosome:" $test_chromosome
+
 #Performance
 TFM_PRED_PATH=$predictions_metrics_test_dir/${experiment}_split000_predictions.h5 \
 	TFM_METRICS_DIR=$predictions_metrics_test_dir \
