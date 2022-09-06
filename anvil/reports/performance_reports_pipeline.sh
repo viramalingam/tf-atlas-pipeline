@@ -16,6 +16,12 @@ predictions_metrics_test=$3
 predictions_metrics_all=$4
 splits_json=${5}
 
+echo $experiment
+echo $peaks
+echo $predictions_metrics_test
+echo $predictions_metrics_all
+echo $splits_json
+
 reports_notebooks_dir="/my_scripts//anvil/reports/"
 
 mkdir /project

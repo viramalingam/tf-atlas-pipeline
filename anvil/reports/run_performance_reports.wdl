@@ -14,7 +14,7 @@ task run_performance_reports{
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.6.6 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_troubleshooting_reports https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/reports/
 
