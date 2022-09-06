@@ -22,7 +22,7 @@ echo $predictions_metrics_test
 echo $predictions_metrics_all
 echo $splits_json
 
-reports_notebooks_dir="/my_scripts//anvil/reports/"
+reports_notebooks_dir="/my_scripts/tf-atlas-pipeline/anvil/reports/"
 
 mkdir /project
 project_dir=/project
