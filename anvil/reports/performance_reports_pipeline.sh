@@ -101,7 +101,7 @@ cp $splits_json $project_dir/splits.json
 
 echo 'test_chromosome=jq .["0"]["test"][0] | join(" ") $project_dir/splits.json | sed s/"//g'
 
-test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
+test_chromosome=`jq '.["0"]["test"] | join(",")' $project_dir/splits.json | sed 's/"//g'`
 
 echo "test_chromosome:" $test_chromosome
 
