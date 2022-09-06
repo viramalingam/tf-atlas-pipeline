@@ -14,14 +14,14 @@ task run_performance_reports{
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone https://github.com/kundajelab/TF-Atlas.git
-		chmod -R 777 TF-Atlas
-		cd TF-Atlas/anvil/reports/
+		git clone --depth 1 --branch v1.6.6 https://github.com/viramalingam/tf-atlas-pipeline.git
+		chmod -R 777 tf-atlas-pipeline
+		cd tf-atlas-pipeline/anvil/reports/
 
-		##shap
+		##reports
 
-		echo "run /my_scripts/TF-Atlas/anvil/reports/performance_reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
-		/my_scripts/TF-Atlas/anvil/reports/performance_reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
+            /my_scripts/tf-atlas-pipeline/anvil/reports/performance_reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${splits_json}
 
 		echo "copying all files to cromwell_root folder"
 		

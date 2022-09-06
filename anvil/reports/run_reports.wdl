@@ -19,13 +19,13 @@ task run_reports {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 		git clone --depth 1 --branch v1.6.6 https://github.com/viramalingam/tf-atlas-pipeline.git
-		chmod -R 777 TF-Atlas
-		cd TF-Atlas/anvil/reports/
+		chmod -R 777 tf-atlas-pipeline
+		cd tf-atlas-pipeline/anvil/reports/
 
 		##shap
 
-		echo "run /my_scripts/TF-Atlas/anvil/reports/reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${sep=',' shap} ${sep=',' modisco_counts} ${sep=',' modisco_profile} ${tomtom_database} ${splits_json}
-		/my_scripts/TF-Atlas/anvil/reports/reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${sep=',' shap} ${sep=',' modisco_counts} ${sep=',' modisco_profile} ${tomtom_database} ${splits_json}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/reports/reports_pipeline.sh" ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${sep=',' shap} ${sep=',' modisco_counts} ${sep=',' modisco_profile} ${tomtom_database} ${splits_json}
+		/my_scripts/tf-atlas-pipeline/anvil/reports/reports_pipeline.sh ${experiment} ${peaks} ${sep=',' predictions_test_chrom} ${sep=',' predictions_all_chrom} ${sep=',' shap} ${sep=',' modisco_counts} ${sep=',' modisco_profile} ${tomtom_database} ${splits_json}
 
 		echo "copying all files to cromwell_root folder"
 		

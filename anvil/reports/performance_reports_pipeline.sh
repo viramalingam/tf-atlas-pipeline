@@ -16,7 +16,7 @@ predictions_metrics_test=$3
 predictions_metrics_all=$4
 splits_json=${5}
 
-reports_notebooks_dir="/my_scripts/TF-Atlas/anvil/reports/"
+reports_notebooks_dir="/my_scripts//anvil/reports/"
 
 mkdir /project
 project_dir=/project
