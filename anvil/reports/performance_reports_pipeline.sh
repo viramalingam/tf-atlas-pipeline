@@ -113,4 +113,14 @@ TFM_PRED_PATH=$predictions_metrics_test_dir/${experiment}_split000_predictions.h
     --execute $reports_notebooks_dir/model_performance.ipynb --to HTML \
     --output $reports_output_dir/performance \
     --ExecutePreprocessor.timeout=-1
+    
+    
+#Performance peaks + negatives
+TFM_PRED_PATH=$predictions_metrics_all_dir/${experiment}_split000_predictions.h5 \
+	TFM_METRICS_DIR=$predictions_metrics_all_dir \
+	TEST_CHROMS=$test_chromosome \
+	jupyter nbconvert \
+    --execute $reports_notebooks_dir/model_performance.ipynb --to HTML \
+    --output $reports_output_dir/performance_allpeaks \
+    --ExecutePreprocessor.timeout=-1
 

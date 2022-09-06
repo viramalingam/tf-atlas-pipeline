@@ -14,7 +14,7 @@ task run_performance_reports{
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch dev_troubleshooting_reports https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v1.6.7 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/reports/
 
@@ -34,7 +34,8 @@ task run_performance_reports{
 	
 	output {
 
-		File performance_reports = "reports/performance.html"
+		File performance_reports_peak_only = "reports/performance.html"
+		File performance_reports_all_regions = "reports/performance_allpeaks.html"
 	
 	
 	}
@@ -67,7 +68,7 @@ workflow performance_reports {
 			splits_json = splits_json
  	}
 	output {
-		File performance_reports = run_performance_reports.performance_reports
-
+		File performance_reports_peak_only = run_performance_reports.performance_reports_peak_only
+		File performance_reports_all_regions = run_performance_reports.performance_reports_all_regions
 	}
 }
