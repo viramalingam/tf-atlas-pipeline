@@ -101,7 +101,7 @@ cp $splits_json $project_dir/splits.json
 
 echo 'test_chromosome=jq .["0"]["test"][0] $project_dir/splits.json | sed s/"//g'
 
-test_chromosome=`jq '.["0"]["test"][0]' $project_dir/splits.json | sed 's/"//g'` 
+test_chromosome=`jq '.["0"]["test"] | join(" ")' $project_dir/splits.json | sed 's/"//g'`
 
 #Performance
 TFM_PRED_PATH=$predictions_metrics_test_dir/${experiment}_split000_predictions.h5 \
