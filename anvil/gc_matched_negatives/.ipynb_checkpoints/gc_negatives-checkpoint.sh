@@ -14,7 +14,7 @@ reference_file=$2
 reference_file_index=$3
 chrom_sizes=$4
 chroms_txt=$5
-reference_gc_hg38_stride_1000_flank_size_1057=$6
+reference_gc_stride_1000_flank_size_1057=$6
 peaks=$7
 split_folds=$8
 
@@ -50,51 +50,51 @@ gunzip ${data_dir}/${1}_inliers.bed.gz
 
 
 # copy down data and reference
-echo $( timestamp ): "cp" $reference_file ${reference_dir}/hg38.genome.fa | \
+echo $( timestamp ): "cp" $reference_file ${reference_dir}/genome.fa | \
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/hg38.genome.fa.fai |\
+echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/genome.fa.fai |\
 tee -a $logfile 
 
 echo $( timestamp ): "cp" $chrom_sizes ${reference_dir}/chrom.sizes |\
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $chroms_txt ${reference_dir}/hg38_chroms.txt |\
+echo $( timestamp ): "cp" $chroms_txt ${reference_dir}/chroms.txt |\
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $reference_gc_hg38_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_hg38_stride_1000_flank_size_1057.bed |\
+echo $( timestamp ): "cp" $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed |\
 tee -a $logfile 
 
 # copy down data and reference
 
-cp $reference_file ${reference_dir}/hg38.genome.fa
-cp $reference_file_index ${reference_dir}/hg38.genome.fa.fai
+cp $reference_file ${reference_dir}/genome.fa
+cp $reference_file_index ${reference_dir}/genome.fa.fai
 cp $chrom_sizes $reference_dir/chrom.sizes
-cp $chroms_txt $reference_dir/hg38_chroms.txt
-cp $reference_gc_hg38_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_hg38_stride_1000_flank_size_1057.bed
+cp $chroms_txt $reference_dir/chroms.txt
+cp $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed
 
 
 echo $( timestamp ): "
 python get_gc_content.py \\
        --input_bed $data_dir/${1}_inliers.bed \\
-       --ref_fasta $reference_dir/hg38.genome.fa \\
+       --ref_fasta $reference_dir/genome.fa \\
        --out_prefix $data_dir/$experiment.gc.bed \\
        --flank_size 1057" | tee -a $logfile 
 
 python get_gc_content.py \
        --input_bed $data_dir/${1}_inliers.bed \
-       --ref_fasta $reference_dir/hg38.genome.fa \
+       --ref_fasta $reference_dir/genome.fa \
        --out_prefix $data_dir/$experiment.gc.bed \
        --flank_size 1057
 
 echo $( timestamp ): "
 bedtools intersect -v -a \\
-    $reference_dir/genomewide_gc_hg38_stride_1000_flank_size_1057.bed \\
+    $reference_dir/genomewide_gc_stride_1000_flank_size_1057.bed \\
     -b $data_dir/${1}_inliers.bed > $data_dir/${experiment}.tsv" | \
     tee -a $logfile 
 
 bedtools intersect -v -a \
-$reference_dir/genomewide_gc_hg38_stride_1000_flank_size_1057.bed \
+$reference_dir/genomewide_gc_stride_1000_flank_size_1057.bed \
 -b $data_dir/${1}_inliers.bed > $data_dir/${experiment}.tsv
 
 echo $( timestamp ): "
