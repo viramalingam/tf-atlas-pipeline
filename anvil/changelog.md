@@ -154,7 +154,10 @@ Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Sta
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.6.5- 2022-08-23
 - hdf5plugin to support blosc compression for shap saving and opening in motif discovery
-- vivekramalingam_tf-atlas_gcp-modeling_v1.6.5.sif is build from this version.
+- vivekramalingam_tf-atlas_gcp-modeling_v1.6.5.sif is build from this version - used for modisco production_run_1
+
+## vivekramalingam/tf-atlas:gcp-modeling_dev
+- used for shap calculations for the ZNFs. Same as v1.6.5. Only difference is that motif discovery script has import deepdish. e102fce64557
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.6.2- 2022-08-23
 Shap pipeline supports experiments with no control.
@@ -172,8 +175,6 @@ Same as the docker used for the modeling runs but the modisco repo is changed to
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.3.0 - 
 Docker used for the modeling run-id-3. Has single multinomial and count loss for training and prediction.
-
-
 
 
 # log of dev branches
