@@ -8,6 +8,7 @@ task run_outlier_detection {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
+		File blacklist_bed      
 
   	}	
 	command {
@@ -21,8 +22,8 @@ task run_outlier_detection {
 
 		##outlier_detection
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/outlier_detection//outliers.sh" ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
-		/my_scripts/tf-atlas-pipeline/anvil/outlier_detection//outliers.sh ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/outlier_detection//outliers.sh" ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${blacklist_bed}
+		/my_scripts/tf-atlas-pipeline/anvil/outlier_detection//outliers.sh ${experiment} ${input_outlier_json} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${blacklist_bed}
 
 		echo "copying all files to cromwell_root folder"
 
@@ -55,6 +56,7 @@ workflow outlier_detection {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
+		File blacklist_bed   
 	}
 
 	call run_outlier_detection {
@@ -64,7 +66,8 @@ workflow outlier_detection {
 			chrom_sizes = chrom_sizes,
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,
-			peaks = peaks
+			peaks = peaks,
+			blacklist_bed = blacklist_bed   
  	}
 	output {
 		File peaks_inliers_bed = run_outlier_detection.peaks_inliers_bed

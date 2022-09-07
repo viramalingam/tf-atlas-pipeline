@@ -14,6 +14,7 @@ chrom_sizes=$3
 chroms_txt=${4}
 bigwigs=${5}
 peaks=${6}
+blacklist_bed=${7}
 
 # create the log file
 logfile=$project_dir/${1}_outliers.log
@@ -46,6 +47,7 @@ tee -a $logfile
 
 cp $chrom_sizes $reference_dir/chrom.sizes
 cp $chroms_txt $reference_dir/hg38_chroms.txt
+cp $blacklist_bed $reference_dir/blacklist.bed
 
 
 # Step 1: Copy the bigwig and peak files
@@ -81,7 +83,7 @@ outliers \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --sequence-len 1000 \\
-    --blacklist blacklist.bed \\
+    --blacklist $reference_dir/blacklist.bed \\
     --global-sample-weight 1.0 \\
     --output-bed $project_dir/peaks_inliers.bed" | tee -a $logfile 
     
@@ -93,6 +95,6 @@ outliers \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --sequence-len 1000 \
-    --blacklist blacklist.bed \
+    --blacklist $reference_dir/blacklist.bed \
     --global-sample-weight 1.0 \
     --output-bed $project_dir/peaks_inliers.bed 
