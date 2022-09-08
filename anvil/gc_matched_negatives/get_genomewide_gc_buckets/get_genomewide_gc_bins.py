@@ -38,7 +38,8 @@ def main():
     print("made df")
     new_index=pd.MultiIndex.from_tuples(df.index, names=('CHR', 'START','END'))
     df = pd.DataFrame(df[0], new_index)
-    df.to_csv(args.out_prefix+".bed",sep='\t', header=True, index=True, index_label=['CHROM','START','END'])
-  
+    df.to_csv(args.out_prefix+".bed",sep='\t', header=False, index=True)
+
+    
 if __name__=="__main__":
     main()
