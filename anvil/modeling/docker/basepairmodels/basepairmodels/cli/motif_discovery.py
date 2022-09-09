@@ -116,10 +116,6 @@ def motif_discovery_argsparser():
 	
 	parser.add_argument("--scores-path", type=str, 
 						help="Path to the importance scores hdf5 file")
-	
-	parser.add_argument("--scores-locations", type=str, 
-						help="path to bed file containing the locations "
-						"that match the scores")
 
 	parser.add_argument("--output-directory", type=str, 
 						help="Path to the output directory")
@@ -323,5 +319,6 @@ def motif_discovery_main(scores_path, output_directory, modisco_window_size, max
 if __name__ == '__main__':
 	parser = motif_discovery_argsparser()
 	args = parser.parse_args()
+    print(args)
 	motif_discovery_main(args.scores_path, args.output_directory, 
 		args.modisco_window_size, args.max_seqlets)
