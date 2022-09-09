@@ -5,19 +5,13 @@ import matplotlib.pyplot as plt
 import os
 import json
 from collections import OrderedDict
-
-
 import h5py
 import hdf5plugin
-
 import numpy as np
 import modiscolite
-
 import modiscolite.tfmodisco
 import modiscolite.util
-
 from modiscolite.visualization import viz_sequence
-
 import random
 import numpy
 
