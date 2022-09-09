@@ -9,7 +9,7 @@ if ! [[ -d /scratch/users/vir/my_scripts ]];
 then
     cd /scratch/users/vir/; rm -rf my_scripts; mkdir my_scripts
     cd /scratch/users/vir/my_scripts
-    git clone --depth 1 --branch v1.6.5 https://github.com/viramalingam/tf-atlas-pipeline.git
+    git clone --depth 1 --branch dev_modisco_lite https://github.com/viramalingam/tf-atlas-pipeline.git
     chmod -R 777 tf-atlas-pipeline
 fi
 cd /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco_lite/
