@@ -18,9 +18,6 @@ import numpy
 random.seed(0)
 numpy.random.seed(0)
 
-from tensorflow.random import set_seed 
-set_seed(1234)
-
 def save_hierarchy(h, grp):
 	root_node_names = []
 	for i in range(len(h.root_nodes)):
