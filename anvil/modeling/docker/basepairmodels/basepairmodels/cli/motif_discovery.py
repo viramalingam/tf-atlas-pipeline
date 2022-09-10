@@ -126,7 +126,7 @@ def motif_discovery_argsparser():
 
 	parser.add_argument('--modisco-window-size', type=int,
 						help="size of the window around the peak "
-						"coodrinate that will be considered for motif"
+						"coordinate that will be considered for motif"
 						"discovery", default=400)
 	return parser
 
@@ -151,7 +151,14 @@ def save_plot(weights, dst_fname):
 
 	plt.savefig(dst_fname)
 
-def motif_discovery_main(scores_path, output_directory, modisco_window_size, max_seqlets):
+def motif_discovery_main():
+	parser = motif_discovery_argsparser()
+	args = parser.parse_args()
+	scores_path = args.scores_path
+	output_directory = args.output_directory
+	modisco_window_size = args.modisco_window_size
+	max_seqlets = args.max_seqlets
+    
 	if not os.path.exists(scores_path):
 		raise Exception(
 			"Score file {} does not exist".format(scores_path))
@@ -317,8 +324,4 @@ def motif_discovery_main(scores_path, output_directory, modisco_window_size, max
 		save_plot(pattern.sequence, '{}/sequence_{}.png'.format(output_directory, idx))
 
 if __name__ == '__main__':
-	parser = motif_discovery_argsparser()
-	args = parser.parse_args()
-    print(args)
-	motif_discovery_main(args.scores_path, args.output_directory, 
-		args.modisco_window_size, args.max_seqlets)
+    motif_discovery_main()
