@@ -1,5 +1,5 @@
 # Use the official TensorFlow image as parent
-FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
+FROM ubuntu:bionic
 
 # Create /tfatlas directory and subdirectories
 RUN mkdir -p /tfatlas
@@ -8,9 +8,6 @@ RUN mkdir -p /tfatlas
 WORKDIR /tfatlas
 
 
-RUN apt-key del 7fa2af80
-
-RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
 RUN apt-get update
 
 
