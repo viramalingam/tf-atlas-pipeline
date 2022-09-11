@@ -66,12 +66,12 @@ python /tfmodisco-lite/modiscolite/motif_discovery \\
 
     
 echo $( timestamp ): "
-python /tfmodisco-lite/modiscolite/motif_discovery \\
+python /tfmodisco-lite/modiscolite/motif_discovery.py \\
     --scores-path $shap_dir/counts_scores.h5 \\
     --output-directory $modisco_counts_dir\\
     --max_seqlets $max_seqlets" | tee -a $logfile
 
-python /tfmodisco-lite/modiscolite/motif_discovery \
+python /tfmodisco-lite/modiscolite/motif_discovery.py \
     --scores-path $shap_dir/counts_scores.h5 \
     --output-directory $modisco_counts_dir \
     --max_seqlets $max_seqlets
