@@ -54,14 +54,14 @@ cp -r ${shap}/*.h5 ${shap_dir}/
 
 
 echo $( timestamp ): "
-python /tfmodisco-lite/modiscolite/motif_discovery \\
+python /tfmodisco-lite/modiscolite/motif_discovery.py \\
     --scores-path $shap_dir/profile_scores.h5 \\
     --output-directory $modisco_profile_dir \\
     --max_seqlets $max_seqlets" | tee -a $logfile
 
-python /tfmodisco-lite/modiscolite/motif_discovery \\
-    --scores-path $shap_dir/profile_scores.h5 \\
-    --output-directory $modisco_profile_dir \\
+python /tfmodisco-lite/modiscolite/motif_discovery.py \
+    --scores-path $shap_dir/profile_scores.h5 \
+    --output-directory $modisco_profile_dir \
     --max_seqlets $max_seqlets
 
     
