@@ -35,63 +35,16 @@ RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-
-
-# Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
-RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
-
-RUN apt install -y --allow-unauthenticated libbz2-dev
-RUN apt install -y --allow-unauthenticated liblzma-dev
-
-RUN pip install --upgrade protobuf==3.19.0
-
-RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
-RUN apt install -y --allow-unauthenticated zlib1g-dev
-RUN pip install pysam==0.18.0
-
-
 # Install tfmodisco-lite repo
 COPY tfmodisco-lite /tfmodisco-lite
 RUN pip install -e /tfmodisco-lite
 
-RUN pip install leidenalg~=0.8.7
-RUN pip install numpy~=1.22.2
-RUN pip install pyparsing~=2.4.7
-RUN pip install imageio~=2.13.0
+RUN pip install h5py
+RUN pip install hdf5plugin
+RUN pip install matplotlib
 
 # Install jq
 RUN apt-get install -y jq
 
-# Install any remaining needed Python packages specified in requirements.txt
-COPY requirements.txt /tfatlas
-RUN pip install -r requirements.txt
-RUN rm requirements.txt
-
-# Clean up after apt and conda
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN conda clean -tipy
-
-# Set environment variables for Python
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-
-
-
-# Install local mseqgen repo
-COPY mseqgen /mseqgen
-RUN pip install -e /mseqgen
-
-# Install local genomics-DL-archsandlosses repo
-COPY genomicsdlarchsandlosses /genomicsdlarchsandlosses
-RUN pip install -e /genomicsdlarchsandlosses
-
-# Install BPNet repo
-COPY basepairmodels /basepairmodels
-RUN pip install -e /basepairmodels
-
-# Install plotnine
-RUN pip install plotnine
-
-# Install modiscolite
 
 
