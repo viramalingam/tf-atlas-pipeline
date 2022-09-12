@@ -27,9 +27,9 @@ cp -r /scratch/users/vir/$round/$fold/${experiment}/modisco_counts/* $modisco_di
 
 if [ -f $oak_dir/modisco/$round/$fold/$experiment/counts/modisco_results.h5 ] && [ -f $oak_dir/modisco/$round/$fold/$experiment/profile/modisco_results.h5 ];
 then
-printf "$experiment success\n"
+printf "$experiment success \n"
 else
-echo "$experiment failed\n" >> /oak/stanford/groups/akundaje/vir/tfatlas/modisco/error/$round/$fold/failed_experiments.txt
+echo "$experiment failed \n" >> /oak/stanford/groups/akundaje/vir/tfatlas/modisco/error/$round/$fold/failed_experiments.txt
 fi
 
 rm -rf /scratch/users/vir/$experiment

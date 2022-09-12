@@ -26,13 +26,10 @@ if [ -f $oak_dir/shap/$round/$fold/$experiment/profile_scores.h5 ] && [ -f $oak_
         fi
         modisco_dir=$oak_dir/modisco/$round/$fold/$experiment
         
-        
-        cores=10
-        score_type=profile
         sbatch --export=ALL --requeue \
             -J $experiment.modisco \
             -p akundaje,owners,normal \
-            -t 1440 -c 10 --mem=32G \
+            -t 300 -c 5 --mem=15G \
             -o $modisco_dir/output_log.txt \
             -e $modisco_dir/error_log.txt \
             run_modisco.sh  $experiment ${round} $fold ${oak_dir}/shap/${round}/$fold/${experiment} 25000 $modisco_dir
