@@ -32,16 +32,16 @@ RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc
 
-# Install tfmodisco-lite repo
-COPY tfmodisco-lite /tfmodisco-lite
-RUN pip install -e /tfmodisco-lite
-
-RUN pip install h5py
-RUN pip install hdf5plugin
 RUN pip install matplotlib
 
 # Install jq
 RUN apt-get install -y jq
+
+# Install tfmodisco-lite repo
+COPY tfmodisco-lite /tfmodisco-lite
+RUN pip install -e /tfmodisco-lite
+
+
 
 
 
