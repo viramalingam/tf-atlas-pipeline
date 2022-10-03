@@ -29,7 +29,7 @@ if [ -f $oak_dir/shap/$round/$fold/$experiment/profile_scores.h5 ] && [ -f $oak_
         sbatch --export=ALL --requeue \
             -J $experiment.modisco \
             -p akundaje,owners,normal \
-            -t 300 -c 5 --mem=15G \
+            -t 180 -c 5 --mem=10G \
             -o $modisco_dir/output_log.txt \
             -e $modisco_dir/error_log.txt \
             run_modisco.sh  $experiment ${round} $fold ${oak_dir}/shap/${round}/$fold/${experiment} 25000 $modisco_dir

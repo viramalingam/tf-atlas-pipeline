@@ -52,9 +52,9 @@ workflow modisco {
 	input {
 		String experiment
 		Array [File] shap
-		Int? mem_gb=32
-		Int? number_of_cpus=8
-		Int? max_seqlets=20000        
+		Int? mem_gb=16
+		Int? number_of_cpus=4
+		Int? max_seqlets=25000        
 
 
 
