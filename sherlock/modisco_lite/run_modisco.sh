@@ -16,9 +16,9 @@ then
 fi
 
 
-echo "singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_dev_modisco_lite.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco_lite/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment}
+echo "singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_dev_modisco_lite.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco_lite/modisco_pipeline.sh" ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment} /oak/stanford/groups/akundaje/soumyak/motifs/pfms/ /oak/stanford/groups/akundaje/soumyak/motifs/motifs.meme.txt
 
-singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_dev_modisco_lite.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco_lite/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment}
+singularity run /oak/stanford/groups/akundaje/vir/tfatlas/docker_images/vivekramalingam_tf-atlas_dev_modisco_lite.sif bash /scratch/users/vir/my_scripts/tf-atlas-pipeline/sherlock/modisco_lite/modisco_pipeline.sh ${experiment} ${shap_dir} ${max_seqlets} /scratch/users/vir/$round/$fold/${experiment} /oak/stanford/groups/akundaje/soumyak/motifs/pfms/ /oak/stanford/groups/akundaje/soumyak/motifs/motifs.meme.txt
 
 echo "copying all files to cromwell_root folder"
 
