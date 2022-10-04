@@ -114,6 +114,10 @@ if args.cmd == "motifs":
 
 	modiscolite.io.save_hdf5(args.output, pos_patterns, neg_patterns)
 
+# export the trimmed motif pngs
+	modiscolite.report.report_motifs(args.h5py, args.output, suffix=args.suffix, 
+		top_n_matches=args.n_matches, run_tomtom = False)
+
 elif args.cmd == 'report':
 	modiscolite.report.report_motifs(args.h5py, args.output, suffix=args.suffix, 
 		top_n_matches=args.n_matches, meme_motif_db=args.meme_db,
