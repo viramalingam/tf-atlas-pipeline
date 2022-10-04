@@ -67,19 +67,6 @@ python /tfmodisco-lite/modisco motifs\
     --output $modisco_profile_dir/modisco_results.h5 \
     --max_seqlets $max_seqlets
 
-echo $( timestamp ): "
-python /tfmodisco-lite/modisco report\\
-    --h5py $modisco_profile_dir/modisco_results.h5 \\
-    --output $modisco_profile_dir/ \\
-    --meme_db $meme_db \\
-    --meme_motifs $meme_motifs" | tee -a $logfile
-    
-python /tfmodisco-lite/modisco report\
-    --h5py $modisco_profile_dir/modisco_results.h5 \
-    --output $modisco_profile_dir/ \
-    --meme_db $meme_db \
-    --meme_motifs $meme_motifs
-
     
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
@@ -91,18 +78,5 @@ python /tfmodisco-lite/modisco motifs\
     --h5py $shap_dir/counts_scores.h5 \
     --output $modisco_counts_dir/modisco_results.h5 \
     --max_seqlets $max_seqlets
-    
-echo $( timestamp ): "
-python /tfmodisco-lite/modisco report\\
-    --h5py $modisco_counts_dir/modisco_results.h5 \\
-    --output $modisco_counts_dir/ \\
-    --meme_db $meme_db \\
-    --meme_motifs $meme_motifs" | tee -a $logfile
-    
-python /tfmodisco-lite/modisco report\
-    --h5py $modisco_counts_dir/modisco_results.h5 \
-    --output $modisco_counts_dir/ \
-    --meme_db $meme_db \
-    --meme_motifs $meme_motifs
     
 
