@@ -60,11 +60,13 @@ echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
     --h5py $shap_dir/profile_scores.h5 \\
     --output $modisco_profile_dir/modisco_results.h5 \\
+    --pngs_dir $modisco_profile_dir \\
     --max_seqlets $max_seqlets" | tee -a $logfile
 
 python /tfmodisco-lite/modisco motifs\
     --h5py $shap_dir/profile_scores.h5 \
     --output $modisco_profile_dir/modisco_results.h5 \
+    --pngs_dir $modisco_profile_dir \
     --max_seqlets $max_seqlets
 
     
@@ -72,11 +74,13 @@ echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
     --h5py $shap_dir/counts_scores.h5 \\
     --output $modisco_counts_dir/modisco_results.h5 \\
+    --pngs_dir $modisco_counts_dir \\
     --max_seqlets $max_seqlets" | tee -a $logfile
 
 python /tfmodisco-lite/modisco motifs\
     --h5py $shap_dir/counts_scores.h5 \
     --output $modisco_counts_dir/modisco_results.h5 \
+    --pngs_dir $modisco_counts_dir \
     --max_seqlets $max_seqlets
     
 
