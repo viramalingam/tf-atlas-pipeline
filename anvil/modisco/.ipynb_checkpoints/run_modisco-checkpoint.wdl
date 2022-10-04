@@ -31,8 +31,10 @@ task run_modisco {
 	}
 	
 	output {
-		Array[File] modisco_profile = glob("modisco_profile/*")
-		Array[File] modisco_counts = glob("modisco_counts/*")
+		Array[File] modisco_profile_motifs = glob("modisco_profile/trimmed_logos/*")
+		Array[File] modisco_counts_motifs = glob("modisco_counts/trimmed_logos/*")
+		File modisco_profile_h5 = "modisco_profile/modisco_results.h5")
+		File modisco_counts_h5 = "modisco_counts/modisco_results.h5")
 		
 	
 	}
@@ -71,10 +73,10 @@ workflow modisco {
 			max_seqlets = max_seqlets
 	}
 	output {
-		Array[File] modisco_profile = run_modisco.modisco_profile
-		Array[File] modisco_counts = run_modisco.modisco_counts
-		Int max_memory_used_gb = run_modisco.max_memory_used_gb
-
+		Array[File] modisco_profile = run_modisco.modisco_profile_motifs
+		Array[File] modisco_counts = run_modisco.modisco_counts_motifs
+		File modisco_profile_h5 = run_modisco.modisco_profile_h5
+		File modisco_counts_h5 = run_modisco.modisco_counts_h5
 		
 	}
 }
