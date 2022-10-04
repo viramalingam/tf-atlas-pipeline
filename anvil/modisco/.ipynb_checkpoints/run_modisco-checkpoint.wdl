@@ -4,7 +4,9 @@ task run_modisco {
 	input {
 		String experiment
 		Array [File] shap
+		Int? mem_gb
 		Int? max_seqlets        
+		Int? number_of_cpus
 
 
   	}	
@@ -49,13 +51,23 @@ workflow modisco {
 	input {
 		String experiment
 		Array [File] shap
+		Int? mem_gb=16
+		Int? number_of_cpus=4
 		Int? max_seqlets=25000        
+
+
+
 	}
+
+
+
 
 	call run_modisco {
 		input:
 			experiment = experiment,
 			shap = shap,
+			mem_gb = mem_gb,
+			number_of_cpus = number_of_cpus,
 			max_seqlets = max_seqlets
 	}
 	output {
