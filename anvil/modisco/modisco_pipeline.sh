@@ -44,11 +44,10 @@ mkdir $modisco_counts_dir
 
 #Step 1: Copy the shap files
 
-echo $( timestamp ): "cp -r" ${shap}/ ${shap_dir}/ |\
+echo $shap | sed 's/,/ /g' | xargs cp -t ${shap_dir}/
+
+echo $( timestamp ): "cp" $shap ${shap_dir}/ |\
 tee -a $logfile 
-
-cp -r ${shap}/*.h5 ${shap_dir}/
-
 
 #Step 2: Run modisco on counts and profile
 
