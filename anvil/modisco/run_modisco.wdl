@@ -33,8 +33,8 @@ task run_modisco {
 	output {
 		Array[File] modisco_profile_motifs = glob("modisco_profile/trimmed_logos/*")
 		Array[File] modisco_counts_motifs = glob("modisco_counts/trimmed_logos/*")
-		File modisco_profile_h5 = "modisco_profile/modisco_results.h5")
-		File modisco_counts_h5 = "modisco_counts/modisco_results.h5")
+		File modisco_profile_h5 = "modisco_profile/modisco_results.h5"
+		File modisco_counts_h5 = "modisco_counts/modisco_results.h5"
 		
 	
 	}
