@@ -118,7 +118,7 @@ if args.cmd == "motifs":
 
 # export the trimmed motif pngs
 
-	modiscolite.report.report_motifs(args.output, args.pngs_dir, top_n_matches=args.n_matches, run_tomtom = False)
+	modiscolite.report.report_motifs(args.output, args.pngs_dir, run_tomtom = False)
 
 elif args.cmd == 'report':
 	modiscolite.report.report_motifs(args.h5py, args.output, suffix=args.suffix, 

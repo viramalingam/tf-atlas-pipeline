@@ -11,12 +11,12 @@ function timestamp {
 experiment=$1
 shap=$2
 max_seqlets=$3
-number_of_cpus=$4
 
+echo $1 $2 $3
 
-
-mkdir /project
+echo 'mkdir project_dir'
 project_dir=/project
+mkdir $project_dir
 
 # create the log file
 logfile=$project_dir/${1}_modisco.log
@@ -44,36 +44,39 @@ mkdir $modisco_counts_dir
 
 #Step 1: Copy the shap files
 
-echo $( timestamp ): "cp" $shap ${shap_dir}/ |\
+echo $( timestamp ): "cp -r" ${shap}/ ${shap_dir}/ |\
 tee -a $logfile 
 
-echo $shap | sed 's/,/ /g' | xargs cp -t $shap_dir/
+cp -r ${shap}/*.h5 ${shap_dir}/
 
 
 #Step 2: Run modisco on counts and profile
 
+
+
 echo $( timestamp ): "
-python /tfmodisco-lite/modiscolite/motif_discovery.py \\
-    --scores-path $shap_dir/profile_scores.h5 \\
-    --output-directory $modisco_profile_dir \\
+python /tfmodisco-lite/modisco motifs\\
+    --h5py $shap_dir/profile_scores.h5 \\
+    --output $modisco_profile_dir/modisco_results.h5 \\
+    --pngs_dir $modisco_profile_dir \\
     --max_seqlets $max_seqlets" | tee -a $logfile
 
-python /tfmodisco-lite/modiscolite/motif_discovery.py \
-    --scores-path $shap_dir/profile_scores.h5 \
-    --output-directory $modisco_profile_dir \
+python /tfmodisco-lite/modisco motifs\
+    --h5py $shap_dir/profile_scores.h5 \
+    --output $modisco_profile_dir/modisco_results.h5 \
+    --pngs_dir $modisco_profile_dir \
     --max_seqlets $max_seqlets
 
     
 echo $( timestamp ): "
-python /tfmodisco-lite/modiscolite/motif_discovery.py \\
-    --scores-path $shap_dir/counts_scores.h5 \\
-    --output-directory $modisco_counts_dir\\
+python /tfmodisco-lite/modisco motifs\\
+    --h5py $shap_dir/counts_scores.h5 \\
+    --output $modisco_counts_dir/modisco_results.h5 \\
+    --pngs_dir $modisco_counts_dir \\
     --max_seqlets $max_seqlets" | tee -a $logfile
 
-python /tfmodisco-lite/modiscolite/motif_discovery.py \
-    --scores-path $shap_dir/counts_scores.h5 \
-    --output-directory $modisco_counts_dir \
+python /tfmodisco-lite/modisco motifs\
+    --h5py $shap_dir/counts_scores.h5 \
+    --output $modisco_counts_dir/modisco_results.h5 \
+    --pngs_dir $modisco_counts_dir \
     --max_seqlets $max_seqlets
-    
-
-
