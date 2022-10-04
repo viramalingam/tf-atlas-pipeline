@@ -37,22 +37,24 @@ RUN pip install matplotlib
 # Install jq
 RUN apt-get install -y jq
 
-# Install tfmodisco-lite repo
-COPY tfmodisco-lite /tfmodisco-lite
-RUN pip install -e /tfmodisco-lite
-
 RUN apt-get update && apt-get update --fix-missing && apt install -y --allow-unauthenticated build-essential
 
 RUN DEBIAN_FRONTEND=noninteractive apt install -y libxml2 && apt-get install -y zlib1g && apt install -y zlib1g-dev
 
-RUN wget https://meme-suite.org/meme/meme-software/5.0.1/meme-5.0.1.tar.gz && \
-	tar xzf meme-5.0.1.tar.gz && \
+RUN wget https://meme-suite.org/meme/meme-software/5.0.1/meme_5.0.1.tar.gz && \
+	tar xzf meme_5.0.1.tar.gz && \
 	cd meme-5.0.1 && \
 	./configure --prefix=/opt/meme --enable-build-libxml2 --enable-build-libxslt && \
 	make && \
 	make install
 ENV PATH "$PATH:/opt/meme/bin/"
 RUN rm -rf meme*
+
+# Install tfmodisco-lite repo
+COPY tfmodisco-lite /tfmodisco-lite
+RUN pip install -e /tfmodisco-lite
+
+
 
 
 
