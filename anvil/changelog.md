@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.6.9] - 2022-10-04
+
+1. merged with branch that uses modisco_lite
+
+## [v1.6.8]
+
+## [v1.6.7]
+
 ## [v1.6.6] - 2022-09-04
 1. changed branch version in wdl for performance reports
 
@@ -158,6 +166,9 @@ Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Sta
 
 ## vivekramalingam/tf-atlas:gcp-modeling_dev
 - used for shap calculations for the ZNFs. Same as v1.6.5. Only difference is that motif discovery script has import deepdish. e102fce64557
+
+## vivekramalingam/tf-atlas:gcp-modisco_modiscolite
+- used for modisco runs
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.6.2- 2022-08-23
 Shap pipeline supports experiments with no control.
