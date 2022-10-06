@@ -1,6 +1,6 @@
 version 1.0
 
-task mean_shap {
+task run_mean_shap {
 	input {
 		File? shap_0
 		File? shap_1
