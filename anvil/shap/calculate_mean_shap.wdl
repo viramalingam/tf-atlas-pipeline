@@ -16,13 +16,10 @@ task run_mean_shap {
 
 		##mean shap
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/calculate_mean_shap.sh" ${sep=',' counts_shap} ${sep=',' profile_shap}
-		/my_scripts/tf-atlas-pipeline/anvil/shap/calculate_mean_shap.sh ${sep=',' counts_shap} ${sep=',' profile_shap}
+		echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" ${sep=',' counts_shap} ${sep=',' profile_shap}
+		python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py ${sep=',' counts_shap} ${sep=',' profile_shap}
 
 		echo "copying all files to cromwell_root folder"
-		
-		cp -r /project/shap_dir_peaks/counts_mean_shap_scores.h5 /cromwell_root/counts_scores.h5
-		cp -r /project/shap_dir_peaks/profile_mean_shap_scores.h5 /cromwell_root/profile_scores.h5
 	}
 	
 	output {
