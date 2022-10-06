@@ -68,15 +68,15 @@ workflow mean_shap {
 
 	call run_mean_shap {
 		input:
-		shap_0 = shap_0
-		shap_1 = shap_1
-		shap_2 = shap_2
-		shap_3 = shap_3
-		shap_4 = shap_4
-		shap_5 = shap_5
-		shap_6 = shap_6
-		shap_7 = shap_7
-		shap_8 = shap_8
+		shap_0 = shap_0,
+		shap_1 = shap_1,
+		shap_2 = shap_2,
+		shap_3 = shap_3,
+		shap_4 = shap_4,
+		shap_5 = shap_5,
+		shap_6 = shap_6,
+		shap_7 = shap_7,
+		shap_8 = shap_8,
 		shap_9 = shap_9
 
 	}
