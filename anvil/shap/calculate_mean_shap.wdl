@@ -2,16 +2,8 @@ version 1.0
 
 task run_mean_shap {
 	input {
-		File? shap_0
-		File? shap_1
-		File? shap_2
-		File? shap_3
-		File? shap_4
-		File? shap_5
-		File? shap_6
-		File? shap_7
-		File? shap_8
-		File? shap_9
+		Array [File]? counts_shap
+		Array [File]? profile_shap
 
 	}	
 	command {
@@ -52,32 +44,18 @@ task run_mean_shap {
 
 workflow mean_shap {
 	input {
-		File? shap_0
-		File? shap_1
-		File? shap_2
-		File? shap_3
-		File? shap_4
-		File? shap_5
-		File? shap_6
-		File? shap_7
-		File? shap_8
-		File? shap_9
+		Array [File]? counts_shap
+		Array [File]? profile_shap
+
+
 
 
 	}
 
 	call run_mean_shap {
 		input:
-		shap_0 = shap_0,
-		shap_1 = shap_1,
-		shap_2 = shap_2,
-		shap_3 = shap_3,
-		shap_4 = shap_4,
-		shap_5 = shap_5,
-		shap_6 = shap_6,
-		shap_7 = shap_7,
-		shap_8 = shap_8,
-		shap_9 = shap_9
+		counts_shap = counts_shap,
+		profile_shap = profile_shap
 
 	}
 	output {
