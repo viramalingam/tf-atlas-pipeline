@@ -16,8 +16,8 @@ task run_mean_shap {
 
 		##mean shap
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/calculate_mean_shap.sh" ${shap_0},${shap_1},${shap_2},${shap_3},${shap_4},${shap_6},${shap_7},${shap_8},${shap_9}
-		/my_scripts/tf-atlas-pipeline/anvil/shap/calculate_mean_shap.sh ${shap_0},${shap_1},${shap_2},${shap_3},${shap_4},${shap_6},${shap_7},${shap_8},${shap_9}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/calculate_mean_shap.sh" ${sep=',' counts_shap} ${sep=',' profile_shap}
+		/my_scripts/tf-atlas-pipeline/anvil/shap/calculate_mean_shap.sh ${sep=',' counts_shap} ${sep=',' profile_shap}
 
 		echo "copying all files to cromwell_root folder"
 		
