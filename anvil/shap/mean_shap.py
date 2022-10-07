@@ -6,8 +6,8 @@ import hdf5plugin
 import argparse
 
 parser = argparse.ArgumentParser(description="calculate mean shap over the given h5s")
-parser.add_argument("--counts_shaps", type=str, required=True, nargs="+", help="counts shap h5s")
-parser.add_argument("--profile_shaps", type=str, required=True, nargs="+", help="profile shap h5s")
+parser.add_argument("--counts_shaps", type=str, required=True, help="counts shap h5s")
+parser.add_argument("--profile_shaps", type=str, required=True, help="profile shap h5s")
 parser.add_argument("--output_dir", type=str,default='/cromwell_root/', help="output directory for the model")
 
 def mean_shap(shaps_list,output_path):
