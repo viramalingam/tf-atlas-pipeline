@@ -33,8 +33,8 @@ task run_mean_shap {
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.6.5'
 		memory: mem_gb + "GB"
-		bootDiskSizeGb: 32
-		disks: "local-disk 50 HDD"
+		bootDiskSizeGb: 100
+		disks: "local-disk 100 HDD"
 	}
 }
 
