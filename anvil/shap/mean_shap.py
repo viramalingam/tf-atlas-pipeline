@@ -16,7 +16,7 @@ def mean_shap(shaps_list,output_path):
     start_lst=[]
     end_lst=[]
     input_seqs_lst=[]
-    for shap_h5 in shaps_list:
+    for shap_h5 in shaps_list.split(','):
         try:
             f = h5py.File(shap_h5, 'r')
             hyp_scores_lst.append(f['hyp_scores'][()])

@@ -16,7 +16,7 @@ task run_mean_shap {
 
 		##mean shap
 
-		echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" ${sep=',' counts_shap} ${sep=',' profile_shap}
+		echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
 		python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
 
 		echo "copying all files to cromwell_root folder"
