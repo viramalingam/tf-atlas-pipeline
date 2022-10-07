@@ -5,6 +5,8 @@ import hdf5plugin
 import numpy as np
 
 import argparse
+import gc
+
 
 parser = argparse.ArgumentParser(description="calculate mean shap over the given h5s")
 parser.add_argument("--counts_shaps", type=str, required=True, help="counts shap h5s")
@@ -66,6 +68,10 @@ def mean_shap(shaps_list,output_path):
         input_seqs_dset[:, :, :] = input_seqs_lst[0]
 
         f.close()
+        
+        del(input_seqs_lst,hyp_scores_mean,chrom_lst,start_lst,end_lst,hyp_scores_lst)
+        
+        gc.collect()
         
         
 args = parser.parse_args()
