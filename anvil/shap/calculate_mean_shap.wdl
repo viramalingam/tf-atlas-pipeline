@@ -19,13 +19,12 @@ task run_mean_shap {
 		echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
 		python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
 
-		echo "copying all files to cromwell_root folder"
+		## All output files are in the cromwell_root folder
 	}
 	
 	output {
 		File profile_mean_shap_scores_h5 = "profile_mean_shap_scores.h5"
 		File counts_mean_shap_scores_h5 = "counts_mean_shap_scores.h5"
-		        
 	
 	
 	}
