@@ -35,7 +35,6 @@ task run_mean_shap {
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
-		maxRetries: 1
 	}
 }
 
