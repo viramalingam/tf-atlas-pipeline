@@ -4,6 +4,7 @@ task run_mean_shap {
 	input {
 		Array [File]? counts_shap
 		Array [File]? profile_shap
+		Int? mem_gb
 
 	}	
 	command {
@@ -31,8 +32,8 @@ task run_mean_shap {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.6.5'
-		memory: 32 + "GB"
-		bootDiskSizeGb: 50
+		memory: mem_gb + "GB"
+		bootDiskSizeGb: 32
 		disks: "local-disk 50 HDD"
 	}
 }
@@ -41,7 +42,7 @@ workflow mean_shap {
 	input {
 		Array [File]? counts_shap
 		Array [File]? profile_shap
-
+		Int? mem_gb = 32
 
 
 
@@ -50,7 +51,8 @@ workflow mean_shap {
 	call run_mean_shap {
 		input:
 		counts_shap = counts_shap,
-		profile_shap = profile_shap
+		profile_shap = profile_shap,
+		mem_gb = mem_gb
 
 	}
 	output {
