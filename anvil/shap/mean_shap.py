@@ -66,5 +66,8 @@ def mean_shap(shaps_list,output_path):
 
         f.close()
         
+        
+args = parser.parse_args()
+
 mean_shap(args.counts_shaps,f"{args.output_dir}/counts_mean_shap_scores.h5")
 mean_shap(args.profile_shaps,f"{args.output_dir}/profile_mean_shap_scores.h5")
