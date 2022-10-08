@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v1.6.11] - 2022-10-04
+
+1. change name of ${shap_dir}/counts/profile*scores*h5 to ${shap_dir}/counts/profile_scores.h5 to accomodate different file names like from mean_shap scores
+
 ## [v1.6.10] - 2022-10-04
 
 1. mean shap score calculation in anvil

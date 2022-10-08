@@ -51,7 +51,8 @@ tee -a $logfile
 
 #Step 2: Run modisco on counts and profile
 
-
+mv ${shap_dir}/counts*scores*h5 ${shap_dir}/counts_scores.h5
+mv ${shap_dir}/profile*scores*h5 ${shap_dir}/profile_scores.h5
 
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
