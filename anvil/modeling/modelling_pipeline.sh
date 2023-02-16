@@ -240,6 +240,7 @@ train \\
     --reverse-complement-augmentation \\
     --learning-rate $learning_rate \\
     --early-stopping-patience 10 \\
+    --orig-multi-loss True \\
     --reduce-lr-on-plateau-patience 5" | tee -a $logfile 
 
 train \
@@ -262,6 +263,7 @@ train \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate \
     --early-stopping-patience 10 \
+    --orig-multi-loss True \
     --reduce-lr-on-plateau-patience 5
     
 # save the values used for training
@@ -363,6 +365,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
+    --orig-multi-loss True \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -379,6 +382,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
+    --orig-multi-loss True \
     --threads $threads
     
 

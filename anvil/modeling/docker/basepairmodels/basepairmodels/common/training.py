@@ -854,7 +854,7 @@ def train_and_validate_ksplits(
         logging.info("Split #{}".format(i))
         logging.info("Training chromosomes, if chromosome wise training regime: {}".format(train_chroms))
         logging.info("Validation chromosomes, if chromosome wise training regime: {}".format(val_chroms))
-            
+        logging.info("orig_multi_loss: {}".format(orig_multi_loss))
         # Start training for the split in a separate process
         # This ensures that all resources are freed, when the 
         # process terminates, & available for training the next split
