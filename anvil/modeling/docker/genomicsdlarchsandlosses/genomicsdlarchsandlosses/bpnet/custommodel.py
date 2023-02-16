@@ -9,13 +9,18 @@ import tensorflow_probability as tfp
 
 class CustomModel(Model):
 
-    def __init__(self, num_tasks, tracks_for_each_task, output_profile_len, loss_weights,counts_loss, **kwargs):
+    def __init__(self, num_tasks, num_output_tracks, tracks_for_each_task, output_profile_len, loss_weights,counts_loss, orig_multi_loss=False, **kwargs):
 
         # call the base class with inputs and outputs
         super(CustomModel, self).__init__(**kwargs)
         
         # number of tasks
         self.num_tasks = num_tasks
+        
+        # number of output tracks used for original multinomial loss
+        self.num_output_tracks = num_output_tracks
+        
+        self.orig_multi_loss = orig_multi_loss
         
         # number of tracks for each task
         self.tracks_for_each_task = tracks_for_each_task
@@ -59,13 +64,20 @@ class CustomModel(Model):
         def _poisson_loss_function(_y_log_true,_y_log_pred):
             total_poisson_loss = 0
             track_count_cuml = 0
-            for i in range(self.num_tasks):
-                num_of_tracks = self.tracks_for_each_task[i]
-                y_log_true = tf.reduce_logsumexp(_y_log_true[:,track_count_cuml:(track_count_cuml+num_of_tracks)],axis=1)
-                y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
-                loss = poisson_loss_function(y_log_true, y_log_pred)
-                track_count_cuml += num_of_tracks
-                total_poisson_loss += loss
+            if self.orig_multi_loss:
+                for i in range(self.num_output_tracks):
+                    y_log_true = _y_log_true[:,i:(i+1)][:,-1]
+                    y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
+                    loss = poisson_loss_function(y_log_true, y_log_pred)
+                    total_poisson_loss += loss               
+            else:
+                for i in range(self.num_tasks):
+                    num_of_tracks = self.tracks_for_each_task[i]
+                    y_log_true = tf.reduce_logsumexp(_y_log_true[:,track_count_cuml:(track_count_cuml+num_of_tracks)],axis=1)
+                    y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
+                    loss = poisson_loss_function(y_log_true, y_log_pred)
+                    track_count_cuml += num_of_tracks
+                    total_poisson_loss += loss
             return total_poisson_loss
     
         def mse_loss_function(y_log_true, y_log_pred):
@@ -78,16 +90,24 @@ class CustomModel(Model):
             total_mse_loss = 0
             track_count_cuml = 0
             num_tasks_count_cuml = 0
+            
+            if self.orig_multi_loss:
+                for i in range(self.num_output_tracks):
+                    y_log_true = _y_log_true[:,i:(i+1)][:,-1]
+                    y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
+                    loss = mse_loss_function(y_log_true, y_log_pred)
+                    total_mse_loss += loss
+            else:
 
-            for i in range(self.num_tasks):
-                num_of_tracks = self.tracks_for_each_task[i]
-                y_log_true = tf.reduce_logsumexp(_y_log_true[:,track_count_cuml:(track_count_cuml+num_of_tracks)],axis=1)
-                y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
-                
-                loss = mse_loss_function(y_log_true, y_log_pred)
-                track_count_cuml += num_of_tracks
-                num_tasks_count_cuml += 1
-                total_mse_loss += loss
+                for i in range(self.num_tasks):
+                    num_of_tracks = self.tracks_for_each_task[i]
+                    y_log_true = tf.reduce_logsumexp(_y_log_true[:,track_count_cuml:(track_count_cuml+num_of_tracks)],axis=1)
+                    y_log_pred = _y_log_pred[:,i:(i+1)][:,-1]
+
+                    loss = mse_loss_function(y_log_true, y_log_pred)
+                    track_count_cuml += num_of_tracks
+                    num_tasks_count_cuml += 1
+                    total_mse_loss += loss
             return total_mse_loss
         
         if self.counts_loss == "MSE":
@@ -125,20 +145,27 @@ class CustomModel(Model):
         def _multinomial_nll(_y,_y_pred):
             total_mnll_loss = 0
             track_count_cuml = 0
-            for i in range(self.num_tasks):
-                num_of_tracks = self.tracks_for_each_task[i]
-                _y_reshape = tf.reshape(\
-                                        _y[:,:,track_count_cuml:(track_count_cuml+num_of_tracks)],\
-                                        [-1,(num_of_tracks)*(self.output_profile_len)]\
-                                       )
-                _y_pred_reshape = tf.reshape(\
-                                             _y_pred[:,:,track_count_cuml:(track_count_cuml+num_of_tracks)],\
-                                             [-1,(num_of_tracks)*(self.output_profile_len)]\
-                                            )
+            
+            if self.orig_multi_loss:
+                for i in range(self.num_output_tracks):
+                    loss = multinomial_nll(_y[..., i], _y_pred[..., i])
+                    total_mnll_loss += loss
                 
-                loss = multinomial_nll(_y_reshape, _y_pred_reshape)
-                track_count_cuml = track_count_cuml+num_of_tracks
-                total_mnll_loss += loss
+            else:
+                for i in range(self.num_tasks):
+                    num_of_tracks = self.tracks_for_each_task[i]
+                    _y_reshape = tf.reshape(\
+                                            _y[:,:,track_count_cuml:(track_count_cuml+num_of_tracks)],\
+                                            [-1,(num_of_tracks)*(self.output_profile_len)]\
+                                           )
+                    _y_pred_reshape = tf.reshape(\
+                                                 _y_pred[:,:,track_count_cuml:(track_count_cuml+num_of_tracks)],\
+                                                 [-1,(num_of_tracks)*(self.output_profile_len)]\
+                                                )
+
+                    loss = multinomial_nll(_y_reshape, _y_pred_reshape)
+                    track_count_cuml = track_count_cuml+num_of_tracks
+                    total_mnll_loss += loss
             return total_mnll_loss
                     
         total_mnll_loss = tf.cond(tf.equal(tf.size(_y), 0), 

@@ -444,29 +444,40 @@ def counts_bias_module(counts_head, counts_bias_inputs, tasks_info,
         else:
             # concatenate counts head with slice of counts bias input
             # for this task
-            
-            counts_bias_input_out_logcounts = layers.Lambda(
-                lambda x: tf.math.reduce_logsumexp(x, axis=-1, keepdims=True),
-                name="{}_logsumexp_counts_bias_{}".format(name_prefix, i))(counts_bias_inputs[i])
-            
-            concat_with_counts_bias_input = layers.concatenate(
-                [_counts_head, counts_bias_input_out_logcounts], 
-                name="{}_concat_with_counts_bias_{}".format(name_prefix, i),
-                axis=-1)
+            if orig_multi_loss:
+                concat_with_counts_bias_input = layers.concatenate(
+                    [_counts_head, counts_bias_inputs[i]], 
+                    name="{}_concat_with_counts_bias_{}".format(name_prefix, i),
+                    axis=-1)
+            else:
+                
+                counts_bias_input_out_logcounts = layers.Lambda(
+                    lambda x: tf.math.reduce_logsumexp(x, axis=-1, keepdims=True),
+                    name="{}_logsumexp_counts_bias_{}".format(name_prefix, i))(counts_bias_inputs[i])
+
+                concat_with_counts_bias_input = layers.concatenate(
+                    [_counts_head, counts_bias_input_out_logcounts], 
+                    name="{}_concat_with_counts_bias_{}".format(name_prefix, i),
+                    axis=-1)
 
             # single unit Dense layer to yield the counts output 
             # prediction for this task
             if num_tasks == 1:
                 name = "logcounts_predictions"
             else:
+                name = "logcounts_predictions_{}".format(i)
             #     name = "logcounts_predictions_{}".format(i)
             # counts_outputs.append(layers.Dense(
             #     units=num_task_tracks, 
             #     name=name)(concat_with_counts_bias_input))
-                name = "logcounts_predictions_{}".format(i)
-            counts_outputs.append(layers.Dense(
-                units=num_tasks, 
-                name=name)(concat_with_counts_bias_input))
+            if orig_multi_loss:
+                counts_outputs.append(layers.Dense(
+                    units=num_task_tracks, 
+                    name=name)(concat_with_counts_bias_input))
+            else: 
+                counts_outputs.append(layers.Dense(
+                    units=num_tasks, 
+                    name=name)(concat_with_counts_bias_input))
 
     # counts output
     if len(counts_outputs) == 1:
@@ -609,7 +620,7 @@ def atac_dnase_bias_model(
 
     
 def BPNet(
-    tasks, bpnet_params, initiliaze_as_bias_model=False, one_hot_input=None, 
+    tasks, bpnet_params, initiliaze_as_bias_model=False, one_hot_input=None, orig_multi_loss=False,
     name_prefix=None):
 
     """
@@ -744,7 +755,11 @@ def BPNet(
     units = counts_head_params["units"]
     # the last Dense layer's units are set to total tracks
     if units[-1]==-1:
-        units[-1] = num_tasks
+        if orig_multi_loss:
+            units[-1] = num_tasks
+        else:
+            units[-1] = total_tracks
+            
     counts_head_out = counts_head(
         syntax_module_out, counts_head_name, units, 
         counts_head_params['dropouts'], counts_head_params['activations'],
@@ -816,8 +831,15 @@ def BPNet(
         #        'output_profile_len':output_profile_len,\
         #        'loss_weights':loss_weights,\
         #        'inputs':inputs, 'outputs':[profile_outputs, logcounts_outputs]})
-        return CustomModel(num_tasks,tracks_for_each_task,output_profile_len,loss_weights,counts_loss,
-            inputs=inputs, outputs=[profile_outputs, logcounts_outputs])
+        return CustomModel(num_tasks,
+                           total_tracks, 
+                           tracks_for_each_task, 
+                           output_profile_len, 
+                           loss_weights, 
+                           counts_loss,
+                           orig_multi_loss,
+                           inputs=inputs, 
+                           outputs=[profile_outputs, logcounts_outputs])
 
 
 def BPNet_ATAC_DNase(tasks, bias_tasks, bpnet_params, bias_bpnet_params, 

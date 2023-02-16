@@ -179,7 +179,7 @@ def train_and_validate(
     background_val_indices=None, bias_input_data=None, 
     bias_model_arch_params_json=None, adjust_bias_model_logcounts=False, 
     is_background_model=False, mnll_loss_sample_weight=1.0, 
-    mnll_loss_background_sample_weight=0.0, suffix_tag=None):
+    mnll_loss_background_sample_weight=0.0, orig_multi_loss=False, suffix_tag=None):
 
     """
         Train and validate on a single train and validation set
@@ -250,6 +250,9 @@ def train_and_validate(
 
             mnll_loss_background_sample_weight (float): weight for each
                 background sample for computing mnll loss
+                
+            orig_multi_loss (boolean): True if original multinomial loss function - one for
+                each strand is to be used
                 
             suffix_tag (str): optional tag to add as a suffix to files
                 (model, log, history & config params files) created in
@@ -401,7 +404,10 @@ def train_and_validate(
             tasks, bias_tasks, model_arch_params, bias_model_arch_params, 
             name_prefix="main")
     else:        
-        model = get_model(tasks, model_arch_params, name_prefix="main")
+        model = get_model(tasks, 
+                          model_arch_params, 
+                          orig_multi_loss=orig_multi_loss, 
+                          name_prefix="main")
     
     # print out the model summary
     model.summary()
@@ -674,7 +680,7 @@ def train_and_validate_ksplits(
     genome_params, batch_gen_params, hyper_params, parallelization_params, 
     splits, bias_input_data=None, bias_model_arch_params_json=None, 
     adjust_bias_model_logcounts=False, is_background_model=False, 
-    mnll_loss_sample_weight=1.0, mnll_loss_background_sample_weight=0.0):
+    mnll_loss_sample_weight=1.0, mnll_loss_background_sample_weight=0.0,orig_multi_loss=False):
 
     """
         Train and validate on one or more train/val splits
@@ -720,6 +726,9 @@ def train_and_validate_ksplits(
 
             mnll_loss_background_sample_weight (float): weight for each
                 background sample for computing mnll loss
+                
+            orig_multi_loss (boolean): True if original multinomial loss function - one for
+                each strand is to be used
     """
     
     chroms = genome_params['chroms']
@@ -860,7 +869,7 @@ def train_and_validate_ksplits(
                   val_indices, background_train_indices, background_val_indices,
                   bias_input_data, bias_model_arch_params_json, 
                   adjust_bias_model_logcounts, is_background_model, 
-                  mnll_loss_sample_weight, mnll_loss_background_sample_weight,
+                  mnll_loss_sample_weight, mnll_loss_background_sample_weight,orig_multi_loss,
                   split_tag])
         p.start()
         

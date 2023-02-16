@@ -133,7 +133,7 @@ def counts_loss_weight_main():
     
     # compute the counts loss weight using the stats module function
     clw = stats.get_recommended_counts_loss_weight(
-        bigWigs, peaks_df, args.alpha)
+        bigWigs, peaks_df, args.alpha, args.orig_multi_loss)
     
     print(clw)
 

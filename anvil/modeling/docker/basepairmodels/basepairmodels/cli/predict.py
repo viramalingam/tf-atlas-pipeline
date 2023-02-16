@@ -399,6 +399,9 @@ def predict(args, pred_dir):
     logging.info("SEQGEN Class Name: {}".format(sequence_generator_class_name))
     BatchGenerator = getattr(generators, sequence_generator_class_name)
     
+    # original multinomial loss was used for training - will be used to decide how to use the model output logits
+    orig_multi_loss = args.orig_multi_loss
+    
     if args.test_indices_file!=None:
         # make sure the background_train_indices_file file exists
         if not os.path.isfile(args.test_indices_file):
@@ -586,30 +589,45 @@ def predict(args, pred_dir):
                 _start = args.output_len // 2 - args.output_window_size // 2  
                 _end = _start + args.output_window_size
                 
-                # combined counts prediction from the count head
-                logcounts_prediction = predictions[1][idx] # this is the logsum of both the strands that is 
-                                                           # predicted                
+                if args.orig_multi_loss:
+                    # counts prediction
+                    logcounts_prediction = predictions[1][idx, j]
+                    pred_logcounts[cnt_batch_examples, j] = logcounts_prediction
 
-                # predicted profile — for now assuming that there are two strands and only one task
-                pred_profile_logits = np.reshape(predictions[0][idx, :, :],[1,args.output_len*2])
+                    # predicted profile
+                    pred_profile_logits = predictions[0][idx, _start:_end, j]
+                    pred_profiles[cnt_batch_examples, :, j] = np.exp(
+                        pred_profile_logits - logsumexp(pred_profile_logits)) * \
+                        (np.exp(logcounts_prediction) - 1)
+                else:
                 
-                profile_predictions = (np.exp(\
-                                              pred_profile_logits - \
-                                              logsumexp(\
-                                                        pred_profile_logits\
-                                                       )) * (np.exp(logcounts_prediction))\
-                                      )
-                                
-                pred_profiles[cnt_batch_examples, :, j] = np.reshape(\
-                                                                     profile_predictions,\
-                                                                     [args.output_len,2]\
-                                                                    )[_start:_end,j] 
+                    # combined counts prediction from the count head
+                    logcounts_prediction = predictions[1][idx] # this is the logsum of both the strands that is 
+                                                               # predicted                
+
+                    # predicted profile — for now assuming that there are two strands and only one task
+                    pred_profile_logits = np.reshape(predictions[0][idx, :, :],[1,args.output_len*2])
+
+                    profile_predictions = (np.exp(\
+                                                  pred_profile_logits - \
+                                                  logsumexp(\
+                                                            pred_profile_logits\
+                                                           )) * (np.exp(logcounts_prediction))\
+                                          )
+
+                    pred_profiles[cnt_batch_examples, :, j] = np.reshape(\
+                                                                         profile_predictions,\
+                                                                         [args.output_len,2]\
+                                                                        )[_start:_end,j] 
+
+                    # counts prediction
+                    pred_logcounts[cnt_batch_examples, j] = np.log(np.sum(np.reshape(\
+                                                                                         profile_predictions,\
+                                                                                         [args.output_len,2]\
+                                                                                        )[:,j])) 
+
                 
-                # counts prediction
-                pred_logcounts[cnt_batch_examples, j] = np.log(np.sum(np.reshape(\
-                                                                                     profile_predictions,\
-                                                                                     [args.output_len,2]\
-                                                                                    )[:,j]))                
+                
             
                 # true profile
                 _true_profiles[cnt_batch_examples, :, j] = \

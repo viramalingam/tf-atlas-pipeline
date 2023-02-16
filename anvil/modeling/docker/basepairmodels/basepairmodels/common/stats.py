@@ -13,7 +13,7 @@ from basepairmodels.cli.exceptionhandler import NoTracebackException
 
 
 def get_recommended_counts_loss_weight(input_bigWigs, peaks, 
-                                       alpha=1.0):
+                                       alpha=1.0, orig_multi_loss=False):
     """
         This function computes the hyper parameter lambda (l) as
         suggested in the BPNet paper on pg. 28
@@ -82,7 +82,11 @@ def get_recommended_counts_loss_weight(input_bigWigs, peaks,
     # average of the total counts
     n_obs = total_counts / float(total_peaks)
     
-    return (alpha) * n_obs # to account for the joint multinomial (*2)
+    if orig_multi_loss:
+        return (alpha/2.0) * (n_obs)
+    
+    else:
+        return (alpha) * n_obs # to account for the joint multinomial (*2)
 
             
         

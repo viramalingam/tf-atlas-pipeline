@@ -130,12 +130,12 @@ def main():
     
     # training and validation
     training.train_and_validate_ksplits(
-        args.input_data, args.model_arch_name, args.model_arch_params_json, 
+        args.input_data, args.model_arch_name, args.model_arch_params_json,
         output_params, genome_params, batch_gen_params, hyper_params, 
         parallelization_params, splits, args.input_data, 
         args.bias_model_arch_params_json, args.adjust_bias_model_logcounts,
         args.is_background_model, args.mnll_loss_sample_weight, 
-        args.mnll_loss_background_sample_weight)
+        args.mnll_loss_background_sample_weight,args.orig_multi_loss)
 
 if __name__ == '__main__':
     main()

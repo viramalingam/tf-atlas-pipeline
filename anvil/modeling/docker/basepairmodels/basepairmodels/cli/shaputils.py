@@ -164,7 +164,8 @@ def dinuc_shuffle(seq, num_shufs, rng=None):
 #             np.array([s[1] for i in range(numshuffles)])]
 
 
-def get_weightedsum_meannormed_logits(model, task_id, stranded):
+def get_weightedsum_meannormed_logits(model, task_id, 
+                                      stranded, orig_multi_loss = False):
     print(model.outputs[0].shape)
     
     if stranded:
@@ -178,13 +179,18 @@ def get_weightedsum_meannormed_logits(model, task_id, stranded):
     # We meannorm as per section titled 
     # "Adjustments for Softmax Layers" in the DeepLIFT paper
     # Reshaping is done to be compatible with the single multinomial
-    reshaped_out=tf.reshape(model.outputs[0], [-1,model.outputs[0][:, :, start_idx:end_idx].shape[1]*(end_idx-start_idx)])
+    
+        
+    if orig_multi_loss:
+        meannormed_logits = \
+            (model.outputs[0][:, :, start_idx:end_idx] - \
+             tf.reduce_mean(
+                model.outputs[0][:, :, start_idx:end_idx], axis=1)[:, None, :])
+    else:
+        reshaped_out=tf.reshape(model.outputs[0], [-1,model.outputs[0][:, :, start_idx:end_idx].shape[1]*(end_idx-start_idx)])
 
-    meannormed_logits=reshaped_out-tf.reduce_mean(reshaped_out, axis=1)[:,None]
-    # meannormed_logits = \
-    #     (model.outputs[0][:, :, start_idx:end_idx] - \
-    #      tf.reduce_mean(
-    #         model.outputs[0][:, :, start_idx:end_idx], axis=1)[:, None, :])
+        meannormed_logits=reshaped_out-tf.reduce_mean(reshaped_out, axis=1)[:,None]
+
         
     # 'stop_gradient' will prevent importance from being propagated
     # through this operation; we do this because we just want to treat
@@ -198,11 +204,13 @@ def get_weightedsum_meannormed_logits(model, task_id, stranded):
     # Weight the logits according to the softmax probabilities, take
     # the sum for each example. This mirrors what was done for the
     # bpnet paper.
-    # weightedsum_meannormed_logits = tf.reduce_sum(softmax_out * \
-    #                                               meannormed_logits,
-    #                                               axis=(1, 2))
-    weightedsum_meannormed_logits = tf.reduce_sum(softmax_out * \
-                                                  meannormed_logits,
-                                                  axis=(1))
+    if orig_multi_loss:
+        weightedsum_meannormed_logits = tf.reduce_sum(softmax_out * \
+                                                      meannormed_logits,
+                                                      axis=(1, 2))
+    else:
+        weightedsum_meannormed_logits = tf.reduce_sum(softmax_out * \
+                                                      meannormed_logits,
+                                                      axis=(1))
     
     return weightedsum_meannormed_logits

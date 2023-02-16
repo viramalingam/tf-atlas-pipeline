@@ -127,6 +127,7 @@ def training_argsparser():
                         "positive peak", default=0.0)
         
     parser.add_argument('--shuffle', action='store_true')
+    
 
     # input data params
     parser.add_argument('--input-data', '-i', type=str,
@@ -157,6 +158,10 @@ def training_argsparser():
     parser.add_argument('--mnll-loss-background-sample-weight', type=float,
                         help="weight for each background sample for computing"
                         "mnll loss", default=0.0)
+    
+    parser.add_argument('--orig-multi-loss', type=bool, 
+                    help="True if original multinomial loss function - one for"
+                    "each strand is to be used", default=False)
     
     return parser
 
@@ -241,6 +246,10 @@ def fastpredict_argsparser():
                         help="specify if bias values should be set as zero." 
                         "Used only during testing. Usefull when trained with bias"
                         "but need to test without it.")
+    
+    parser.add_argument('--orig-multi-loss', type=bool, 
+                    help="True if original multinomial loss function - one for"
+                    "each strand is to be used", default=False)
     return parser
 
 
@@ -327,6 +336,10 @@ def shap_scores_argsparser():
     parser.add_argument('--time-zone', type=str,
                         help="time zone to use for timestamping output "
                         "directories", default='US/Pacific')
+    
+    parser.add_argument('--orig-multi-loss', type=bool, 
+                    help="True if original multinomial loss function - one for"
+                    "each strand is to be used", default=False)
     return parser
 
 
@@ -452,6 +465,10 @@ def counts_loss_weight_argsparser():
                         help="default value to use in case there are "
                         "exceptions or problems during the execution of the "
                         "script")
+    
+    parser.add_argument('--orig-multi-loss', type=bool, 
+                    help="True if original multinomial loss function - one for"
+                    "each strand is to be used", default=False)
     
     return parser
 
