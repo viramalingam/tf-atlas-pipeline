@@ -240,7 +240,7 @@ train \\
     --reverse-complement-augmentation \\
     --learning-rate $learning_rate \\
     --early-stopping-patience 10 \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --reduce-lr-on-plateau-patience 5" | tee -a $logfile 
 
 train \
@@ -263,7 +263,7 @@ train \
     --reverse-complement-augmentation \
     --learning-rate $learning_rate \
     --early-stopping-patience 10 \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --reduce-lr-on-plateau-patience 5
     
 # save the values used for training
@@ -365,7 +365,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -382,7 +382,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --threads $threads
     
 
@@ -421,7 +421,7 @@ predict \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads\\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --set-bias-as-zero" | tee -a $logfile 
 
 predict \
@@ -439,7 +439,7 @@ predict \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --set-bias-as-zero
     
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics without bias..."
@@ -477,7 +477,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -494,7 +494,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --threads $threads
 
 
@@ -523,7 +523,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -540,7 +540,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --threads $threads
     
     
@@ -560,7 +560,7 @@ predict \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --set-bias-as-zero" | tee -a $logfile 
 
 predict \
@@ -578,7 +578,7 @@ predict \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --set-bias-as-zero
 
 echo $( timestamp ): "
@@ -596,7 +596,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -613,6 +613,6 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --threads $threads
 

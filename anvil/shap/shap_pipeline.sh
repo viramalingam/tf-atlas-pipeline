@@ -133,7 +133,7 @@ shap_scores \\
     --input-seq-len 2114 \\
     --control-len 1000 \\
     --task-id 0 \\
-    --orig-multi-loss True \\
+    --orig-multi-loss False \\
     --input-data $project_dir/testing_input_peaks.json" | tee -a $logfile
 
 shap_scores \
@@ -145,7 +145,7 @@ shap_scores \
     --input-seq-len 2114 \
     --control-len 1000 \
     --task-id 0 \
-    --orig-multi-loss True \
+    --orig-multi-loss False \
     --input-data $project_dir/testing_input_peaks.json # this file doesnt have negatives
 
 echo $( timestamp ): "
