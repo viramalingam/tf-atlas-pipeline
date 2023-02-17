@@ -393,7 +393,7 @@ def profile_bias_module(
 
     
 def counts_bias_module(counts_head, counts_bias_inputs, tasks_info, 
-                       name_prefix=None):
+                       name_prefix=None,orig_multi_loss=False):
     """
         Apply bias correction to counts head
         
@@ -753,12 +753,17 @@ def BPNet(
         counts_head_name = '{}_counts_head'.format(name_prefix)
     # the units for the Dense layers
     units = counts_head_params["units"]
+    
+    print("units:",units)
+    print("num_tasks:",num_tasks)
+    print("total_tracks:",total_tracks)
+    
     # the last Dense layer's units are set to total tracks
     if units[-1]==-1:
         if orig_multi_loss:
-            units[-1] = num_tasks
-        else:
             units[-1] = total_tracks
+        else:
+            units[-1] = num_tasks
             
     counts_head_out = counts_head(
         syntax_module_out, counts_head_name, units, 
@@ -769,6 +774,7 @@ def BPNet(
     # if the tasks have no bias tracks then profile_head and 
     # counts_head are the outputs of the model
     inputs = [one_hot_input]
+    print("total_bias_tracks:",total_bias_tracks)
     if total_bias_tracks == 0:
         profile_outputs = profile_head_out
         logcounts_outputs = counts_head_out  
@@ -811,7 +817,7 @@ def BPNet(
         # Step 5.3 - account for counts bias
         logcounts_outputs = counts_bias_module(
             counts_head_out, counts_bias_inputs, tasks, 
-            name_prefix=name_prefix)
+            name_prefix=name_prefix,orig_multi_loss=orig_multi_loss)
     
     if use_attribution_prior:            
         # instantiate attribution prior Model with inputs and outputs

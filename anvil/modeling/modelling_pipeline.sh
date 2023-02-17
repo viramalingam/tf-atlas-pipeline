@@ -438,6 +438,7 @@ predict \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
+    --orig-multi-loss True \
     --set-bias-as-zero
     
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics without bias..."
@@ -491,6 +492,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
+    --orig-multi-loss True \
     --threads $threads
 
 
@@ -535,6 +537,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
+    --orig-multi-loss True \
     --threads $threads
     
     
@@ -571,6 +574,7 @@ predict \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
+    --orig-multi-loss True \
     --set-bias-as-zero
 
 echo $( timestamp ): "
@@ -604,5 +608,6 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
+    --orig-multi-loss True \
     --threads $threads
 

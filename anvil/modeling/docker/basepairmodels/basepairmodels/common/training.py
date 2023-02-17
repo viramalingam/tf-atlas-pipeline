@@ -411,6 +411,10 @@ def train_and_validate(
     
     # print out the model summary
     model.summary()
+        
+    logging.info(f"model.num_tasks: {model.num_tasks}")
+    logging.info(f"model.num_output_tracks: {model.num_output_tracks}")
+    logging.info(f"model.orig_multi_loss: {model.orig_multi_loss}")
 
     # compile the model
     logging.debug("Compiling model")
