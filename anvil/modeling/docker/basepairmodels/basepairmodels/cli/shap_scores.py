@@ -315,7 +315,7 @@ def shap_scores(args, shap_dir):
 
     # explainer for the profile head
     weightedsum_meannormed_logits = get_weightedsum_meannormed_logits(
-        model, task_id=args.task_id, stranded=True, args.orig_multi_loss)
+        model, task_id=args.task_id, stranded=True, orig_multi_loss=args.orig_multi_loss)
     
     profile_model_profile_explainer = shap.explainers.deep.TFDeepExplainer(
         (profile_explainer_inputs, weightedsum_meannormed_logits),
