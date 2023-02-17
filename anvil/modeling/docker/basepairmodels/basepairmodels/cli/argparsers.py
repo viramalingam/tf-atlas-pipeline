@@ -159,9 +159,9 @@ def training_argsparser():
                         help="weight for each background sample for computing"
                         "mnll loss", default=0.0)
     
-    parser.add_argument('--orig-multi-loss', type=bool, 
+    parser.add_argument('--orig-multi-loss', action='store_true', 
                     help="True if original multinomial loss function - one for"
-                    "each strand is to be used", default=False)
+                    "each strand is to be used")
     
     return parser
 
@@ -247,9 +247,9 @@ def fastpredict_argsparser():
                         "Used only during testing. Usefull when trained with bias"
                         "but need to test without it.")
     
-    parser.add_argument('--orig-multi-loss', type=bool, 
+    parser.add_argument('--orig-multi-loss', action='store_true', 
                     help="True if original multinomial loss function - one for"
-                    "each strand is to be used", default=False)
+                    "each strand is to be used")
     return parser
 
 
@@ -337,9 +337,9 @@ def shap_scores_argsparser():
                         help="time zone to use for timestamping output "
                         "directories", default='US/Pacific')
     
-    parser.add_argument('--orig-multi-loss', type=bool, 
+    parser.add_argument('--orig-multi-loss', action='store_true', 
                     help="True if original multinomial loss function - one for"
-                    "each strand is to be used", default=False)
+                    "each strand is to be used")
     return parser
 
 
@@ -466,9 +466,9 @@ def counts_loss_weight_argsparser():
                         "exceptions or problems during the execution of the "
                         "script")
     
-    parser.add_argument('--orig-multi-loss', type=bool, 
+    parser.add_argument('--orig-multi-loss', action='store_true', 
                     help="True if original multinomial loss function - one for"
-                    "each strand is to be used", default=False)
+                    "each strand is to be used")
     
     return parser
 
