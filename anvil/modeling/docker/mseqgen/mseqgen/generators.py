@@ -1011,6 +1011,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
 
         """
         return self.name
+    
 
     def _generate_batch(self, coords):
         """
@@ -1035,6 +1036,7 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
                     outputs and when 'mode' is 'test' tuple of 
                     cordinates & the inputs
         """
+        
         
         # create a new reverse complement column in the dataframe
         # and set it to 0 for all loci (0-not reverse complemented, 
@@ -1138,7 +1140,11 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
             seq = fasta_ref[chrom][start:end].seq.upper()
             
             # collect all the sequences into a list
-            sequences.append(seq)
+            if row['rev_comp']==0:
+                sequences.append(seq)
+            else:
+                rev_comp_seq = sequtils.reverse_complement_of_sequences([seq])
+                sequences.append(rev_comp_seq[0])
             
             start = row['pos'] - self._output_flank + jitter
             end = row['pos'] + self._output_flank + jitter
@@ -1154,45 +1160,80 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
             for i in range(self._num_tasks):
                                           
                 # Step 2. get the profile signal value
-                for signal_file in signal_files[i]:
-                    profile_predictions[rowCnt, :, profile_track_idx] = \
-                        np.nan_to_num(signal_file.values(chrom, start, end))  
+                if len(signal_files[i])>2:
+                    logging.error(f"signal_files cannot be more than two. But given: {signal_files}")
+                profile_track_before_current_task_idx = profile_track_idx
+                _profile_predictions = np.zeros((1,self._output_flank*2,len(signal_files[i])))    
+                for signal_file_idx in range(len(signal_files[i])):
+                    _profile_predictions[:, :, signal_file_idx] = \
+                        np.nan_to_num(signal_files[i][signal_file_idx].values(chrom, start, end))
+                    profile_track_idx += 1                           
+                                                
+                if row['rev_comp']==0:
+                    profile_predictions[rowCnt, :, profile_track_before_current_task_idx:(profile_track_before_current_task_idx+len(signal_files[i]))] = _profile_predictions
+                else:
+                    if len(signal_files[i])==2:                    
+                        profile_predictions[rowCnt, :, profile_track_before_current_task_idx:(profile_track_before_current_task_idx+len(signal_files[i]))] = sequtils.reverse_complement_of_profiles(_profile_predictions, stranded=True)
+                    if len(signal_files[i])==1:
+                        profile_predictions[rowCnt, :, profile_track_before_current_task_idx:(profile_track_before_current_task_idx+len(signal_files[i]))] = sequtils.reverse_complement_of_profiles(_profile_predictions, stranded=False)
                         
-                    profile_track_idx += 1
-                    
+                
+                                                
                 if not self._set_bias_as_zero:
                 #skip setting the bias values. Initialization value of zero will be used
                     # Step 3. get the bias values
-                    bias_track_idx = 0
-                    for j in range(len(bias_files[i])):
-                        bias_file = bias_files[i][j]
-                        profile_bias_input[i][rowCnt, :, bias_track_idx] = \
-                            np.nan_to_num(bias_file.values(chrom, start, end))
+                    total_bias_track = 0
+                    _bias_predictions = np.zeros((1,self._output_flank*2,len(bias_files[i])))                            
+                    for bias_file_idx in range(len(bias_files[i])):
+                        _bias_predictions[:, :, bias_file_idx] = np.nan_to_num(bias_files[i][bias_file_idx].values(chrom, start, end))
+                        total_bias_track += 1
+                        
+                    if len(bias_files[i])!=0:
+                        if row['rev_comp']==0:
+                            profile_bias_input[i][rowCnt, :, :] = _bias_predictions
+                        else:
+                            if len(bias_files[i])==2:                    
+                                profile_bias_input[i][rowCnt, :, :] = sequtils.reverse_complement_of_profiles(_bias_predictions, stranded=True)
+                            if len(bias_files[i])==1:
+                                profile_bias_input[i][rowCnt, :, :] = sequtils.reverse_complement_of_profiles(_bias_predictions, stranded=False)
 
-                        bias_track_idx += 1
+                        for bias_smooth_idx in range(len(bias_files[i])):
+                            # add the smoothed track if 'smoothing' has been
+                            # specified
+                            if self._tasks[i]['bias']['smoothing'][bias_smooth_idx] is not None:
+                                # get the smoothing params
+                                sigma = self._tasks[i]['bias']['smoothing'][bias_smooth_idx][0]
+                                window_size = \
+                                    self._tasks[i]['bias']['smoothing'][bias_smooth_idx][1]
 
-                        # add the smoothed track if 'smoothing' has been
-                        # specified
-                        if self._tasks[i]['bias']['smoothing'][j] is not None:
-                            # get the smoothing params
-                            sigma = self._tasks[i]['bias']['smoothing'][j][0]
-                            window_size = \
-                                self._tasks[i]['bias']['smoothing'][j][1]
+                                # the smoothed bias track will 
+                                # follow the original bias tracks in the last
+                                # dimension
+                                profile_bias_input[i][rowCnt, :, total_bias_track+bias_smooth_idx] = \
+                                    utils.gaussian1D_smoothing(
+                                        profile_bias_input[i][
+                                            rowCnt, :, bias_smooth_idx],
+                                        sigma, window_size)
 
-                            # the smoothed bias track will immediately 
-                            # follow the original bias track in the last
-                            # dimension
-                            profile_bias_input[i][rowCnt, :, bias_track_idx] = \
-                                utils.gaussian1D_smoothing(
-                                    profile_bias_input[i][
-                                        rowCnt, :, bias_track_idx - 1],
-                                    sigma, window_size)
-
-                            bias_track_idx += 1
 
             rowCnt += 1
 
         # Step 4. one hot encode all the sequences in the batch 
+        
+#         if self.curr_epoch==0:
+#             # print('sequences[0]:',sequences[0])
+            
+#             print('len(sequences):',len(sequences))
+            
+#             print([sequences[0] == sequtils.reverse_complement_of_sequences([seq])[0] for seq in sequences])
+                        
+#             # print('sequences[len(coords[coords["rev_comp"]==0])]:',
+#             #         sequences[len(coords[coords["rev_comp"]==0])])
+#             # print('len(coords[coords["rev_comp"]==0]):',
+#             #         len(coords[coords["rev_comp"]==0]))
+#             # print('len(coords):',
+#             #         len(coords))
+        
         if len(sequences) == profile_predictions.shape[0]:
             X = sequtils.one_hot_encode(sequences, self._input_flank * 2)
         else:
