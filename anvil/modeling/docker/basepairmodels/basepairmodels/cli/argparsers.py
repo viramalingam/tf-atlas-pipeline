@@ -250,6 +250,11 @@ def fastpredict_argsparser():
     parser.add_argument('--orig-multi-loss', action='store_true', 
                     help="True if original multinomial loss function - one for"
                     "each strand is to be used")
+    
+    parser.add_argument('--disable-reverse-complement-augmentation', 
+                        action='store_true', 
+                        help="disable reverse complement augmentation")
+    
     return parser
 
 

@@ -1301,6 +1301,8 @@ class MBPNetSequenceGenerator(MSequenceGenerator):
             # compute metrics
             inputs['true_profiles'] = profile_predictions
             inputs['true_logcounts'] = logcounts_predictions
+            inputs['rev_comp'] = coords['rev_comp'].values
+            
             return inputs
 
 
