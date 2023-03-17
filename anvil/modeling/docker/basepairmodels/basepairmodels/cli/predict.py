@@ -685,12 +685,11 @@ def predict(args, pred_dir):
                         
                     pred_profiles[cnt_batch_examples, :, j] = (pred_profiles[cnt_batch_examples, :, j]+sequtils.reverse_complement_of_profiles(pred_profiles_rev.reshape((1,-1,1)),stranded=False).reshape(args.output_len,))/2
 
-
-                    pred_logcounts[cnt_batch_examples, j] = np.log(np.exp(pred_logcounts[cnt_batch_examples, j])+np.exp(pred_logcounts_rev)/2)
-
-                
-                
-
+                    if args.orig_multi_loss:
+                        
+                        pred_logcounts[cnt_batch_examples, j] = (np.exp(logcounts_prediction) + np.exp(logcounts_prediction_rev))/2
+                    else:
+                        pred_logcounts[cnt_batch_examples, j] = np.log(np.exp(pred_logcounts[cnt_batch_examples, j])+np.exp(pred_logcounts_rev)/2)
                 
                 
             
