@@ -20,7 +20,7 @@ bigwigs=${9}
 peaks=${10}
 background_regions=${11}
 indices_files=${12}
-disable_reverse_complement_aug=${13}
+disable_reverse_complement_augmentation=${13}
 
 echo $experiment
 echo $model
@@ -34,7 +34,7 @@ echo $bigwigs
 echo $peaks
 echo $background_regions
 echo $indices_files
-echo $disable_reverse_complement_aug
+echo $disable_reverse_complement_augmentation
 
 mkdir /project
 project_dir=/project
@@ -285,7 +285,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \\
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -302,7 +302,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
     
 
@@ -340,7 +340,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \\
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads\\
     --set-bias-as-zero" | tee -a $logfile 
 
@@ -358,7 +358,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads \
     --set-bias-as-zero
     
@@ -397,7 +397,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -414,7 +414,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
 
 
@@ -443,7 +443,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \\
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -460,7 +460,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
     
     
@@ -479,7 +479,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \\
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads \\
     --set-bias-as-zero" | tee -a $logfile 
 
@@ -497,7 +497,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads \
     --set-bias-as-zero
 
@@ -516,7 +516,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -533,5 +533,5 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_aug $disable_reverse_complement_aug  \
+    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
