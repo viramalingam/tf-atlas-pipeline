@@ -118,9 +118,8 @@ def training_argsparser():
                         "the peaks from the exact center of the input",
                         default=128)
 
-    parser.add_argument('--reverse-complement-augmentation', 
-                        action='store_true', 
-                        help="enable reverse complement augmentation")
+    parser.add_argument('--reverse-complement-augmentation', type=bool,
+                        help="enable reverse complement augmentation",default=False)
     
     parser.add_argument('--negative-sampling-rate', type=float,
                         help="number of negatives to sample for every "
@@ -250,6 +249,9 @@ def fastpredict_argsparser():
     parser.add_argument('--orig-multi-loss', action='store_true', 
                     help="True if original multinomial loss function - one for"
                     "each strand is to be used")
+    
+    parser.add_argument('--reverse-complement-augmentation', type=bool,
+                        help="enable reverse complement augmentation",default=False)
     
     parser.add_argument('--disable-reverse-complement-augmentation', 
                         action='store_true', 

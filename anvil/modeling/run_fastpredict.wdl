@@ -14,7 +14,7 @@ task run_fastpredict {
 		File peaks
 		File background_regions
 		Array [File]? indices_files
-		
+		String? disable_reverse_complement_aug
 	}
 	command {
 		#create data directories and download scripts
@@ -27,8 +27,8 @@ task run_fastpredict {
 		
 		##fastpredict
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' indices_files}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' indices_files}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' indices_files} ${disable_reverse_complement_aug}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${sep=',' indices_files} ${disable_reverse_complement_aug}
 		
 		
 		echo "copying all files to cromwell_root folder"
@@ -118,7 +118,7 @@ workflow fastpredict {
 		File peaks
 		File background_regions
 		Array [File]? indices_files
-		
+		String? disable_reverse_complement_aug = False
 	}
 	
 	call run_fastpredict {
@@ -134,7 +134,8 @@ workflow fastpredict {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions,
-			indices_files = indices_files
+			indices_files = indices_files,
+			disable_reverse_complement_aug = disable_reverse_complement_aug
 	}
 	output {
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = run_fastpredict.predictions_and_metrics_all_peaks_test_chroms
