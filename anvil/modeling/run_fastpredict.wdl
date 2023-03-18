@@ -118,7 +118,7 @@ workflow fastpredict {
 		File peaks
 		File background_regions
 		Array [File]? indices_files
-		String? disable_reverse_complement_aug = False
+		String? disable_reverse_complement_aug = 'False'
 	}
 	
 	call run_fastpredict {
