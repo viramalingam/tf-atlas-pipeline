@@ -285,7 +285,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -302,7 +302,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
     
 
@@ -340,7 +340,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads\\
     --set-bias-as-zero" | tee -a $logfile 
 
@@ -358,7 +358,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads \
     --set-bias-as-zero
     
@@ -397,7 +397,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -414,7 +414,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
 
 
@@ -443,7 +443,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -460,7 +460,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
     
     
@@ -479,7 +479,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \\
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \\
     --threads $threads \\
     --set-bias-as-zero" | tee -a $logfile 
 
@@ -497,7 +497,7 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads \
     --set-bias-as-zero
 
@@ -516,7 +516,7 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads" | tee -a $logfile 
 
 predict \
@@ -533,5 +533,5 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --disable_reverse_complement_augmentation $disable_reverse_complement_augmentation  \
+    --disable-reverse-complement-augmentation $disable_reverse_complement_augmentation  \
     --threads $threads
