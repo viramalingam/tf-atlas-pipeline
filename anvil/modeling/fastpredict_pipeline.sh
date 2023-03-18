@@ -19,8 +19,8 @@ chroms_txt=$8
 bigwigs=${9}
 peaks=${10}
 background_regions=${11}
-indices_files=${12}
-disable_reverse_complement_augmentation=${13}
+disable_reverse_complement_augmentation=${12}
+indices_files=${13}
 
 echo $experiment
 echo $model
@@ -33,8 +33,8 @@ echo $chroms_txt
 echo $bigwigs
 echo $peaks
 echo $background_regions
-echo $indices_files
 echo $disable_reverse_complement_augmentation
+echo $indices_files
 
 mkdir /project
 project_dir=/project
