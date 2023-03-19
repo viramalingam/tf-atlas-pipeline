@@ -256,8 +256,11 @@ def get_suffled_peak_sequences(peak_path,fasta_path, input_seq_len = 2114,
         Input_start = sample_peaks_df.mask(Input_start < 0,0)
         Input_end = sample_peaks_df['start'] + sample_peaks_df['summit'] + (input_seq_len//2)
         
-        print(Input_start)
-        print(sample_peaks_df['chrom'])
+        
+        print("Input_start:",Input_start)
+        print("Input_end:",Input_end)
+        print("sample_peaks_df['chrom']",sample_peaks_df['chrom'])
+        print("sample_peaks_df['start']:",sample_peaks_df['start'])
         
         actual_sequence = fasta_ref.fetch(sample_peaks_df['chrom'][1], Input_start[1] , Input_end[1]).upper()
         padded_sequence = actual_sequence+(random_seq(input_seq_len-len(actual_sequence)))
