@@ -245,18 +245,14 @@ def get_suffled_peak_sequences(peak_path,fasta_path, input_seq_len = 2114,
     fasta_ref = pysam.FastaFile(fasta_path)
 
     sequences = []
-
+    
+    sample_peaks_df = peaks_df.sample(n=num_of_simulated_sequences,replace=True).reset_index(drop=True)
     Input_start = peaks_df['start'] + peaks_df['summit'] - (input_seq_len//2)
     Input_start = Input_start.mask(Input_start < 0,0)
     Input_end = peaks_df['start'] + peaks_df['summit'] + (input_seq_len//2)
 
     for i in range(num_of_simulated_sequences):
-        sample_peaks_df = peaks_df.sample(frac=1).reset_index(drop=True)
-        Input_start = sample_peaks_df['start'] + sample_peaks_df['summit'] - (input_seq_len//2)
-        Input_start = sample_peaks_df.mask(Input_start < 0,0)
-        Input_end = sample_peaks_df['start'] + sample_peaks_df['summit'] + (input_seq_len//2)
-        
-        
+               
         print("Input_start:",Input_start)
         print("Input_end:",Input_end)
         print("sample_peaks_df['chrom']",sample_peaks_df['chrom'])
