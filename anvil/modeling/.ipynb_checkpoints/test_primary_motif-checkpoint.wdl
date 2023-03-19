@@ -16,7 +16,7 @@ task test_primary_motif {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.12 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch merge_single_joint_multi https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
@@ -56,7 +56,7 @@ task test_primary_motif {
 	}
 	
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_merge_single_joint_multi'
 		memory: 16 + "GB"
 		bootDiskSizeGb: 20
 		disks: "local-disk 20 HDD"
