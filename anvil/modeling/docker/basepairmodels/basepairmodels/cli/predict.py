@@ -394,7 +394,12 @@ def predict(args, pred_dir):
     batch_gen_params['mode'] = 'test'
     
     rev_comp_aug = str(args.reverse_complement_augmentation).lower()=='true'
-        
+    
+    
+    print("args.reverse_complement_augmentation:",args.reverse_complement_augmentation)
+    print("str(args.reverse_complement_augmentation).lower():",str(args.reverse_complement_augmentation).lower())
+    print("rev_comp_aug:",rev_comp_aug)
+    
     print("batch_gen_params['rev_comp_aug']:",batch_gen_params['rev_comp_aug'])
 
     # instantiate the batch generator class for testing
