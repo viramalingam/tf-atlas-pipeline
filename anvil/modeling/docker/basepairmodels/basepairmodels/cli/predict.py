@@ -387,11 +387,15 @@ def predict(args, pred_dir):
     batch_gen_params['sequence_generator_name'] = args.sequence_generator_name
     batch_gen_params['input_seq_len'] = args.input_seq_len
     batch_gen_params['output_len'] = args.output_len
-    batch_gen_params['rev_comp_aug'] = not(args.disable_reverse_complement_augmentation)
+    batch_gen_params['rev_comp_aug'] = str(args.reverse_complement_augmentation).lower()=='true'
     batch_gen_params['negative_sampling_rate'] = 0.0
     batch_gen_params['max_jitter'] = 0
     batch_gen_params['shuffle'] = False
     batch_gen_params['mode'] = 'test'
+    
+    rev_comp_aug = str(args.reverse_complement_augmentation).lower()=='true'
+        
+    print("batch_gen_params['rev_comp_aug']:",batch_gen_params['rev_comp_aug'])
 
     # instantiate the batch generator class for testing
         # get the corresponding batch generator class for this model
@@ -635,7 +639,8 @@ def predict(args, pred_dir):
                                                                                         )[:,j])) 
                     
                     
-                if not(args.disable_reverse_complement_augmentation): 
+                if rev_comp_aug: 
+
                     assert((coordinates[idx]==coordinates[(len(coordinates)//2)+idx]).all())
                     assert(rev_comp_status[idx]==0)
                     assert(rev_comp_status[(len(coordinates)//2)+idx]==1)
