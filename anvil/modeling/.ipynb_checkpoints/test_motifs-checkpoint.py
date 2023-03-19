@@ -250,10 +250,13 @@ def get_suffled_peak_sequences(peak_path,fasta_path, input_seq_len = 2114,
     Input_start = Input_start.mask(Input_start < 0,0)
     Input_end = peaks_df['start'] + peaks_df['summit'] + (input_seq_len//2)
 
-    if len(peaks_df)<num_of_simulated_sequences:
-        num_of_simulated_sequences = len(peaks_df)
     for i in range(num_of_simulated_sequences):
-        actual_sequence = fasta_ref.fetch(peaks_df['chrom'][i], Input_start[i] , Input_end[i]).upper()
+        sample_peaks_df = peaks_df.sample(frac=1).reset_index(drop=True)
+        Input_start = sample_peaks_df['start'] + sample_peaks_df['summit'] - (input_seq_len//2)
+        Input_start = sample_peaks_df.mask(Input_start < 0,0)
+        Input_end = sample_peaks_df['start'] + sample_peaks_df['summit'] + (input_seq_len//2)
+        
+        actual_sequence = fasta_ref.fetch(sample_peaks_df['chrom'][1], Input_start[1] , Input_end[1]).upper()
         padded_sequence = actual_sequence+(random_seq(input_seq_len-len(actual_sequence)))
         shuffled_seq = dinuc_shuffle(padded_sequence)
         sequences.append(shuffled_seq)
