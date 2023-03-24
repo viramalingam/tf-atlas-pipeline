@@ -28,19 +28,30 @@ args = parser.parse_args()
 
 f = h5py.File(args.h5_file,'r')
 peaks_df = pd.read_csv(args.peak_file,header=None,sep="\t")
+
+print("peaks_df:",peaks_df)
+
 negs_df = pd.read_csv(args.neg_file,header=None,sep="\t")
+
+print("negs_df:",negs_df)
 
 all_regions_df = pd.concat([negs_df,peaks_df]).reset_index(drop=True)
 all_regions_df.columns=['chroms','start','end','name','label','strand','p','q','x','summit']
 all_regions_df['end']=(all_regions_df['start']+all_regions_df['summit'])+(args.output_length//2)
 all_regions_df['start']=(all_regions_df['start']+all_regions_df['summit'])-(args.output_length//2)
 
-h5_df = pd.DataFrame({'chroms':f['coords']['coords_chrom'][()],
+print("all_regions_df:",all_regions_df)
+
+h5_df = pd.DataFrame({'chroms':f['coords']['coords_chrom'][()].astype('U8'),
                      'start':f['coords']['coords_start'][()],
                      'end':f['coords']['coords_end'][()],
                      'log_counts':(f['predictions']['pred_logcounts'][()][:,0]).tolist()})
 
+print("h5_df:",h5_df)
+
 predictions = pd.merge(all_regions_df, h5_df, how='inner', on=['chroms','start','end'])
+
+print("predictions:",predictions)
 
 if args.test_indices_file!=None:
         # make sure the background_train_indices_file file exists
@@ -67,6 +78,9 @@ if test_indices!=None:
     predictions = predictions.loc[predictions.index[test_indices]].reset_index(drop=True)
 
 from sklearn.metrics import roc_auc_score, average_precision_score
+
+print("predictions['label'].astype(int):",predictions['label'].astype(int))
+print("predictions['log_counts']:",predictions['log_counts'])
 
 print('average_precision_score:',average_precision_score(predictions['label'].astype(int),predictions['log_counts']))
 print('roc_auc_score:',roc_auc_score(predictions['label'].astype(int),predictions['log_counts']))
