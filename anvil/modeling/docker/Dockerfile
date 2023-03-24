@@ -26,7 +26,7 @@ RUN cd /opt/ && \
 ENV PATH "$PATH:/opt/google-cloud-sdk/bin/"
 
 # Install Miniconda with Python 3.10 into /opt
-RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2023.03-Linux-x86_64.sh -O ~/conda.sh && \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Linux-x86_64.sh -O ~/conda.sh && \
     /bin/bash ~/conda.sh -b -p /opt/conda && \
     rm ~/conda.sh
     
@@ -43,9 +43,9 @@ RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
 ENV PATH /opt/conda/bin:$PATH
 
 
-RUN pip install pyparsing~=2.4.7
-RUN pip install imageio~=2.13.0
-RUN pip install --upgrade protobuf==3.19.0
+# RUN pip install pyparsing~=2.4.7
+# RUN pip install imageio~=2.13.0
+# RUN pip install --upgrade protobuf==3.19.0
 
 
 # Install jq
@@ -53,54 +53,56 @@ RUN apt-get install -y jq
 
 # Install matplotlib
 
-RUN pip install matplotlib
+# RUN pip install pandas
 
-RUN pip install plotnine
+# RUN pip install matplotlib
 
-RUN pip install pysam
+# RUN pip install plotnine
 
-# Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
-RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
+# # Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
+# RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 
-RUN conda install -y -c anaconda pandas
-
-RUN apt install -y --allow-unauthenticated libbz2-dev
-RUN apt install -y --allow-unauthenticated liblzma-dev
-RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
+# RUN apt install -y --allow-unauthenticated libbz2-dev
+# RUN apt install -y --allow-unauthenticated liblzma-dev
+# RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
 RUN apt install -y --allow-unauthenticated build-essential
 
-RUN DEBIAN_FRONTEND=noninteractive apt install -y libxml2 && apt-get install -y zlib1g && apt install -y zlib1g-dev
-
-RUN wget https://meme-suite.org/meme/meme-software/5.5.1/meme-5.5.1.tar.gz && \
-	tar xzf meme-5.5.1.tar.gz && \
-	cd meme-5.5.1 && \
-	./configure --prefix=/opt/meme --enable-build-libxml2 --enable-build-libxslt && \
-	make && \
-	make install
-ENV PATH "$PATH:/opt/meme/bin/"
-RUN rm -rf meme*
-
-# Install tfmodisco-lite repo
-COPY tfmodisco-lite /tfmodisco-lite
-RUN pip install -e /tfmodisco-lite
-
-RUN apt-get install -y --allow-unauthenticated libpq-dev
-
-# Install any remaining needed Python packages specified in requirements.txt
-COPY requirements.txt /tfatlas
-RUN pip install -r requirements.txt
-RUN rm requirements.txt
-
-# Clean up after apt and conda
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN conda clean -tipy
-
-
-# Install local shap repo
-COPY shap /shap
-RUN pip install -e /shap
+# RUN DEBIAN_FRONTEND=noninteractive apt install -y libxml2 && apt-get install -y zlib1g && apt install -y zlib1g-dev
 
 # Install local bpnet repo
 COPY bpnet-refactor /bpnet
 RUN pip install -e /bpnet
+
+# RUN wget https://meme-suite.org/meme/meme-software/5.5.1/meme-5.5.1.tar.gz && \
+# 	tar xzf meme-5.5.1.tar.gz && \
+# 	cd meme-5.5.1 && \
+# 	./configure --prefix=/opt/meme --enable-build-libxml2 --enable-build-libxslt && \
+# 	make && \
+# 	make install
+# ENV PATH "$PATH:/opt/meme/bin/"
+# RUN rm -rf meme*
+
+# # Install tfmodisco-lite repo
+# COPY tfmodisco-lite /tfmodisco-lite
+# RUN pip install -e /tfmodisco-lite
+
+# RUN apt-get install -y --allow-unauthenticated libpq-dev
+
+# # Install any remaining needed Python packages specified in requirements.txt
+# COPY requirements.txt /tfatlas
+# RUN pip install -r requirements.txt
+# RUN rm requirements.txt
+
+# # Clean up after apt and conda
+# RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# RUN conda clean -tipy
+
+
+# # Install local shap repo
+# COPY shap /shap
+# RUN pip install -e /shap
+
+# RUN conda install -y -c conda-forge libgcc
+
+# RUN conda install -y -c conda-forge gxx_linux-64==11.3.0
 
