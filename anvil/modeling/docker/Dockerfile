@@ -1,5 +1,5 @@
 # Use the official TensorFlow image as parent
-FROM tensorflow/tensorflow:2.4.1-gpu
+FROM tensorflow/tensorflow:2.11.0-gpu
 
 # Create /tfatlas directory and subdirectories
 RUN mkdir -p /tfatlas
@@ -20,15 +20,19 @@ RUN apt-get update --fix-missing && \
 # Install Google Cloud SDK
 RUN apt-get update && apt install -y --allow-unauthenticated wget
 RUN cd /opt/ && \
-	wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && \
-	tar xvfz google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && \
+	wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-423.0.0-linux-x86_64.tar.gz && \
+	tar xvfz google-cloud-sdk-423.0.0-linux-x86_64.tar.gz && \
 	./google-cloud-sdk/install.sh
 ENV PATH "$PATH:/opt/google-cloud-sdk/bin/"
 
-# Install Miniconda with Python 3.7 into /opt
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh
+# Install Miniconda with Python 3.10 into /opt
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2023.03-Linux-x86_64.sh -O ~/conda.sh && \
+    /bin/bash ~/conda.sh -b -p /opt/conda && \
+    rm ~/conda.sh
+    
+# Set environment variables for Python
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 # Enable Conda and alter bashrc so the Conda default environment is always activated
 RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
@@ -38,28 +42,49 @@ RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
 # Attach Conda to PATH
 ENV PATH /opt/conda/bin:$PATH
 
-#tensorflow-gpu 2.4.1 has requirement numpy~=1.19.2
 
-RUN pip install numpy~=1.19.2
 RUN pip install pyparsing~=2.4.7
 RUN pip install imageio~=2.13.0
+RUN pip install --upgrade protobuf==3.19.0
 
 
+# Install jq
+RUN apt-get install -y jq
 
+# Install matplotlib
+
+RUN pip install matplotlib
+
+RUN pip install plotnine
+
+RUN pip install pysam
 
 # Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
 RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 
+RUN conda install -y -c anaconda pandas
+
 RUN apt install -y --allow-unauthenticated libbz2-dev
 RUN apt install -y --allow-unauthenticated liblzma-dev
 RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
+RUN apt install -y --allow-unauthenticated build-essential
 
-RUN pip install --upgrade protobuf==3.19.0
+RUN DEBIAN_FRONTEND=noninteractive apt install -y libxml2 && apt-get install -y zlib1g && apt install -y zlib1g-dev
 
-RUN conda install -c bioconda pysam
+RUN wget https://meme-suite.org/meme/meme-software/5.5.1/meme-5.5.1.tar.gz && \
+	tar xzf meme-5.5.1.tar.gz && \
+	cd meme-5.5.1 && \
+	./configure --prefix=/opt/meme --enable-build-libxml2 --enable-build-libxslt && \
+	make && \
+	make install
+ENV PATH "$PATH:/opt/meme/bin/"
+RUN rm -rf meme*
 
-# Install jq
-RUN apt-get install -y jq
+# Install tfmodisco-lite repo
+COPY tfmodisco-lite /tfmodisco-lite
+RUN pip install -e /tfmodisco-lite
+
+RUN apt-get install -y --allow-unauthenticated libpq-dev
 
 # Install any remaining needed Python packages specified in requirements.txt
 COPY requirements.txt /tfatlas
@@ -70,29 +95,12 @@ RUN rm requirements.txt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN conda clean -tipy
 
-# Set environment variables for Python
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
 
 # Install local shap repo
 COPY shap /shap
 RUN pip install -e /shap
 
-# Install local tfmodisco repo
-COPY tfmodisco /tfmodisco
-RUN pip install -e /tfmodisco
+# Install local bpnet repo
+COPY bpnet-refactor /bpnet
+RUN pip install -e /bpnet
 
-# Install local mseqgen repo
-COPY mseqgen /mseqgen
-RUN pip install -e /mseqgen
-
-# Install local genomics-DL-archsandlosses repo
-COPY genomicsdlarchsandlosses /genomicsdlarchsandlosses
-RUN pip install -e /genomicsdlarchsandlosses
-
-# Install BPNet repo
-COPY basepairmodels /basepairmodels
-RUN pip install -e /basepairmodels
-
-# Install plotnine
-RUN pip install plotnine
