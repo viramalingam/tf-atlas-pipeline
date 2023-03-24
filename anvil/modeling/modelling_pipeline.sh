@@ -192,17 +192,17 @@ echo '$project_dir/training_input.json'
 cat $project_dir/training_input.json
 
 # compute the counts loss weight to be used for this experiment
-echo $( timestamp ): "counts_loss_weight=\`counts_loss_weight --input-data \
+echo $( timestamp ): "bpnet-counts-loss-weight=\`counts_loss_weight --input-data \
 $project_dir/training_input.json\`" | tee -a $logfile
 
 #default counts_loss_weight
 counts_loss_weight=100
 
 #compute the counts_loss_weight; if it does not work default will be used
-counts_loss_weight=`bpnet-counts_loss_weight --input-data $project_dir/training_input.json`
+counts_loss_weight=`bpnet-counts-loss-weight --input-data $project_dir/training_input.json`
 
 # print the counts loss weight
-echo $( timestamp ): "bpnet-counts_loss_weight:" $counts_loss_weight | tee -a $logfile 
+echo $( timestamp ): "counts_loss_weight:" $counts_loss_weight | tee -a $logfile 
 
 # modify the bpnet params json to reflect the counts loss weight
 echo  $( timestamp ): "sed -i -e" "s/<>/$counts_loss_weight/g" \
