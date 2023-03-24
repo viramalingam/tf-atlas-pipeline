@@ -199,10 +199,10 @@ $project_dir/training_input.json\`" | tee -a $logfile
 counts_loss_weight=100
 
 #compute the counts_loss_weight; if it does not work default will be used
-counts_loss_weight=`counts_loss_weight --input-data $project_dir/training_input.json`
+counts_loss_weight=`bpnet-counts_loss_weight --input-data $project_dir/training_input.json`
 
 # print the counts loss weight
-echo $( timestamp ): "counts_loss_weight:" $counts_loss_weight | tee -a $logfile 
+echo $( timestamp ): "bpnet-counts_loss_weight:" $counts_loss_weight | tee -a $logfile 
 
 # modify the bpnet params json to reflect the counts loss weight
 echo  $( timestamp ): "sed -i -e" "s/<>/$counts_loss_weight/g" \
@@ -220,7 +220,7 @@ fi
 head ${data_dir}/${experiment}_peaks.bed
 
 echo $( timestamp ): "
-train \\
+bpnet-train \\
     --input-data $project_dir/training_input.json \\
     --output-dir $model_dir \\
     --reference-genome $reference_dir/hg38.genome.fa \\
@@ -242,7 +242,7 @@ train \\
     --early-stopping-patience 10 \\
     --reduce-lr-on-plateau-patience 5" | tee -a $logfile 
 
-train \
+bpnet-train \
     --input-data $project_dir/training_input.json \
     --output-dir $model_dir \
     --reference-genome $reference_dir/hg38.genome.fa \
@@ -349,7 +349,7 @@ else
 fi
 
 echo $( timestamp ): "
-predict \\
+bpnet-predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
@@ -365,7 +365,7 @@ predict \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-predict \
+bpnet-predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
@@ -402,7 +402,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --chroms $test_chromosome
     
 echo $( timestamp ): "
-predict \\
+bpnet-predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
@@ -419,7 +419,7 @@ predict \\
     --threads $threads\\
     --set-bias-as-zero" | tee -a $logfile 
 
-predict \
+bpnet-predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
@@ -457,7 +457,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
 
 
 echo $( timestamp ): "
-predict \\
+bpnet-predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
@@ -473,7 +473,7 @@ predict \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-predict \
+bpnet-predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
@@ -501,7 +501,7 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 
 echo $( timestamp ): "
-predict \\
+bpnet-predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
@@ -517,7 +517,7 @@ predict \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-predict \
+bpnet-predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
@@ -535,7 +535,7 @@ predict \
     
     
 echo $( timestamp ): "
-predict \\
+bpnet-predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
@@ -552,7 +552,7 @@ predict \\
     --threads $threads \\
     --set-bias-as-zero" | tee -a $logfile 
 
-predict \
+bpnet-predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
@@ -570,7 +570,7 @@ predict \
     --set-bias-as-zero
 
 echo $( timestamp ): "
-predict \\
+bpnet-predict \\
     --model $model_dir/${1}_split000.h5 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
@@ -586,7 +586,7 @@ predict \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads" | tee -a $logfile 
 
-predict \
+bpnet-predict \
     --model $model_dir/${1}_split000.h5 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
