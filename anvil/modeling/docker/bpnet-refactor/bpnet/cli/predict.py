@@ -604,11 +604,6 @@ def predict(args, pred_dir):
                 
                 assert(cur_profile_prediction.shape==(1,args.output_len,2))
                 assert(cur_logcounts_prediction.shape==(1,1)|cur_logcounts_prediction.shape==(1,2))
-                
-rev_comp_profile_prediction.shape: (1, 1000, 2)
-rev_comp_logcounts_prediction.shape: (1, 1)
-rev_comp_profile_prediction.shape: (1, 1000, 2)
-cur_profile_prediction.shape: (1, 1000, 2)
 
                 if args.reverse_complement_average:
                     # take the prediction from the rev comp version
