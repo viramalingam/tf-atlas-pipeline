@@ -602,8 +602,13 @@ def predict(args, pred_dir):
                 cur_profile_prediction = predictions[0][idx:idx+1]
                 cur_logcounts_prediction = predictions[1][idx:idx+1]
                 
-                print("cur_profile_prediction.shape:",cur_profile_prediction.shape)
-                print("cur_logcounts_prediction.shape:",cur_logcounts_prediction.shape)
+                assert(cur_profile_prediction.shape==(1,args.output_len,2))
+                assert(cur_logcounts_prediction.shape==(1,1)|cur_logcounts_prediction.shape==(1,2))
+                
+rev_comp_profile_prediction.shape: (1, 1000, 2)
+rev_comp_logcounts_prediction.shape: (1, 1)
+rev_comp_profile_prediction.shape: (1, 1000, 2)
+cur_profile_prediction.shape: (1, 1000, 2)
 
                 if args.reverse_complement_average:
                     # take the prediction from the rev comp version
@@ -617,8 +622,9 @@ def predict(args, pred_dir):
                     rev_comp_profile_prediction = predictions[0][rev_comp_idx:rev_comp_idx+1]
                     rev_comp_logcounts_prediction = predictions[1][rev_comp_idx:rev_comp_idx+1]
                     
-                    print("rev_comp_profile_prediction.shape:",rev_comp_profile_prediction.shape)
-                    print("rev_comp_logcounts_prediction.shape:",rev_comp_logcounts_prediction.shape)
+                    assert(rev_comp_profile_prediction.shape==(1,args.output_len,2))
+                    assert((rev_comp_logcounts_prediction.shape==(1,1))|
+                           (rev_comp_logcounts_prediction.shape==(1,2)))
                     
 
                     # average the counts
@@ -632,7 +638,7 @@ def predict(args, pred_dir):
                     rev_comp_profile_prediction = sequtils.reverse_complement_of_profiles(rev_comp_profile_prediction,
                                                                                           stranded=rev_comp_profile_prediction.shape[2]==2)
                     
-                    print("rev_comp_profile_prediction.shape:",rev_comp_profile_prediction.shape)
+                    assert(rev_comp_profile_prediction.shape==(1,args.output_len,2))
                     
                     # average the profiles
                     cur_profile_prediction = (cur_profile_prediction + rev_comp_profile_prediction) / 2
