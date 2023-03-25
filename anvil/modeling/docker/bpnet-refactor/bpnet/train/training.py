@@ -497,7 +497,7 @@ def train_and_validate(
     hist_df = pd.DataFrame(custom_history) 
 
     # file name for json file
-    hist_json = model_fname.replace('.h5', '.history.json')
+    hist_json = model_fname+'.history.json'
 
     # Step 2. write the dataframe to json
     with open(hist_json, mode='w') as f:
