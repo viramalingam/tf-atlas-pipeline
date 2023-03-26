@@ -23,6 +23,8 @@ from scipy.special import logsumexp
 from scipy.stats import pearsonr, spearmanr, multinomial
 from tqdm import tqdm
 from tensorflow.keras.models import load_model
+from tensorflow.keras.utils import CustomObjectScope
+
 
 """
 Currently only supports single-tasking 

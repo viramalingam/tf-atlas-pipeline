@@ -101,7 +101,7 @@ task run_modelling {
 		disks: "local-disk 100 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
-		nvidiaDriverVersion: "460.106.00"
+		nvidiaDriverVersion: "418.87.00"
 		maxRetries: 1
 	}
 }

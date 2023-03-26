@@ -51,6 +51,10 @@ RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 
 RUN pip install --upgrade protobuf==3.19.0
 
+RUN pip install numpy~=1.19.2
+RUN pip install h5py>=3.7.0
+RUN pip install pandas>=1.4.3
+
 RUN conda install -c bioconda pysam
 
 # Install jq
@@ -70,23 +74,9 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 
-
-RUN apt install -y --allow-unauthenticated libbz2-dev
-RUN apt install -y --allow-unauthenticated liblzma-dev
-RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
-RUN DEBIAN_FRONTEND=noninteractive apt install -y --allow-unauthenticated libxml2 && apt-get install -y --allow-unauthenticated zlib1g && apt install -y --allow-unauthenticated zlib1g-dev
 RUN apt install -y --allow-unauthenticated build-essential
 
-
-RUN wget https://meme-suite.org/meme/meme-software/5.5.1/meme-5.5.1.tar.gz && \
-	tar xzf meme-5.5.1.tar.gz && \
-	cd meme-5.5.1 && \
-	./configure --prefix=/opt/meme --enable-build-libxml2 --enable-build-libxslt && \
-	make && \
-	make install
-ENV PATH "$PATH:/opt/meme/bin/"
-RUN rm -rf meme*
-
+RUN conda install -c bioconda pybigwig
 
 # Install local bpnet repo
 COPY bpnet-refactor /bpnet
