@@ -57,7 +57,6 @@ ENV LANG=C.UTF-8
 
 RUN apt install -y --allow-unauthenticated build-essential
 
-RUN conda install -c bioconda pybigwig
 
 # Install local bpnet repo
 # git clone https://github.com/kundajelab/bpnet-refactor.git
