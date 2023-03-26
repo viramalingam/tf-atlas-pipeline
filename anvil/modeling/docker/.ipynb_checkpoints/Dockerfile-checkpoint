@@ -41,8 +41,6 @@ ENV PATH /opt/conda/bin:$PATH
 #tensorflow-gpu 2.4.1 has requirement numpy~=1.19.2
 
 RUN pip install numpy~=1.19.2
-RUN pip install pyparsing~=2.4.7
-RUN pip install imageio~=2.13.0
 
 
 # Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
@@ -51,7 +49,6 @@ RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 
 RUN pip install --upgrade protobuf==3.19.0
 
-RUN pip install numpy~=1.19.2
 RUN pip install h5py>=3.7.0
 RUN pip install pandas>=1.4.3
 
