@@ -607,10 +607,10 @@ bpnet-predict \
 
 
 # save the values used for training
-cp $project_dir/training_input.json $model_dir/${1}_split000
-cp ${data_dir}/${experiment}_peaks.bed $model_dir/${1}_split000
-cp ${data_dir}/${experiment}_background_regions.bed $model_dir/${1}_split000
-cp ${data_dir}/${experiment}_combined.bed $model_dir/${1}_split000
-cp $project_dir/bpnet_params.json $model_dir/${1}_split000
-cp $project_dir/splits.json $model_dir/${1}_split000
-cp $indices_dir/* $model_dir/${1}_split000
+cp $project_dir/training_input.json $model_dir/
+cp ${data_dir}/${experiment}_peaks.bed $model_dir/
+cp ${data_dir}/${experiment}_background_regions.bed $model_dir/
+cp ${data_dir}/${experiment}_combined.bed $model_dir/
+cp $project_dir/bpnet_params.json $model_dir/
+cp $project_dir/splits.json $model_dir/
+cp $indices_dir/* $model_dir/
