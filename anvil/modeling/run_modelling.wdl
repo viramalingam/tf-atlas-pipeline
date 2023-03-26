@@ -22,7 +22,7 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch troubleshoot_py310_tf211_bpnet_refactor https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch test_py310_tf11 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
@@ -95,13 +95,13 @@ task run_modelling {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_troubleshoot_py310_tf211_bpnet_refactor'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_test_py310_tf11'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
-		nvidiaDriverVersion: "418.87.00"
+		nvidiaDriverVersion: "460.106.00"
 		maxRetries: 1
 	}
 }
