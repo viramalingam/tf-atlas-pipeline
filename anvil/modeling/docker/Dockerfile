@@ -46,8 +46,6 @@ RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 RUN pip install --upgrade protobuf==3.19.0
 
 
-RUN conda install -c bioconda pysam
-
 # Install jq
 RUN apt-get install -y jq
 
