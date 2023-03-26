@@ -341,7 +341,7 @@ fi
 
 echo $( timestamp ): "
 bpnet-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $all_peaks_test_chroms_indices_file \\
@@ -358,7 +358,7 @@ bpnet-predict \\
     --threads $threads" | tee -a $logfile 
 
 bpnet-predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $all_peaks_test_chroms_indices_file \
@@ -396,7 +396,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     
 echo $( timestamp ): "
 bpnet-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $all_peaks_test_chroms_indices_file \\
@@ -414,7 +414,7 @@ bpnet-predict \\
     --set-bias-as-zero" | tee -a $logfile 
 
 bpnet-predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $all_peaks_test_chroms_indices_file \
@@ -453,7 +453,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
 
 echo $( timestamp ): "
 bpnet-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
     --test-indices-file $all_peaks_all_chroms_indices_file \\
@@ -470,7 +470,7 @@ bpnet-predict \\
     --threads $threads" | tee -a $logfile 
 
 bpnet-predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
     --test-indices-file $all_peaks_all_chroms_indices_file \
@@ -499,7 +499,7 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 echo $( timestamp ): "
 bpnet-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $test_peaks_test_chroms_indices_file \\
@@ -516,7 +516,7 @@ bpnet-predict \\
     --threads $threads" | tee -a $logfile 
 
 bpnet-predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $test_peaks_test_chroms_indices_file \
@@ -535,7 +535,7 @@ bpnet-predict \
     
 echo $( timestamp ): "
 bpnet-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $test_peaks_test_chroms_indices_file \\
@@ -553,7 +553,7 @@ bpnet-predict \\
     --set-bias-as-zero" | tee -a $logfile 
 
 bpnet-predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $test_peaks_test_chroms_indices_file \
@@ -572,7 +572,7 @@ bpnet-predict \
 
 echo $( timestamp ): "
 bpnet-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
     --test-indices-file $test_peaks_all_chroms_indices_file \\
@@ -589,7 +589,7 @@ bpnet-predict \\
     --threads $threads" | tee -a $logfile 
 
 bpnet-predict \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
     --test-indices-file $test_peaks_all_chroms_indices_file \
@@ -613,6 +613,10 @@ cp ${data_dir}/${experiment}_background_regions.bed $model_dir/
 cp ${data_dir}/${experiment}_combined.bed $model_dir/
 cp $project_dir/bpnet_params.json $model_dir/
 cp $project_dir/splits.json $model_dir/
+
+cd $model_dir
+echo "tar -cf ${1}_split000.tar ${1}_split000"
+tar -cf ${1}_split000.tar ${1}_split000
 
 if [[ -n "${indices_files}" ]];then
     if [[ ${indices_files} != '' ]];then
