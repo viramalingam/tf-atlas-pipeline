@@ -23,6 +23,10 @@ from scipy.special import logsumexp
 from scipy.stats import pearsonr, spearmanr, multinomial
 from tqdm import tqdm
 from tensorflow.keras.models import load_model
+from tensorflow.keras.utils import CustomObjectScope
+
+from bpnet.model.custommodel \
+    import CustomModel
 
 """
 Currently only supports single-tasking 
@@ -907,7 +911,11 @@ def predict_main():
     logger.init_logger(logfname)
 
     # predict
-    predict(args, pred_dir)
+
+    with CustomObjectScope({'tf': tf,
+                            'CustomModel': CustomModel}):
+            
+        predict(args, pred_dir)
     
 if __name__ == '__main__':
     predict_main()

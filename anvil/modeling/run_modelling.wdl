@@ -22,7 +22,7 @@ task run_modelling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch test_revert_py37_tf241 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
@@ -34,7 +34,7 @@ task run_modelling {
 		echo "copying all files to cromwell_root folder"
 		
 		cp /project/bpnet_params.json /cromwell_root/bpnet_params.json
-		cp -r /project/model/${experiment}_split000 /cromwell_root/model
+		cp -r /project/model /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_all_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms /cromwell_root/
@@ -95,13 +95,13 @@ task run_modelling {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_py310_test'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_test_revert_py37_tf241'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
-		nvidiaDriverVersion: "460.106.00"
+		nvidiaDriverVersion: "418.87.00"
 		maxRetries: 1
 	}
 }
