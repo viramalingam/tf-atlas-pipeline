@@ -19,7 +19,7 @@ chroms_txt=$8
 bigwigs=${9}
 peaks=${10}
 background_regions=${11}
-reverse_complement_augmentation=${12}
+reverse_complement_average=${12}
 indices_files=${13}
 
 echo $experiment
@@ -129,6 +129,15 @@ echo $model | sed 's/,/ /g' | xargs cp -t $model_dir/
 
 echo $( timestamp ): "cp" $model ${model_dir}/ |\
 tee -a $logfile 
+
+cd ${model_dir}
+
+echo $( timestamp ): "tar -xvf" ${model_dir}/${1}_split000.tar |\
+tee -a $logfile 
+
+tar -xvf ${model_dir}/${1}_split000.tar
+
+cd -
 
 
 echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}_peaks.bed.gz |\
@@ -271,8 +280,8 @@ else
 fi
 
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $all_peaks_test_chroms_indices_file \\
@@ -285,11 +294,11 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --reverse-complement-augmentation $reverse_complement_augmentation  \\
-    --threads $threads" | tee -a $logfile 
+    --threads $threads \\
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $all_peaks_test_chroms_indices_file \
@@ -302,8 +311,8 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
-    --threads $threads
+    --threads $threads \
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
     
 
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics ..."
@@ -326,8 +335,8 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --chroms $test_chromosome
     
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $all_peaks_test_chroms_indices_file \\
@@ -340,12 +349,12 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --reverse-complement-augmentation $reverse_complement_augmentation  \\
-    --threads $threads\\
-    --set-bias-as-zero" | tee -a $logfile 
+    --set-bias-as-zero
+    --threads $threads \\
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $all_peaks_test_chroms_indices_file \
@@ -358,9 +367,9 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
+    --set-bias-as-zero \
     --threads $threads \
-    --set-bias-as-zero
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
     
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics without bias..."
 
@@ -383,8 +392,8 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
 
 
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
     --test-indices-file $all_peaks_all_chroms_indices_file \\
@@ -397,11 +406,11 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
-    --threads $threads" | tee -a $logfile 
+    --threads $threads \\
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
     --test-indices-file $all_peaks_all_chroms_indices_file \
@@ -414,8 +423,8 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
-    --threads $threads
+    --threads $threads \
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
 
 
 # modify the testing_input json for prediction
@@ -429,8 +438,8 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $test_peaks_test_chroms_indices_file \\
@@ -443,11 +452,11 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --reverse-complement-augmentation $reverse_complement_augmentation  \\
-    --threads $threads" | tee -a $logfile 
+    --threads $threads \\
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $test_peaks_test_chroms_indices_file \
@@ -460,13 +469,13 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
-    --threads $threads
+    --threads $threads \
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
     
     
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $test_peaks_test_chroms_indices_file \\
@@ -479,12 +488,12 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --reverse-complement-augmentation $reverse_complement_augmentation  \\
+    --set-bias-as-zero
     --threads $threads \\
-    --set-bias-as-zero" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $test_peaks_test_chroms_indices_file \
@@ -497,13 +506,13 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
+    --set-bias-as-zero \
     --threads $threads \
-    --set-bias-as-zero
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
 
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_all_chromosome \\
     --test-indices-file $test_peaks_all_chroms_indices_file \\
@@ -516,11 +525,11 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
-    --threads $threads" | tee -a $logfile 
+    --threads $threads \\
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_all_chromosome \
     --test-indices-file $test_peaks_all_chroms_indices_file \
@@ -533,5 +542,5 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --reverse-complement-augmentation $reverse_complement_augmentation  \
-    --threads $threads
+    --threads $threads \
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )

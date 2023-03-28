@@ -13,7 +13,7 @@ task run_fastpredict {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		String? reverse_complement_aug
+		Bool? reverse_complement_average
 		Array [File]? indices_files        
 	}
 	command {
@@ -21,14 +21,14 @@ task run_fastpredict {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 		
-		git clone --depth 1 --branch merge_single_joint_multi https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
 		##fastpredict
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_aug} ${sep=',' indices_files}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_aug} ${sep=',' indices_files}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files}
 		
 		
 		echo "copying all files to cromwell_root folder"
@@ -93,7 +93,7 @@ task run_fastpredict {
 	}
 
 runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_merge_single_joint_multi'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_test_revert_py37_tf241'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
@@ -117,7 +117,7 @@ workflow fastpredict {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		String? reverse_complement_aug = 'True'
+		Bool? reverse_complement_average = true
 		Array [File]? indices_files
         
 	}
@@ -135,7 +135,7 @@ workflow fastpredict {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			background_regions = background_regions,
-			reverse_complement_aug = reverse_complement_aug,
+			reverse_complement_average = reverse_complement_average,
 			indices_files = indices_files
 	}
 	output {
