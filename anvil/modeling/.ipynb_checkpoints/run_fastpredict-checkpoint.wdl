@@ -13,7 +13,7 @@ task run_fastpredict {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		Bool? reverse_complement_average
+		Boolean? reverse_complement_average
 		Array [File]? indices_files        
 	}
 	command {
@@ -117,7 +117,7 @@ workflow fastpredict {
 		Array [File] bigwigs
 		File peaks
 		File background_regions
-		Bool? reverse_complement_average = true
+		Boolean? reverse_complement_average = true
 		Array [File]? indices_files
         
 	}
