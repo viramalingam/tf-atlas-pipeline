@@ -14,7 +14,7 @@ def parse_args():
 def main():
     args=parse_args()
     ref=pysam.FastaFile(args.ref_fasta)
-    data=pd.read_csv(args.input_bed,header=0,sep='\t')
+    data=pd.read_csv(args.input_bed,header=None,sep='\t')
 
     num_rows=str(data.shape[0])
     print("num_rows:"+num_rows) 
