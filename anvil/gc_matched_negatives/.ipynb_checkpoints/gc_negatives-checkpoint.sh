@@ -16,7 +16,6 @@ chrom_sizes=$4
 chroms_txt=$5
 reference_gc_stride_1000_flank_size_1057=$6
 peaks=$7
-split_folds=$8
 
 mkdir /project
 project_dir=/project
@@ -102,13 +101,11 @@ python get_gc_matched_negatives.py \\
         --candidate_negatives $data_dir/${experiment}.tsv \\
         --foreground_gc_bed  $data_dir/$experiment.gc.bed \\
         --output_prefix $data_dir/${experiment}_negatives \\
-        --chr_fold_path $split_folds\\
         --neg_to_pos_ratio_train 4" \\ | tee -a $logfile 
 
 python get_gc_matched_negatives.py \
         --candidate_negatives $data_dir/${experiment}.tsv \
         --foreground_gc_bed  $data_dir/$experiment.gc.bed \
-        --chr_fold_path $split_folds \
         --output_prefix $data_dir/${experiment}_negatives \
         --neg_to_pos_ratio_train 4
 
