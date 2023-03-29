@@ -2,13 +2,13 @@ run gc_negative.sh and check if the following gives the same values.
 
 ## docker run -it --rm --cpus=10 --memory=200g --gpus device=1 --mount src=/mnt/lab_data2/vir/tf_chr_atlas/temp/troubleshooting_single_multi/encode_znf_models/ENCSR000EVX/,target=/mydata,type=bind vivekramalingam/tf-atlas:gcp-modeling_merge_single_joint_multi
 
-##cd /; mkdir my_scripts
-##cd /my_scripts
-##git clone --depth 1 --branch main  https://github.com/viramalingam/tf-atlas-pipeline.git
-##chmod -R 777 tf-atlas-pipeline
-##cd tf-atlas-pipeline/anvil/gc_matched_negatives/
+cd /; mkdir my_scripts
+cd /my_scripts
+git clone --depth 1 --branch main  https://github.com/viramalingam/tf-atlas-pipeline.git
+chmod -R 777 tf-atlas-pipeline
+cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
-##/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ENCSR000EVX ##/mydata/reference_hg38.genome.fa /mydata/reference_hg38.genome.fa.fai ##/mydata/reference_chrom.sizes /mydata/hg38_chroms.txt ##/mydata/genomewide_gc_hg38_stride_1000_inputlen_2114.bed /mydata/peaks_inliers.bed.gz
+/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ENCSR000EVX /mydata/reference_hg38.genome.fa /mydata/reference_hg38.genome.fa.fai /mydata/reference_chrom.sizes /mydata/hg38_chroms.txt /mydata/genomewide_gc_hg38_stride_1000_inputlen_2114.bed /mydata/peaks_inliers.bed.gz
 
 
 
@@ -21,3 +21,32 @@ zcat /mydata/peaks_inliers.bed.gz | awk '{print $1}' | sort -V | uniq | xargs -I
 zcat /mydata/peaks_inliers.bed.gz | awk '{print $1}' | sort -V | uniq | xargs -I {} sh -c 'expr $(zcat /mydata/peaks_inliers.bed.gz | grep -w {} | wc -l) \* $neg_to_pos_ratio_train' > number_of_peaks_times_neg_to_pos_ratio.txt
 
 diff number_of_negative.txt number_of_peaks_times_neg_to_pos_ratio.txt
+
+
+
+#test if there are neg_to_pos_ratio_train number of neg regions for each peak in the same chromosome
+
+head /project/data/gc_neg_only.bed
+head /project/data/ENCSR000EVX_inliers.bed
+
+tail /project/data/gc_neg_only.bed
+tail /project/data/ENCSR000EVX_inliers.bed
+
+
+# test if the gc_content of the gc_neg_only.bed negative regions is close to the gc content of the peaks
+python get_gc_content.py \
+>        --input_bed /project/data/gc_neg_only.bed \
+>        --ref_fasta /project/reference/genome.fa \
+>        --out_prefix /project/data/test.gc.bed \
+>        --flank_size 1057
+
+head /project/data/ENCSR000EVX.gc.bed
+head /project/data/test.gc.bed
+
+tail /project/data/ENCSR000EVX.gc.bed
+tail /project/data/test.gc.bed
+
+
+#test if the same set of negatives is produced if the script is ran two times
+
+head /project/data/gc_neg_only.bed
