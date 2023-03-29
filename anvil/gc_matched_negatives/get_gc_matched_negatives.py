@@ -113,6 +113,8 @@ def adjust_gc(chrom,cur_gc,negatives,used_negatives):
 if __name__=="__main__":
 
     args=parse_args()
+    
+    random.seed(1234)
 
     # splits_dict=json.load(open(args.chr_fold_path))
 
