@@ -70,7 +70,7 @@ workflow shap {
 		Array [File] bigwigs
 		File peaks
 		Array [File] model
-		?Int seed=0
+		Int? seed=0
 
 	}
 
