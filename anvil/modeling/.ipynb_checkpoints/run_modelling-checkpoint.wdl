@@ -35,6 +35,7 @@ task run_modelling {
 		
 		cp /project/bpnet_params.json /cromwell_root/bpnet_params.json
 		cp -r /project/model /cromwell_root/
+		cp -r 
 		cp -r /project/predictions_and_metrics_test_peaks_test_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_test_peaks_all_chroms /cromwell_root/
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms /cromwell_root/

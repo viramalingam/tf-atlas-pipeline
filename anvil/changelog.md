@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v2.0.0-rc.1] - 2023-03-29
+
+1. fixed rc augmentation. added rc-averaging for prediction. Uses the newer bpnet-refactor repo that combines basepairmodels, mseqgen, genomiclossesandarchs. Changed profile metrics normalization. Exposed seed in shap to prevent same shuffles being used for background calculation in all the folds.
+
+
+
 ## [v1.6.11] - 2022-10-04
 
 1. change name of ${shap_dir}/counts/profile*scores*h5 to ${shap_dir}/counts/profile_scores.h5 to accomodate different file names like from mean_shap scores

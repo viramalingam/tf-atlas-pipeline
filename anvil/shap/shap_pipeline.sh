@@ -17,6 +17,7 @@ chroms_txt=$6
 bigwigs=$7
 peaks=$8
 model=${9}
+seed=${10}
 
 mkdir /project
 project_dir=/project
@@ -141,6 +142,7 @@ bpnet-shap \\
     --input-seq-len 2114 \\
     --control-len 1000 \\
     --task-id 0 \\
+    --seed $seed \\
     --input-data $project_dir/testing_input_peaks.json" | tee -a $logfile
 
 bpnet-shap \
@@ -152,6 +154,7 @@ bpnet-shap \
     --input-seq-len 2114 \
     --control-len 1000 \
     --task-id 0 \
+    --seed $seed \
     --input-data $project_dir/testing_input_peaks.json # this file doesnt have negatives
 
 echo $( timestamp ): "

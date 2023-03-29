@@ -11,21 +11,21 @@ task run_shap {
 		Array [File] bigwigs
 		File peaks
 		Array [File] model
-
+		Int seed
 
   	}	
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.6.5 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.0.0-rc.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/shap/
 
 		##shap
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh" ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model}
-		/my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh" ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model} ${seed}
+		/my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model} ${seed}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -48,13 +48,13 @@ task run_shap {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.6.5'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1'
 		memory: 30 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
 		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
-		nvidiaDriverVersion: "450.51.05" 
+		nvidiaDriverVersion: "418.87.00"
 		maxRetries: 1
 	}
 }
@@ -70,6 +70,7 @@ workflow shap {
 		Array [File] bigwigs
 		File peaks
 		Array [File] model
+		?Int seed=0
 
 	}
 
@@ -83,7 +84,8 @@ workflow shap {
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,
 			peaks = peaks,
-			model = model
+			model = model,
+			seed = seed            
  	}
 	output {
 		Array[File] shap_dir_peaks = run_shap.shap_dir_peaks

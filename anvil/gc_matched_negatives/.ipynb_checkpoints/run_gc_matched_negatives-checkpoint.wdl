@@ -15,7 +15,7 @@ task run_gc_matched_negatives {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.6.8 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.0.0-rc.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
@@ -44,7 +44,7 @@ task run_gc_matched_negatives {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.6.5'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
