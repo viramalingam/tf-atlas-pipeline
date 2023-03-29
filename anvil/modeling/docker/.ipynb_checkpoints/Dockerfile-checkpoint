@@ -7,18 +7,20 @@ RUN mkdir -p /tfatlas
 # Set the working directory
 WORKDIR /tfatlas
 
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 RUN apt-key del 7fa2af80
+RUN apt-get update && apt-get install -y --no-install-recommends wget
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb
+RUN dpkg -i cuda-keyring_1.0-1_all.deb
 
-RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
 RUN apt-get update --fix-missing
 
 
 # Install some basic utilities
-RUN apt-get update --fix-missing && \
-    apt-get install -y wget bzip2 ca-certificates curl git
+RUN apt-get install -y wget bzip2 ca-certificates curl git
 
 # Install Google Cloud SDK
-RUN apt-get update && apt install -y --allow-unauthenticated wget
 RUN cd /opt/ && \
 	wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && \
 	tar xvfz google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && \
@@ -42,17 +44,17 @@ ENV PATH /opt/conda/bin:$PATH
 
 RUN pip install numpy~=1.19.2
 
-
 # Install SAMtools, BEDtools, and UCSC BedGraphToBigWig
 RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
 
 
+RUN apt-get update
+RUN apt install -y --allow-unauthenticated libbz2-dev
+RUN apt install -y --allow-unauthenticated liblzma-dev
+RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
+RUN apt-get install -y --allow-unauthenticated libpcap-dev
+RUN apt-get install -y --allow-unauthenticated libssl-dev 
 RUN pip install --upgrade protobuf==3.19.0
-
-RUN pip install h5py>=3.7.0
-RUN pip install pandas>=1.4.3
-
-RUN conda install -c bioconda pysam
 
 # Install jq
 RUN apt-get install -y jq
@@ -73,25 +75,18 @@ ENV LANG=C.UTF-8
 
 RUN apt install -y --allow-unauthenticated build-essential
 
-RUN conda install -c bioconda pybigwig
 
 
+RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.0.0-rc.1
 
-RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.0.0-rc.2
-
+# COPY bpnet-refactor /bpnet
+# RUN pip install -e /bpnet
 
 # Install any remaining needed Python packages specified in requirements.txt
 COPY requirements.txt /tfatlas
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
 
-# # Install tfmodisco-lite repo
-# COPY tfmodisco-lite /tfmodisco-lite
-# RUN pip install -e /tfmodisco-lite
-
-# # Install local shap repo
-# COPY shap /shap
-# RUN pip install -e /shap
 
 # # Clean up after apt and conda
 # RUN apt-get clean && rm -rf /var/lib/apt/lists/*
