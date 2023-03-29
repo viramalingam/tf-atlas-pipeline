@@ -128,11 +128,11 @@ sed -i -e "s/<test_loci>/peaks/g" $project_dir/testing_input_peaks.json | tee -a
 
 
 cp $project_dir/testing_input_peaks.json $shap_dir_peaks/testing_input_peaks.json
-cp $model_dir/${1}_split000.h5 $shap_dir_peaks/${1}_split000.h5
+cp $model_dir/${1}_split000.tar $shap_dir_peaks/${1}_split000.tar
 
 
 echo $( timestamp ): "
-shap_scores \\
+bpnet-shap \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --model $model_dir/${1}_split000 \\
     --bed-file $data_dir/${1}_peaks.bed \\
@@ -143,7 +143,7 @@ shap_scores \\
     --task-id 0 \\
     --input-data $project_dir/testing_input_peaks.json" | tee -a $logfile
 
-shap_scores \
+bpnet-shap \
     --reference-genome $reference_dir/hg38.genome.fa \
     --model $model_dir/${1}_split000 \
     --bed-file $data_dir/${1}_peaks.bed \
