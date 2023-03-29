@@ -11,7 +11,7 @@ task run_shap {
 		Array [File] bigwigs
 		File peaks
 		Array [File] model
-		Int seed
+		Int? seed
 
   	}	
 	command {
