@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: basepairmodels
+Version: 0.3.1
+Summary: BPNet: toolkit to learn motif synthax from high-resolution functional genomics data using convolutional neural networks
+Home-page: https://github.com/kundajelab/basepairmodels
+Author: Zahoor Zafrulla
+Author-email: zahoor@stanford.edu
+License: MIT license
+Description: UNKNOWN
+Keywords: deep learning,computational biology,bioinformatics,genomics
+Platform: UNKNOWN
+Provides-Extra: dev

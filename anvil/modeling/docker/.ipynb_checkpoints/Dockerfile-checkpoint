@@ -77,14 +77,7 @@ RUN conda install -c bioconda pybigwig
 
 
 
-
-# Install local bpnet repo
-#git clone https://github.com/kundajelab/bpnet-refactor.git
-#cd bpnet-refactor
-#git reset --hard 8f2de41
-
-COPY bpnet-refactor /bpnet
-RUN pip install -e /bpnet
+RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.0.0-rc.1
 
 
 # Install any remaining needed Python packages specified in requirements.txt

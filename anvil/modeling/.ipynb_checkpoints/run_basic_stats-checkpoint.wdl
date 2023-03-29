@@ -15,7 +15,7 @@ task run_basicstats {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.3.6 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.0.0-rc.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 
@@ -48,7 +48,7 @@ task run_basicstats {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.3.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1'
 		memory: mem_gb + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"

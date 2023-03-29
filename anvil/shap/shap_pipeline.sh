@@ -16,7 +16,6 @@ chrom_sizes=$5
 chroms_txt=$6
 bigwigs=$7
 peaks=$8
-# background_regions=$9
 model=${9}
 
 mkdir /project
@@ -90,6 +89,15 @@ tee -a $logfile
 
 echo $model | sed 's/,/ /g' | xargs cp -t $model_dir/
 
+cd ${model_dir}
+
+echo $( timestamp ): "tar -xvf" ${model_dir}/${1}_split000.tar |\
+tee -a $logfile 
+
+tar -xvf ${model_dir}/${1}_split000.tar
+
+cd -
+
 
 echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
@@ -126,7 +134,7 @@ cp $model_dir/${1}_split000.h5 $shap_dir_peaks/${1}_split000.h5
 echo $( timestamp ): "
 shap_scores \\
     --reference-genome $reference_dir/hg38.genome.fa \\
-    --model $model_dir/${1}_split000.h5 \\
+    --model $model_dir/${1}_split000 \\
     --bed-file $data_dir/${1}_peaks.bed \\
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
     --output-dir $shap_dir_peaks \\
@@ -137,7 +145,7 @@ shap_scores \\
 
 shap_scores \
     --reference-genome $reference_dir/hg38.genome.fa \
-    --model $model_dir/${1}_split000.h5 \
+    --model $model_dir/${1}_split000 \
     --bed-file $data_dir/${1}_peaks.bed \
     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
     --output-dir $shap_dir_peaks \
@@ -175,73 +183,3 @@ python importance_hdf5_to_bigwig.py \
         -r $data_dir/${1}_peaks.bed \
         -o $shap_dir_peaks/counts_scores.bw\
         -s $shap_dir_peaks/counts_scores.stats.txt
-        
-
-
-
-
-# # modify the testing_input json for 
-# cp $project_dir/testing_input.json $project_dir/testing_input_all.json
-# echo  $( timestamp ): "sed -i -e" "s/<experiment>/$1/g" $project_dir/testing_input_all.json 
-# sed -i -e "s/<experiment>/$1/g" $project_dir/testing_input_all.json | tee -a $logfile 
-
-# echo  $( timestamp ): "sed -i -e" "s/<test_loci>/combined/g" $project_dir/testing_input_all.json 
-# sed -i -e "s/<test_loci>/combined/g" $project_dir/testing_input_all.json | tee -a $logfile
-
-
-# cp $project_dir/testing_input_all.json $shap_dir_all/testing_input_all.json
-# cp $model_dir/${1}_split000.h5 $shap_dir_all/${1}_split000.h5
-
-
-# echo $( timestamp ): "
-# shap_scores \\
-#     --reference-genome $reference_dir/hg38.genome.fa \\
-#     --model $model_dir/${1}_split000.h5 \\
-#     --bed-file $data_dir/${1}_combined.bed \\
-#     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
-#     --output-dir $shap_dir_all \\
-#     --input-seq-len 2114 \\
-#     --control-len 1000 \\
-#     --task-id 0 \\
-#     --input-data $project_dir/testing_input_all.json" | tee -a $logfile
-
-# shap_scores \
-#     --reference-genome $reference_dir/hg38.genome.fa \
-#     --model $model_dir/${1}_split000.h5 \
-#     --bed-file $data_dir/${1}_combined.bed \
-#     --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
-#     --output-dir $shap_dir_all \
-#     --input-seq-len 2114 \
-#     --control-len 1000 \
-#     --task-id 0 \
-#     --input-data $project_dir/testing_input_all.json # this file doesnt have negatives
-
-# echo $( timestamp ): "
-# python importance_hdf5_to_bigwig.py \\
-#         -h5 $shap_dir_all/profile_scores.h5 \\
-#         -c $reference_dir/chrom.sizes \\
-#         -r $data_dir/${1}_combined.bed \\
-#         -o $shap_dir_all/profile_scores.bw\\
-#         -s $shap_dir_all/profile_scores.stats.txt" \\ | tee -a $logfile 
-
-# python importance_hdf5_to_bigwig.py \
-#         -h5 $shap_dir_all/profile_scores.h5 \
-#         -c $reference_dir/chrom.sizes \
-#         -r $data_dir/${1}_combined.bed \
-#         -o $shap_dir_all/profile_scores.bw\
-#         -s $shap_dir_all/profile_scores.stats.txt
-        
-# echo $( timestamp ): "
-# python importance_hdf5_to_bigwig.py \\
-#         -h5 $shap_dir_all/counts_scores.h5 \\
-#         -c $reference_dir/chrom.sizes \\
-#         -r $data_dir/${1}_combined.bed \\
-#         -o $shap_dir_all/counts_scores.bw\\
-#         -s $shap_dir_all/counts_scores.stats.txt" \\ | tee -a $logfile 
-
-# python importance_hdf5_to_bigwig.py \
-#         -h5 $shap_dir_all/counts_scores.h5 \
-#         -c $reference_dir/chrom.sizes \
-#         -r $data_dir/${1}_combined.bed \
-#         -o $shap_dir_all/counts_scores.bw\
-#         -s $shap_dir_all/counts_scores.stats.txt

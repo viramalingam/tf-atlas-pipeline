@@ -1,0 +1,9 @@
+[console_scripts]
+counts_loss_weight = basepairmodels.cli.counts_loss_weight:counts_loss_weight_main
+embeddings = basepairmodels.cli.embeddings:embeddings_main
+motif_discovery = basepairmodels.cli.motif_discovery:motif_discovery_main
+outliers = basepairmodels.cli.outliers:outliers_main
+predict = basepairmodels.cli.predict:predict_main
+shap_scores = basepairmodels.cli.shap_scores:shap_scores_main
+train = basepairmodels.cli.bpnettrainer:main
+
