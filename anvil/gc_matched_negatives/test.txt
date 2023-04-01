@@ -4,7 +4,7 @@ run gc_negative.sh and check if the following gives the same values.
 
 cd /; mkdir my_scripts
 cd /my_scripts
-git clone --depth 1 --branch main  https://github.com/viramalingam/tf-atlas-pipeline.git
+git clone --depth 1 --branch v2.0.0-rc.1  https://github.com/viramalingam/tf-atlas-pipeline.git
 chmod -R 777 tf-atlas-pipeline
 cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
@@ -35,10 +35,10 @@ tail /project/data/ENCSR000EVX_inliers.bed
 
 # test if the gc_content of the gc_neg_only.bed negative regions is close to the gc content of the peaks
 python get_gc_content.py \
->        --input_bed /project/data/gc_neg_only.bed \
->        --ref_fasta /project/reference/genome.fa \
->        --out_prefix /project/data/test.gc.bed \
->        --flank_size 1057
+        --input_bed /project/data/gc_neg_only.bed \
+        --ref_fasta /project/reference/genome.fa \
+        --out_prefix /project/data/test.gc.bed \
+        --flank_size 1057
 
 head /project/data/ENCSR000EVX.gc.bed
 head /project/data/test.gc.bed

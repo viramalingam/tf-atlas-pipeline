@@ -77,7 +77,7 @@ RUN apt install -y --allow-unauthenticated build-essential
 
 
 
-RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.0.0-rc.1
+RUN pip install git+https://github.com/kundajelab/bpnet-refactor@ba5aedb
 
 # COPY bpnet-refactor /bpnet
 # RUN pip install -e /bpnet
