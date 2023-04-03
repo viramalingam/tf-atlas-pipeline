@@ -11,7 +11,7 @@ import gc
 parser = argparse.ArgumentParser(description="calculate mean shap over the given h5s")
 parser.add_argument("--counts_shaps", type=str, required=True, help="counts shap h5s")
 parser.add_argument("--profile_shaps", type=str, required=True, help="profile shap h5s")
-parser.add_argument("--output_dir", type=str,default='/cromwell_root/', help="output directory for the model")
+parser.add_argument("--output_dir", type=str,default='/cromwell_root/', help="output directory for the mean_shap")
 
 def mean_shap(shaps_list,output_path):
     hyp_scores_lst=[]
@@ -31,9 +31,9 @@ def mean_shap(shaps_list,output_path):
         except:
             print(f'{shap_h5} does not exist')
 
-    if(sum([any(all(element == chrom_lst[0]) for element in chrom_lst),
-     any(all(element == start_lst[0]) for element in start_lst),
-     any(all(element == end_lst[0]) for element in end_lst)])==3):
+    if(sum([all(all(element == chrom_lst[0]) for element in chrom_lst),
+     all(all(element == start_lst[0]) for element in start_lst),
+     all(all(element == end_lst[0]) for element in end_lst)])==3):
 
         hyp_scores_mean = np.nanmean(np.array(hyp_scores_lst),axis=0)
 
