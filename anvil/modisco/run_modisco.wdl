@@ -41,7 +41,7 @@ task run_modisco {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modisco_modiscolite_v2.0.7m'
-		memory: 16 + "GB"
+		memory: mem_gb + "GB"
 		cpu: number_of_cpus
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
