@@ -217,7 +217,7 @@ def create_modisco_logos(modisco_file, modisco_logo_dir, trim_threshold):
 	return tags
 
 def report_motifs(modisco_h5py, output_dir, meme_motif_db, suffix='./', 
-	top_n_matches=3, trim_threshold=0.3, trim_min_length=3):
+	top_n_matches=3, trim_threshold=0.3, trim_min_length=3, run_tomtom = True):
 
 	if not os.path.isdir(output_dir):
 		os.mkdir(output_dir)
@@ -227,36 +227,38 @@ def report_motifs(modisco_h5py, output_dir, meme_motif_db, suffix='./',
 	modisco_logo_dir = output_dir + '/trimmed_logos/'
 
 	motifs = read_meme(meme_motif_db)
-	names = create_modisco_logos(modisco_h5py, modisco_logo_dir, trim_threshold)
+    
+	if run_tomtom:
+		names = create_modisco_logos(modisco_h5py, modisco_logo_dir, trim_threshold)
 
-	tomtom_df = run_tomtom(modisco_h5py, output_dir, meme_motif_db, 
-		top_n_matches=top_n_matches, tomtom_exec="tomtom", 
-		trim_threshold=trim_threshold, trim_min_length=trim_min_length)
+		tomtom_df = run_tomtom(modisco_h5py, output_dir, meme_motif_db, 
+			top_n_matches=top_n_matches, tomtom_exec="tomtom", 
+			trim_threshold=trim_threshold, trim_min_length=trim_min_length)
 
-	tomtom_df['modisco_cwm_fwd'] = ['{}trimmed_logos/{}.cwm.fwd.png'.format(suffix, name) for name in names]
-	tomtom_df['modisco_cwm_rev'] = ['{}trimmed_logos/{}.cwm.rev.png'.format(suffix, name) for name in names]
+		tomtom_df['modisco_cwm_fwd'] = ['{}trimmed_logos/{}.cwm.fwd.png'.format(suffix, name) for name in names]
+		tomtom_df['modisco_cwm_rev'] = ['{}trimmed_logos/{}.cwm.rev.png'.format(suffix, name) for name in names]
 
-	reordered_columns = ['pattern', 'num_seqlets', 'modisco_cwm_fwd', 'modisco_cwm_rev']
-	for i in range(top_n_matches):
-		name = "match{}".format(i)
-		logos = []
+		reordered_columns = ['pattern', 'num_seqlets', 'modisco_cwm_fwd', 'modisco_cwm_rev']
+		for i in range(top_n_matches):
+			name = "match{}".format(i)
+			logos = []
 
-		for index, row in tomtom_df.iterrows():
-			if name in tomtom_df.columns:
-				if pandas.isnull(row[name]):
-					logos.append("NA")
+			for index, row in tomtom_df.iterrows():
+				if name in tomtom_df.columns:
+					if pandas.isnull(row[name]):
+						logos.append("NA")
+					else:
+						make_logo(row[name], output_dir, motifs)
+						logos.append("{}{}.png".format(suffix, row[name]))
 				else:
-					make_logo(row[name], output_dir, motifs)
-					logos.append("{}{}.png".format(suffix, row[name]))
-			else:
-				break
+					break
 
-		tomtom_df["{}_logo".format(name)] = logos
-		reordered_columns.extend([name, 'qval{}'.format(i), "{}_logo".format(name)])
+			tomtom_df["{}_logo".format(name)] = logos
+			reordered_columns.extend([name, 'qval{}'.format(i), "{}_logo".format(name)])
 
-	tomtom_df = tomtom_df[reordered_columns]
-	tomtom_df.to_html(open('{}/motifs.html'.format(output_dir), 'w'),
-		escape=False, formatters=dict(modisco_cwm_fwd=path_to_image_html,
-			modisco_cwm_rev=path_to_image_html, match0_logo=path_to_image_html,
-			match1_logo=path_to_image_html, match2_logo=path_to_image_html), 
-		index=False)
+		tomtom_df = tomtom_df[reordered_columns]
+		tomtom_df.to_html(open('{}/motifs.html'.format(output_dir), 'w'),
+			escape=False, formatters=dict(modisco_cwm_fwd=path_to_image_html,
+				modisco_cwm_rev=path_to_image_html, match0_logo=path_to_image_html,
+				match1_logo=path_to_image_html, match2_logo=path_to_image_html), 
+			index=False)
