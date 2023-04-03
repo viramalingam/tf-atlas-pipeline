@@ -216,7 +216,7 @@ def create_modisco_logos(modisco_file, modisco_logo_dir, trim_threshold):
 
 	return tags
 
-def report_motifs(modisco_h5py, output_dir, meme_motif_db, suffix='./', 
+def report_motifs(modisco_h5py, output_dir, meme_motif_db="./", suffix='./', 
 	top_n_matches=3, trim_threshold=0.3, trim_min_length=3, run_tomtom = True):
 
 	if not os.path.isdir(output_dir):
@@ -226,10 +226,11 @@ def report_motifs(modisco_h5py, output_dir, meme_motif_db, suffix='./',
 		os.mkdir(output_dir + '/trimmed_logos/')
 	modisco_logo_dir = output_dir + '/trimmed_logos/'
 
-	motifs = read_meme(meme_motif_db)
+	names = create_modisco_logos(modisco_h5py, modisco_logo_dir, trim_threshold)
+
     
 	if run_tomtom:
-		names = create_modisco_logos(modisco_h5py, modisco_logo_dir, trim_threshold)
+		motifs = read_meme(meme_motif_db)
 
 		tomtom_df = run_tomtom(modisco_h5py, output_dir, meme_motif_db, 
 			top_n_matches=top_n_matches, tomtom_exec="tomtom", 
