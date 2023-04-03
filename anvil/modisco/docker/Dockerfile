@@ -50,7 +50,7 @@ RUN wget https://meme-suite.org/meme/meme-software/5.0.1/meme_5.0.1.tar.gz && \
 ENV PATH "$PATH:/opt/meme/bin/"
 RUN rm -rf meme*
 
-# Install tfmodisco-lite repo
+# Install tfmodisco-lite repo (2.0.7)
 COPY tfmodisco-lite /tfmodisco-lite
 RUN pip install -e /tfmodisco-lite
 
