@@ -18,7 +18,7 @@ task run_shap {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch dev_shap_save_precision https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.0.0-rc.2 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/shap/
 
@@ -48,7 +48,7 @@ task run_shap {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_dev_shap_save_precision'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.2'
 		memory: 30 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
