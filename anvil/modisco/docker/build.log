@@ -1,0 +1,107 @@
+Sending build context to Docker daemon  162.3kB
+Step 1/18 : FROM ubuntu:bionic
+ ---> 35b3f4f76a24
+Step 2/18 : RUN mkdir -p /tfatlas
+ ---> Using cache
+ ---> ca8af6f08521
+Step 3/18 : WORKDIR /tfatlas
+ ---> Using cache
+ ---> 1c8987a87f20
+Step 4/18 : RUN apt-get update
+ ---> Using cache
+ ---> 6f3c1f3a6697
+Step 5/18 : RUN apt-get update --fix-missing &&     apt-get install -y wget bzip2 ca-certificates curl git
+ ---> Using cache
+ ---> 332a3602cbb3
+Step 6/18 : RUN apt-get update && apt install -y --allow-unauthenticated wget
+ ---> Using cache
+ ---> 5971573a08c4
+Step 7/18 : RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.sh -O ~/miniconda.sh &&     /bin/bash ~/miniconda.sh -b -p /opt/conda &&     rm ~/miniconda.sh
+ ---> Using cache
+ ---> 2b28626fc75d
+Step 8/18 : ENV PATH /opt/conda/bin:$PATH
+ ---> Using cache
+ ---> da52faee5564
+Step 9/18 : RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh &&     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc &&     echo "conda activate base" >> ~/.bashrc
+ ---> Using cache
+ ---> cb2b2b5c1e00
+Step 10/18 : RUN pip install matplotlib
+ ---> Using cache
+ ---> 2cf289585a58
+Step 11/18 : RUN apt-get install -y jq
+ ---> Using cache
+ ---> 2233a184ed05
+Step 12/18 : RUN apt-get update && apt-get update --fix-missing && apt install -y --allow-unauthenticated build-essential
+ ---> Using cache
+ ---> 8cc0c2005d65
+Step 13/18 : RUN DEBIAN_FRONTEND=noninteractive apt install -y libxml2 && apt-get install -y zlib1g && apt install -y zlib1g-dev
+ ---> Using cache
+ ---> 9188ca213faa
+Step 14/18 : RUN wget https://meme-suite.org/meme/meme-software/5.0.1/meme_5.0.1.tar.gz && 	tar xzf meme_5.0.1.tar.gz && 	cd meme-5.0.1 && 	./configure --prefix=/opt/meme --enable-build-libxml2 --enable-build-libxslt && 	make && 	make install
+ ---> Using cache
+ ---> 66f6266e67e3
+Step 15/18 : ENV PATH "$PATH:/opt/meme/bin/"
+ ---> Using cache
+ ---> 1b21ac2feea4
+Step 16/18 : RUN rm -rf meme*
+ ---> Using cache
+ ---> b4e4e1b2c058
+Step 17/18 : COPY tfmodisco-lite /tfmodisco-lite
+ ---> fd731af66793
+Step 18/18 : RUN pip install -e /tfmodisco-lite
+ ---> Running in 693162edf6ba
+Obtaining file:///tfmodisco-lite
+Requirement already satisfied: numpy>=1.21.5 in /opt/conda/lib/python3.8/site-packages (from modisco-lite==2.0.7) (1.23.3)
+Collecting scipy>=1.6.2
+  Downloading scipy-1.10.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (34.5 MB)
+Collecting numba>=0.53.1
+  Downloading numba-0.56.4-cp38-cp38-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.5 MB)
+Collecting scikit-learn>=1.0.2
+  Downloading scikit_learn-1.2.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (9.8 MB)
+Collecting leidenalg==0.8.10
+  Downloading leidenalg-0.8.10-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.3 MB)
+Collecting igraph==0.9.11
+  Downloading igraph-0.9.11-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)
+Requirement already satisfied: tqdm>=4.38.0 in /opt/conda/lib/python3.8/site-packages (from modisco-lite==2.0.7) (4.42.1)
+Collecting pandas>=1.4.3
+  Downloading pandas-2.0.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
+Collecting logomaker>=0.8
+  Downloading logomaker-0.8-py2.py3-none-any.whl (11.8 MB)
+Collecting h5py>=3.7.0
+  Downloading h5py-3.8.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.7 MB)
+Collecting hdf5plugin
+  Downloading hdf5plugin-4.1.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (39.8 MB)
+Collecting importlib-metadata; python_version < "3.9"
+  Downloading importlib_metadata-6.1.0-py3-none-any.whl (21 kB)
+Requirement already satisfied: setuptools in /opt/conda/lib/python3.8/site-packages (from numba>=0.53.1->modisco-lite==2.0.7) (45.2.0.post20200210)
+Collecting llvmlite<0.40,>=0.39.0dev0
+  Downloading llvmlite-0.39.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (34.6 MB)
+Collecting threadpoolctl>=2.0.0
+  Downloading threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+Collecting joblib>=1.1.1
+  Downloading joblib-1.2.0-py3-none-any.whl (297 kB)
+Collecting texttable>=1.6.2
+  Downloading texttable-1.6.7-py2.py3-none-any.whl (10 kB)
+Requirement already satisfied: python-dateutil>=2.8.2 in /opt/conda/lib/python3.8/site-packages (from pandas>=1.4.3->modisco-lite==2.0.7) (2.8.2)
+Collecting pytz>=2020.1
+  Downloading pytz-2023.3-py2.py3-none-any.whl (502 kB)
+Collecting tzdata>=2022.1
+  Downloading tzdata-2023.3-py2.py3-none-any.whl (341 kB)
+Requirement already satisfied: matplotlib in /opt/conda/lib/python3.8/site-packages (from logomaker>=0.8->modisco-lite==2.0.7) (3.6.0)
+Collecting zipp>=0.5
+  Downloading zipp-3.15.0-py3-none-any.whl (6.8 kB)
+Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.8/site-packages (from python-dateutil>=2.8.2->pandas>=1.4.3->modisco-lite==2.0.7) (1.14.0)
+Requirement already satisfied: kiwisolver>=1.0.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (1.4.4)
+Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (4.37.2)
+Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (0.11.0)
+Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (1.0.5)
+Requirement already satisfied: pillow>=6.2.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (9.2.0)
+Requirement already satisfied: pyparsing>=2.2.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (3.0.9)
+Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (21.3)
+Installing collected packages: scipy, zipp, importlib-metadata, llvmlite, numba, threadpoolctl, joblib, scikit-learn, texttable, igraph, leidenalg, pytz, tzdata, pandas, logomaker, h5py, hdf5plugin, modisco-lite
+  Running setup.py develop for modisco-lite
+Successfully installed h5py-3.8.0 hdf5plugin-4.1.1 igraph-0.9.11 importlib-metadata-6.1.0 joblib-1.2.0 leidenalg-0.8.10 llvmlite-0.39.1 logomaker-0.8 modisco-lite numba-0.56.4 pandas-2.0.0 pytz-2023.3 scikit-learn-1.2.2 scipy-1.10.1 texttable-1.6.7 threadpoolctl-3.1.0 tzdata-2023.3 zipp-3.15.0
+Removing intermediate container 693162edf6ba
+ ---> 2dc50fd2c5ec
+Successfully built 2dc50fd2c5ec
+Successfully tagged vivekramalingam/tf-atlas:gcp-modisco_modiscolite_v2.0.7m

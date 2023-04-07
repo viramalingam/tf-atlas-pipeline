@@ -15,6 +15,35 @@ import logomaker
 
 pd.options.display.max_colwidth = 500
 
+def read_meme(filename):
+	motifs = {}
+
+	with open(filename, "r") as infile:
+		motif, width, i = None, None, 0
+
+		for line in infile:
+			if motif is None:
+				if line[:5] == 'MOTIF':
+					motif = line.split()[1]
+				else:
+					continue
+
+			elif width is None:
+				if line[:6] == 'letter':
+					width = int(line.split()[5])
+					pwm = np.zeros((width, 4))
+
+			elif i < width:
+				pwm[i] = list(map(float, line.split()))
+				i += 1
+
+			else:
+				motifs[motif] = pwm
+				motif, width, i = None, None, 0
+
+	return motifs
+
+
 def compute_per_position_ic(ppm, background, pseudocount):
     alphabet_len = len(background)
     ic = ((np.log((ppm+pseudocount)/(1 + pseudocount*alphabet_len))/np.log(2))
@@ -94,7 +123,8 @@ def run_tomtom(modisco_h5py, output_prefix, meme_motif_db, top_n_matches=3,
 			continue
 
 		metacluster = modisco_results[name]
-		for pattern_name, pattern in metacluster.items():
+		key = lambda x: int(x[0].split("_")[-1])
+		for pattern_name, pattern in sorted(metacluster.items(), key=key):
 			ppm = np.array(pattern['sequence'][:])
 			cwm = np.array(pattern["contrib_scores"][:])
 
@@ -108,13 +138,14 @@ def run_tomtom(modisco_h5py, output_prefix, meme_motif_db, top_n_matches=3,
 			tomtom_results['pattern'].append(tag)
 			tomtom_results['num_seqlets'].append(num_seqlets)
 
+			i = -1
 			for i, (target, qval) in r.iloc[:top_n_matches].iterrows():
 				tomtom_results['match{}'.format(i)].append(target)
 				tomtom_results['qval{}'.format(i)].append(qval)
 
 			for j in range(i+1, top_n_matches):
-				tomtom_results['match{}'.format(i)].append(None)
-				tomtom_results['qval{}'.format(i)].append(None)			
+				tomtom_results['match{}'.format(j)].append(None)
+				tomtom_results['qval{}'.format(j)].append(None)			
 
 	modisco_results.close()
 	return pandas.DataFrame(tomtom_results)
@@ -130,20 +161,19 @@ def _plot_weights(array, path, figsize=(10,3), **kwargs):
 	df = pandas.DataFrame(array, columns=['A', 'C', 'G', 'T'])
 	df.index.name = 'pos'
 
-	crp_logo = logomaker.Logo(df, ax=ax, font_name='Arial Rounded')
+	crp_logo = logomaker.Logo(df, ax=ax)
 	crp_logo.style_spines(visible=False)
 	plt.ylim(min(df.sum(axis=1).min(), 0), df.sum(axis=1).max())
 
 	plt.savefig(path)
 	plt.close()
 	
-def make_logo(match, logo_dir, meme_motif_db):
+def make_logo(match, logo_dir, motifs):
 	if match == 'NA':
 		return
 
 	background = np.array([0.25, 0.25, 0.25, 0.25])
-	ppm = np.loadtxt("{}/{}.pfm".format(meme_motif_db, match), delimiter='\t')
-	ppm = np.transpose(ppm)
+	ppm = motifs[match]
 	ic = compute_per_position_ic(ppm, background, 0.001)
 
 	_plot_weights(ppm*ic[:, None], path='{}/{}.png'.format(logo_dir, match))
@@ -151,16 +181,17 @@ def make_logo(match, logo_dir, meme_motif_db):
 
 def create_modisco_logos(modisco_file, modisco_logo_dir, trim_threshold):
 	results = h5py.File(modisco_file, 'r')
-	names = []
+	tags = []
 
-	for metacluster_name in ["pos_patterns", "neg_patterns"]:
-		if metacluster_name not in results.keys():
+	for name in ["pos_patterns", "neg_patterns"]:
+		if name not in results.keys():
 			continue
 
-		metacluster = results[metacluster_name]
-		for pattern_name, pattern in metacluster.items():
-			name = '{}.{}'.format(metacluster_name, pattern_name)
-			names.append(name)
+		metacluster = results[name]
+		key = lambda x: int(x[0].split("_")[-1])
+		for pattern_name, pattern in sorted(metacluster.items(), key=key):
+			tag = '{}.{}'.format(name, pattern_name)
+			tags.append(tag)
 
 			cwm_fwd = np.array(pattern['contrib_scores'][:])
 			cwm_rev = cwm_fwd[::-1, ::-1]
@@ -180,13 +211,13 @@ def create_modisco_logos(modisco_file, modisco_logo_dir, trim_threshold):
 			trimmed_cwm_fwd = cwm_fwd[start_fwd:end_fwd]
 			trimmed_cwm_rev = cwm_rev[start_rev:end_rev]
 
-			_plot_weights(trimmed_cwm_fwd, path='{}/{}.cwm.fwd.png'.format(modisco_logo_dir, name))
-			_plot_weights(trimmed_cwm_rev, path='{}/{}.cwm.rev.png'.format(modisco_logo_dir, name))
+			_plot_weights(trimmed_cwm_fwd, path='{}/{}.cwm.fwd.png'.format(modisco_logo_dir, tag))
+			_plot_weights(trimmed_cwm_rev, path='{}/{}.cwm.rev.png'.format(modisco_logo_dir, tag))
 
-	return names
+	return tags
 
-def report_motifs(modisco_h5py, output_dir, meme_motif_db = "./", meme_motif_dir = "./",
-	suffix='./', top_n_matches=3, trim_threshold=0.3, trim_min_length=3, run_tomtom = True):
+def report_motifs(modisco_h5py, output_dir, meme_motif_db="./", suffix='./', 
+	top_n_matches=3, trim_threshold=0.3, trim_min_length=3, run_tomtom = True):
 
 	if not os.path.isdir(output_dir):
 		os.mkdir(output_dir)
@@ -196,7 +227,11 @@ def report_motifs(modisco_h5py, output_dir, meme_motif_db = "./", meme_motif_dir
 	modisco_logo_dir = output_dir + '/trimmed_logos/'
 
 	names = create_modisco_logos(modisco_h5py, modisco_logo_dir, trim_threshold)
+
+    
 	if run_tomtom:
+		motifs = read_meme(meme_motif_db)
+
 		tomtom_df = run_tomtom(modisco_h5py, output_dir, meme_motif_db, 
 			top_n_matches=top_n_matches, tomtom_exec="tomtom", 
 			trim_threshold=trim_threshold, trim_min_length=trim_min_length)
@@ -208,13 +243,13 @@ def report_motifs(modisco_h5py, output_dir, meme_motif_db = "./", meme_motif_dir
 		for i in range(top_n_matches):
 			name = "match{}".format(i)
 			logos = []
-			
+
 			for index, row in tomtom_df.iterrows():
 				if name in tomtom_df.columns:
 					if pandas.isnull(row[name]):
 						logos.append("NA")
 					else:
-						make_logo(row[name], output_dir, meme_motif_dir)
+						make_logo(row[name], output_dir, motifs)
 						logos.append("{}{}.png".format(suffix, row[name]))
 				else:
 					break

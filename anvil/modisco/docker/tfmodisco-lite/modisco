@@ -48,8 +48,6 @@ report_parser.add_argument("-s", "--suffix", type=str, default="./",
 	help="The suffix to add to the beginning of images. Should be equal to the output if using a Jupyter notebook.")
 report_parser.add_argument("-m", "--meme_db", type=str, required=True,
 	help="A MEME file containing motifs.")
-report_parser.add_argument("-l", "--meme_motifs", type=str, required=True,
-	help="A directory including extracted MEME motif pfms.")
 report_parser.add_argument("-n", "--n_matches", type=int, default=3,
 	help="The number of top TOMTOM matches to include in the report.")
 
@@ -59,6 +57,11 @@ convert_parser.add_argument("-i", "--h5py", type=str, required=True,
 convert_parser.add_argument("-o", "--output", type=str, required=True,
 	help="An HDF5 file formatted in the new way.")
 
+convertback_parser = subparsers.add_parser("convert-backward", help="Convert a new h5py to the old format.")
+convertback_parser.add_argument("-i", "--h5py", type=str, required=True,
+	help="An HDF5 file formatted in the new way.")
+convertback_parser.add_argument("-o", "--output", type=str, required=True,
+	help="An HDF5 file formatted in the old way.")
 
 
 # Pull the arguments
@@ -104,6 +107,13 @@ if args.cmd == "motifs":
 		sequences = sequences[:, :, start:end].transpose(0, 2, 1)
 		attributions = attributions[:, :, start:end].transpose(0, 2, 1)
 
+	if sequences.shape[1] < args.window:
+		raise ValueError("Window ({}) cannot be ".format(args.window) +
+			"longer than the sequences".format(sequences.shape))
+
+	sequences = sequences.astype('float32')
+	attributions = attributions.astype('float32')
+
 	pos_patterns, neg_patterns = modiscolite.tfmodisco.TFMoDISco(
 		hypothetical_contribs=attributions, 
 		one_hot=sequences,
@@ -120,10 +130,13 @@ if args.cmd == "motifs":
 
 	modiscolite.report.report_motifs(args.output, args.pngs_dir, run_tomtom = False)
 
+
 elif args.cmd == 'report':
 	modiscolite.report.report_motifs(args.h5py, args.output, suffix=args.suffix, 
-		top_n_matches=args.n_matches, meme_motif_db=args.meme_db,
-		meme_motif_dir=args.meme_motifs)
+		top_n_matches=args.n_matches, meme_motif_db=args.meme_db)
 
 elif args.cmd == 'convert':
 	modiscolite.io.convert(args.h5py, args.output)
+
+elif args.cmd == 'convert-backward':
+	modiscolite.io.convert_new_to_old(args.h5py, args.output)

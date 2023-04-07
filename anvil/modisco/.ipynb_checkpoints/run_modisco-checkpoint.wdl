@@ -14,7 +14,7 @@ task run_modisco {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v1.6.11 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch dev_modisco_latest https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modisco/
 
@@ -40,8 +40,8 @@ task run_modisco {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modisco_modiscolite'
-		memory: 16 + "GB"
+		docker: 'vivekramalingam/tf-atlas:gcp-modisco_modiscolite_v2.0.7m'
+		memory: mem_gb + "GB"
 		cpu: number_of_cpus
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
