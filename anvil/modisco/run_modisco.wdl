@@ -4,8 +4,8 @@ task run_modisco {
 	input {
 		String experiment
 		Array [File] shap
+		Int? max_seqlets    
 		Int? mem_gb
-		Int? max_seqlets        
 		Int? number_of_cpus
 
 
@@ -14,7 +14,7 @@ task run_modisco {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch dev_modisco_latest https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modisco/
 
@@ -53,9 +53,9 @@ workflow modisco {
 	input {
 		String experiment
 		Array [File] shap
+		Int? max_seqlets=25000
 		Int? mem_gb=16
-		Int? number_of_cpus=4
-		Int? max_seqlets=25000        
+		Int? number_of_cpus=4        
 
 
 
@@ -68,9 +68,10 @@ workflow modisco {
 		input:
 			experiment = experiment,
 			shap = shap,
+			max_seqlets = max_seqlets,
 			mem_gb = mem_gb,
-			number_of_cpus = number_of_cpus,
-			max_seqlets = max_seqlets
+			number_of_cpus = number_of_cpus
+
 	}
 	output {
 		Array[File] modisco_profile = run_modisco.modisco_profile_motifs
