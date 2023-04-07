@@ -16286,3 +16286,492 @@ Removing intermediate container 2d8986778933
 Successfully built 737032c53ccb
 Successfully tagged vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1
   Building wheel for pysam (setup.py): still running...
+Sending build context to Docker daemon  1.295MB
+Step 1/38 : FROM tensorflow/tensorflow:2.4.1-gpu
+ ---> edb49f6a133b
+Step 2/38 : RUN mkdir -p /tfatlas
+ ---> Using cache
+ ---> e0f7e3c96588
+Step 3/38 : WORKDIR /tfatlas
+ ---> Using cache
+ ---> 984e10a6b38d
+Step 4/38 : RUN rm /etc/apt/sources.list.d/cuda.list
+ ---> Using cache
+ ---> 2b0b09729c05
+Step 5/38 : RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+ ---> Using cache
+ ---> fd6e4e7c92d0
+Step 6/38 : RUN apt-key del 7fa2af80
+ ---> Using cache
+ ---> bcd29bb122e1
+Step 7/38 : RUN apt-get update && apt-get install -y --no-install-recommends wget
+ ---> Using cache
+ ---> 64a727f34223
+Step 8/38 : RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb
+ ---> Using cache
+ ---> 5d9d39580629
+Step 9/38 : RUN dpkg -i cuda-keyring_1.0-1_all.deb
+ ---> Using cache
+ ---> 50e95b132d89
+Step 10/38 : RUN apt-get update --fix-missing
+ ---> Using cache
+ ---> 93631a49b1c2
+Step 11/38 : RUN apt-get install -y wget bzip2 ca-certificates curl git
+ ---> Using cache
+ ---> 62d15539328c
+Step 12/38 : RUN cd /opt/ && 	wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && 	tar xvfz google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && 	./google-cloud-sdk/install.sh
+ ---> Using cache
+ ---> 38fdc74a67f0
+Step 13/38 : ENV PATH "$PATH:/opt/google-cloud-sdk/bin/"
+ ---> Using cache
+ ---> 8df582a39678
+Step 14/38 : RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh -O ~/miniconda.sh &&     /bin/bash ~/miniconda.sh -b -p /opt/conda &&     rm ~/miniconda.sh
+ ---> Using cache
+ ---> 7aca3589c81c
+Step 15/38 : RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh &&     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc &&     echo "conda activate base" >> ~/.bashrc
+ ---> Using cache
+ ---> 6891e32037b3
+Step 16/38 : ENV PATH /opt/conda/bin:$PATH
+ ---> Using cache
+ ---> 682875884054
+Step 17/38 : RUN pip install numpy~=1.19.2
+ ---> Using cache
+ ---> edfbda8aafc0
+Step 18/38 : RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
+ ---> Using cache
+ ---> c5e66052fb0a
+Step 19/38 : RUN apt-get update
+ ---> Using cache
+ ---> 04e0da326876
+Step 20/38 : RUN apt install -y --allow-unauthenticated libbz2-dev
+ ---> Using cache
+ ---> 08812d33a54f
+Step 21/38 : RUN apt install -y --allow-unauthenticated liblzma-dev
+ ---> Using cache
+ ---> b5dd8f49f394
+Step 22/38 : RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
+ ---> Using cache
+ ---> 7a0079a1ad3c
+Step 23/38 : RUN apt-get install -y --allow-unauthenticated libpcap-dev
+ ---> Using cache
+ ---> 88d571071485
+Step 24/38 : RUN apt-get install -y --allow-unauthenticated libssl-dev
+ ---> Using cache
+ ---> aeb211507190
+Step 25/38 : RUN pip install --upgrade protobuf==3.19.0
+ ---> Using cache
+ ---> 438de2eca2df
+Step 26/38 : RUN apt-get install -y jq
+ ---> Using cache
+ ---> 3f90585dffb2
+Step 27/38 : COPY requirements.txt /tfatlas
+ ---> Using cache
+ ---> c2d0fa2c413c
+Step 28/38 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 61eba33a09c9
+Step 29/38 : RUN rm requirements.txt
+ ---> Using cache
+ ---> 805b0073f5b1
+Step 30/38 : RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> a8fe130a05de
+Step 31/38 : RUN conda clean -tipy
+ ---> Using cache
+ ---> 4dceea9a1fba
+Step 32/38 : ENV LC_ALL=C.UTF-8
+ ---> Using cache
+ ---> 2307c2278f47
+Step 33/38 : ENV LANG=C.UTF-8
+ ---> Using cache
+ ---> 26a0d96f32f3
+Step 34/38 : RUN apt install -y --allow-unauthenticated build-essential
+ ---> Using cache
+ ---> 952846dbf536
+Step 35/38 : RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.0.0-rc.1
+ ---> Using cache
+ ---> d7efdf9be3dd
+Step 36/38 : COPY requirements.txt /tfatlas
+ ---> Using cache
+ ---> 12a594ac4be8
+Step 37/38 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> a249069a74b2
+Step 38/38 : RUN rm requirements.txt
+ ---> Using cache
+ ---> fd7eb525e484
+Successfully built fd7eb525e484
+Successfully tagged vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1
+Sending build context to Docker daemon  1.299MB
+Step 1/38 : FROM tensorflow/tensorflow:2.4.1-gpu
+ ---> edb49f6a133b
+Step 2/38 : RUN mkdir -p /tfatlas
+ ---> Using cache
+ ---> e0f7e3c96588
+Step 3/38 : WORKDIR /tfatlas
+ ---> Using cache
+ ---> 984e10a6b38d
+Step 4/38 : RUN rm /etc/apt/sources.list.d/cuda.list
+ ---> Using cache
+ ---> 2b0b09729c05
+Step 5/38 : RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+ ---> Using cache
+ ---> fd6e4e7c92d0
+Step 6/38 : RUN apt-key del 7fa2af80
+ ---> Using cache
+ ---> bcd29bb122e1
+Step 7/38 : RUN apt-get update && apt-get install -y --no-install-recommends wget
+ ---> Using cache
+ ---> 64a727f34223
+Step 8/38 : RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb
+ ---> Using cache
+ ---> 5d9d39580629
+Step 9/38 : RUN dpkg -i cuda-keyring_1.0-1_all.deb
+ ---> Using cache
+ ---> 50e95b132d89
+Step 10/38 : RUN apt-get update --fix-missing
+ ---> Using cache
+ ---> 93631a49b1c2
+Step 11/38 : RUN apt-get install -y wget bzip2 ca-certificates curl git
+ ---> Using cache
+ ---> 62d15539328c
+Step 12/38 : RUN cd /opt/ && 	wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && 	tar xvfz google-cloud-sdk-307.0.0-linux-x86_64.tar.gz && 	./google-cloud-sdk/install.sh
+ ---> Using cache
+ ---> 38fdc74a67f0
+Step 13/38 : ENV PATH "$PATH:/opt/google-cloud-sdk/bin/"
+ ---> Using cache
+ ---> 8df582a39678
+Step 14/38 : RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.2-Linux-x86_64.sh -O ~/miniconda.sh &&     /bin/bash ~/miniconda.sh -b -p /opt/conda &&     rm ~/miniconda.sh
+ ---> Using cache
+ ---> 7aca3589c81c
+Step 15/38 : RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh &&     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc &&     echo "conda activate base" >> ~/.bashrc
+ ---> Using cache
+ ---> 6891e32037b3
+Step 16/38 : ENV PATH /opt/conda/bin:$PATH
+ ---> Using cache
+ ---> 682875884054
+Step 17/38 : RUN pip install numpy~=1.19.2
+ ---> Using cache
+ ---> edfbda8aafc0
+Step 18/38 : RUN conda install -y -c bioconda samtools bedtools ucsc-bedgraphtobigwig
+ ---> Using cache
+ ---> c5e66052fb0a
+Step 19/38 : RUN apt-get update
+ ---> Using cache
+ ---> 04e0da326876
+Step 20/38 : RUN apt install -y --allow-unauthenticated libbz2-dev
+ ---> Using cache
+ ---> 08812d33a54f
+Step 21/38 : RUN apt install -y --allow-unauthenticated liblzma-dev
+ ---> Using cache
+ ---> b5dd8f49f394
+Step 22/38 : RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
+ ---> Using cache
+ ---> 7a0079a1ad3c
+Step 23/38 : RUN apt-get install -y --allow-unauthenticated libpcap-dev
+ ---> Using cache
+ ---> 88d571071485
+Step 24/38 : RUN apt-get install -y --allow-unauthenticated libssl-dev
+ ---> Using cache
+ ---> aeb211507190
+Step 25/38 : RUN pip install --upgrade protobuf==3.19.0
+ ---> Using cache
+ ---> 438de2eca2df
+Step 26/38 : RUN apt-get install -y jq
+ ---> Using cache
+ ---> 3f90585dffb2
+Step 27/38 : COPY requirements.txt /tfatlas
+ ---> Using cache
+ ---> c2d0fa2c413c
+Step 28/38 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 61eba33a09c9
+Step 29/38 : RUN rm requirements.txt
+ ---> Using cache
+ ---> 805b0073f5b1
+Step 30/38 : RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> a8fe130a05de
+Step 31/38 : RUN conda clean -tipy
+ ---> Using cache
+ ---> 4dceea9a1fba
+Step 32/38 : ENV LC_ALL=C.UTF-8
+ ---> Using cache
+ ---> 2307c2278f47
+Step 33/38 : ENV LANG=C.UTF-8
+ ---> Using cache
+ ---> 26a0d96f32f3
+Step 34/38 : RUN apt install -y --allow-unauthenticated build-essential
+ ---> Using cache
+ ---> 952846dbf536
+Step 35/38 : RUN pip install git+https://github.com/kundajelab/bpnet-refactor@dev_shap_save_precision
+ ---> Running in 32b5c3c9b02e
+Collecting git+https://github.com/kundajelab/bpnet-refactor@dev_shap_save_precision
+  Cloning https://github.com/kundajelab/bpnet-refactor (to revision dev_shap_save_precision) to /tmp/pip-req-build-yunk0p29
+[91m  Running command git clone -q https://github.com/kundajelab/bpnet-refactor /tmp/pip-req-build-yunk0p29
+[0m[91m  Running command git checkout -b dev_shap_save_precision --track origin/dev_shap_save_precision
+[0m[91m  Switched to a new branch 'dev_shap_save_precision'
+[0m[91m  Branch 'dev_shap_save_precision' set up to track remote branch 'dev_shap_save_precision' from 'origin'.
+[0mCollecting tensorflow==2.4.1
+  Downloading tensorflow-2.4.1-cp37-cp37m-manylinux2010_x86_64.whl (394.3 MB)
+Collecting tensorflow-probability==0.12.2
+  Downloading tensorflow_probability-0.12.2-py2.py3-none-any.whl (4.8 MB)
+Requirement already satisfied: tqdm in /opt/conda/lib/python3.7/site-packages (from bpnet==0.4.0) (4.42.1)
+Collecting scikit-learn
+  Downloading scikit_learn-1.0.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (24.8 MB)
+Collecting scipy
+  Downloading scipy-1.7.3-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (38.1 MB)
+Collecting scikit-image
+  Downloading scikit_image-0.19.3-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (13.5 MB)
+Collecting deepdish
+  Downloading deepdish-0.3.7-py2.py3-none-any.whl (37 kB)
+Requirement already satisfied: pandas in /opt/conda/lib/python3.7/site-packages (from bpnet==0.4.0) (1.3.5)
+Collecting matplotlib
+  Downloading matplotlib-3.5.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl (11.2 MB)
+Collecting plotly
+  Downloading plotly-5.14.0-py2.py3-none-any.whl (15.3 MB)
+Collecting deeptools
+  Downloading deepTools-3.5.1-py3-none-any.whl (233 kB)
+Collecting pyfaidx
+  Downloading pyfaidx-0.7.2.1-py3-none-any.whl (28 kB)
+Collecting deeplift
+  Downloading deeplift-0.6.13.0.tar.gz (30 kB)
+Collecting hdf5plugin
+  Downloading hdf5plugin-4.1.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (39.8 MB)
+Collecting shap@ git+https://github.com/kundajelab/shap.git
+  Cloning https://github.com/kundajelab/shap.git to /tmp/pip-install-qt70nw1o/shap
+[91m  Running command git clone -q https://github.com/kundajelab/shap.git /tmp/pip-install-qt70nw1o/shap
+[0mRequirement already satisfied: numpy~=1.19.2 in /opt/conda/lib/python3.7/site-packages (from tensorflow==2.4.1->bpnet==0.4.0) (1.19.5)
+Collecting google-pasta~=0.2
+  Downloading google_pasta-0.2.0-py3-none-any.whl (57 kB)
+Requirement already satisfied: protobuf>=3.9.2 in /opt/conda/lib/python3.7/site-packages (from tensorflow==2.4.1->bpnet==0.4.0) (3.19.0)
+Collecting termcolor~=1.1.0
+  Downloading termcolor-1.1.0.tar.gz (3.9 kB)
+Collecting wheel~=0.35
+  Downloading wheel-0.40.0-py3-none-any.whl (64 kB)
+Collecting wrapt~=1.12.1
+  Downloading wrapt-1.12.1.tar.gz (27 kB)
+Collecting tensorboard~=2.4
+  Downloading tensorboard-2.11.2-py3-none-any.whl (6.0 MB)
+Collecting gast==0.3.3
+  Downloading gast-0.3.3-py2.py3-none-any.whl (9.7 kB)
+Collecting opt-einsum~=3.3.0
+  Downloading opt_einsum-3.3.0-py3-none-any.whl (65 kB)
+Collecting flatbuffers~=1.12.0
+  Downloading flatbuffers-1.12-py2.py3-none-any.whl (15 kB)
+Collecting astunparse~=1.6.3
+  Downloading astunparse-1.6.3-py2.py3-none-any.whl (12 kB)
+Collecting grpcio~=1.32.0
+  Downloading grpcio-1.32.0-cp37-cp37m-manylinux2014_x86_64.whl (3.8 MB)
+Collecting tensorflow-estimator<2.5.0,>=2.4.0
+  Downloading tensorflow_estimator-2.4.0-py2.py3-none-any.whl (462 kB)
+Collecting h5py~=2.10.0
+  Downloading h5py-2.10.0-cp37-cp37m-manylinux1_x86_64.whl (2.9 MB)
+Collecting keras-preprocessing~=1.1.2
+  Downloading Keras_Preprocessing-1.1.2-py2.py3-none-any.whl (42 kB)
+Collecting typing-extensions~=3.7.4
+  Downloading typing_extensions-3.7.4.3-py3-none-any.whl (22 kB)
+Collecting six~=1.15.0
+  Downloading six-1.15.0-py2.py3-none-any.whl (10 kB)
+Collecting absl-py~=0.10
+  Downloading absl_py-0.15.0-py3-none-any.whl (132 kB)
+Collecting cloudpickle>=1.3
+  Downloading cloudpickle-2.2.1-py3-none-any.whl (25 kB)
+Collecting decorator
+  Downloading decorator-5.1.1-py3-none-any.whl (9.1 kB)
+Collecting dm-tree
+  Downloading dm_tree-0.1.8-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (153 kB)
+Collecting joblib>=0.11
+  Downloading joblib-1.2.0-py3-none-any.whl (297 kB)
+Collecting threadpoolctl>=2.0.0
+  Downloading threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+Collecting packaging>=20.0
+  Downloading packaging-23.0-py3-none-any.whl (42 kB)
+Collecting imageio>=2.4.1
+  Downloading imageio-2.27.0-py3-none-any.whl (3.4 MB)
+Collecting pillow!=7.1.0,!=7.1.1,!=8.3.0,>=6.1.0
+  Downloading Pillow-9.5.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+Collecting PyWavelets>=1.1.1
+  Downloading PyWavelets-1.3.0-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl (6.4 MB)
+Collecting networkx>=2.2
+  Downloading networkx-2.6.3-py3-none-any.whl (1.9 MB)
+Collecting tifffile>=2019.7.26
+  Downloading tifffile-2021.11.2-py3-none-any.whl (178 kB)
+Collecting tables
+  Downloading tables-3.7.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (5.9 MB)
+Requirement already satisfied: python-dateutil>=2.7.3 in /opt/conda/lib/python3.7/site-packages (from pandas->bpnet==0.4.0) (2.8.2)
+Requirement already satisfied: pytz>=2017.3 in /opt/conda/lib/python3.7/site-packages (from pandas->bpnet==0.4.0) (2023.3)
+Collecting fonttools>=4.22.0
+  Downloading fonttools-4.38.0-py3-none-any.whl (965 kB)
+Collecting kiwisolver>=1.0.1
+  Downloading kiwisolver-1.4.4-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl (1.1 MB)
+Collecting pyparsing>=2.2.1
+  Downloading pyparsing-3.0.9-py3-none-any.whl (98 kB)
+Collecting cycler>=0.10
+  Downloading cycler-0.11.0-py3-none-any.whl (6.4 kB)
+Collecting tenacity>=6.2.0
+  Downloading tenacity-8.2.2-py3-none-any.whl (24 kB)
+Collecting py2bit>=0.2.0
+  Downloading py2bit-0.3.0.tar.gz (16 kB)
+Collecting pysam>=0.14.0
+  Downloading pysam-0.20.0.tar.gz (4.0 MB)
+Collecting deeptoolsintervals>=0.1.8
+  Downloading deeptoolsintervals-0.1.9.tar.gz (41 kB)
+Collecting numpydoc>=0.5
+  Downloading numpydoc-1.5.0-py3-none-any.whl (52 kB)
+Collecting pyBigWig>=0.2.1
+  Downloading pyBigWig-0.3.21-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (192 kB)
+Requirement already satisfied: setuptools in /opt/conda/lib/python3.7/site-packages (from pyfaidx->bpnet==0.4.0) (45.2.0.post20200210)
+Collecting ipython
+  Downloading ipython-7.34.0-py3-none-any.whl (793 kB)
+Collecting markdown>=2.6.8
+  Downloading Markdown-3.4.3-py3-none-any.whl (93 kB)
+Collecting tensorboard-data-server<0.7.0,>=0.6.0
+  Downloading tensorboard_data_server-0.6.1-py3-none-manylinux2010_x86_64.whl (4.9 MB)
+Collecting google-auth<3,>=1.6.3
+  Downloading google_auth-2.17.1-py2.py3-none-any.whl (178 kB)
+Collecting google-auth-oauthlib<0.5,>=0.4.1
+  Downloading google_auth_oauthlib-0.4.6-py2.py3-none-any.whl (18 kB)
+Collecting tensorboard-plugin-wit>=1.6.0
+  Downloading tensorboard_plugin_wit-1.8.1-py3-none-any.whl (781 kB)
+Requirement already satisfied: requests<3,>=2.21.0 in /opt/conda/lib/python3.7/site-packages (from tensorboard~=2.4->tensorflow==2.4.1->bpnet==0.4.0) (2.22.0)
+Collecting werkzeug>=1.0.1
+  Downloading Werkzeug-2.2.3-py3-none-any.whl (233 kB)
+Collecting numexpr>=2.6.2
+  Downloading numexpr-2.8.4-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (379 kB)
+Collecting sphinx>=4.2
+  Downloading sphinx-5.3.0-py3-none-any.whl (3.2 MB)
+Collecting Jinja2>=2.10
+  Downloading Jinja2-3.1.2-py3-none-any.whl (133 kB)
+Collecting pygments
+  Downloading Pygments-2.14.0-py3-none-any.whl (1.1 MB)
+Collecting matplotlib-inline
+  Downloading matplotlib_inline-0.1.6-py3-none-any.whl (9.4 kB)
+Collecting pickleshare
+  Downloading pickleshare-0.7.5-py2.py3-none-any.whl (6.9 kB)
+Collecting pexpect>4.3; sys_platform != "win32"
+  Downloading pexpect-4.8.0-py2.py3-none-any.whl (59 kB)
+Collecting traitlets>=4.2
+  Downloading traitlets-5.9.0-py3-none-any.whl (117 kB)
+Collecting jedi>=0.16
+  Downloading jedi-0.18.2-py2.py3-none-any.whl (1.6 MB)
+Collecting backcall
+  Downloading backcall-0.2.0-py2.py3-none-any.whl (11 kB)
+Collecting prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0
+  Downloading prompt_toolkit-3.0.38-py3-none-any.whl (385 kB)
+Collecting importlib-metadata>=4.4; python_version < "3.10"
+  Downloading importlib_metadata-6.1.0-py3-none-any.whl (21 kB)
+Collecting pyasn1-modules>=0.2.1
+  Downloading pyasn1_modules-0.2.8-py2.py3-none-any.whl (155 kB)
+Collecting cachetools<6.0,>=2.0.0
+  Downloading cachetools-5.3.0-py3-none-any.whl (9.3 kB)
+Collecting rsa<5,>=3.1.4; python_version >= "3.6"
+  Downloading rsa-4.9-py3-none-any.whl (34 kB)
+Collecting requests-oauthlib>=0.7.0
+  Downloading requests_oauthlib-1.3.1-py2.py3-none-any.whl (23 kB)
+Requirement already satisfied: chardet<3.1.0,>=3.0.2 in /opt/conda/lib/python3.7/site-packages (from requests<3,>=2.21.0->tensorboard~=2.4->tensorflow==2.4.1->bpnet==0.4.0) (3.0.4)
+Requirement already satisfied: idna<2.9,>=2.5 in /opt/conda/lib/python3.7/site-packages (from requests<3,>=2.21.0->tensorboard~=2.4->tensorflow==2.4.1->bpnet==0.4.0) (2.8)
+Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.7/site-packages (from requests<3,>=2.21.0->tensorboard~=2.4->tensorflow==2.4.1->bpnet==0.4.0) (2022.12.7)
+Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /opt/conda/lib/python3.7/site-packages (from requests<3,>=2.21.0->tensorboard~=2.4->tensorflow==2.4.1->bpnet==0.4.0) (1.25.8)
+Collecting MarkupSafe>=2.1.1
+  Downloading MarkupSafe-2.1.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (25 kB)
+Collecting sphinxcontrib-devhelp
+  Downloading sphinxcontrib_devhelp-1.0.2-py2.py3-none-any.whl (84 kB)
+Collecting sphinxcontrib-jsmath
+  Downloading sphinxcontrib_jsmath-1.0.1-py2.py3-none-any.whl (5.1 kB)
+Collecting imagesize>=1.3
+  Downloading imagesize-1.4.1-py2.py3-none-any.whl (8.8 kB)
+Collecting sphinxcontrib-serializinghtml>=1.1.5
+  Downloading sphinxcontrib_serializinghtml-1.1.5-py2.py3-none-any.whl (94 kB)
+Collecting babel>=2.9
+  Downloading Babel-2.12.1-py3-none-any.whl (10.1 MB)
+Collecting sphinxcontrib-htmlhelp>=2.0.0
+  Downloading sphinxcontrib_htmlhelp-2.0.0-py2.py3-none-any.whl (100 kB)
+Collecting docutils<0.20,>=0.14
+  Downloading docutils-0.19-py3-none-any.whl (570 kB)
+Collecting snowballstemmer>=2.0
+  Downloading snowballstemmer-2.2.0-py2.py3-none-any.whl (93 kB)
+Collecting sphinxcontrib-qthelp
+  Downloading sphinxcontrib_qthelp-1.0.3-py2.py3-none-any.whl (90 kB)
+Collecting alabaster<0.8,>=0.7
+  Downloading alabaster-0.7.13-py3-none-any.whl (13 kB)
+Collecting sphinxcontrib-applehelp
+  Downloading sphinxcontrib_applehelp-1.0.2-py2.py3-none-any.whl (121 kB)
+Collecting ptyprocess>=0.5
+  Downloading ptyprocess-0.7.0-py2.py3-none-any.whl (13 kB)
+Collecting parso<0.9.0,>=0.8.0
+  Downloading parso-0.8.3-py2.py3-none-any.whl (100 kB)
+Collecting wcwidth
+  Downloading wcwidth-0.2.6-py2.py3-none-any.whl (29 kB)
+Collecting zipp>=0.5
+  Downloading zipp-3.15.0-py3-none-any.whl (6.8 kB)
+Collecting pyasn1<0.5.0,>=0.4.6
+  Downloading pyasn1-0.4.8-py2.py3-none-any.whl (77 kB)
+Collecting oauthlib>=3.0.0
+  Downloading oauthlib-3.2.2-py3-none-any.whl (151 kB)
+Building wheels for collected packages: bpnet, deeplift, shap, termcolor, wrapt, py2bit, pysam, deeptoolsintervals
+  Building wheel for bpnet (setup.py): started
+  Building wheel for bpnet (setup.py): finished with status 'done'
+  Created wheel for bpnet: filename=bpnet-0.4.0-py3-none-any.whl size=80791 sha256=7790e8f125f80b9ff7878485641098195b2ad13daaf44331c8239df2beeb4413
+  Stored in directory: /tmp/pip-ephem-wheel-cache-cvfz4y7t/wheels/1e/1f/03/7761eb5f03d5b2345a5a9fbd881c418abfdd6e62a9475e652d
+  Building wheel for deeplift (setup.py): started
+  Building wheel for deeplift (setup.py): finished with status 'done'
+  Created wheel for deeplift: filename=deeplift-0.6.13.0-py3-none-any.whl size=36446 sha256=162fa1e5420a3e7d1e370cbc95d658fb4e6c63f061d8761be34b03d32877d1d5
+  Stored in directory: /root/.cache/pip/wheels/5f/0f/15/3cb70dbd2147a5c948da210c6a283d87ea19c8e8ecb941b21e
+  Building wheel for shap (setup.py): started
+  Building wheel for shap (setup.py): finished with status 'done'
+  Created wheel for shap: filename=shap-0.29.3-cp37-cp37m-linux_x86_64.whl size=352666 sha256=6089392b845cd0102b905c99f082111d0a5ef1bc83c98ef706ce346f5efe48fc
+  Stored in directory: /tmp/pip-ephem-wheel-cache-cvfz4y7t/wheels/17/f4/42/5de7ea593f1750febc12ea4fc8e9fbb3eca0a5b1b39fb9324e
+  Building wheel for termcolor (setup.py): started
+  Building wheel for termcolor (setup.py): finished with status 'done'
+  Created wheel for termcolor: filename=termcolor-1.1.0-py3-none-any.whl size=4830 sha256=1cba7f8a39f79690c0256362fc62832a404aae30cae23f2cd232a66483ff7bdf
+  Stored in directory: /root/.cache/pip/wheels/3f/e3/ec/8a8336ff196023622fbcb36de0c5a5c218cbb24111d1d4c7f2
+  Building wheel for wrapt (setup.py): started
+  Building wheel for wrapt (setup.py): finished with status 'done'
+  Created wheel for wrapt: filename=wrapt-1.12.1-cp37-cp37m-linux_x86_64.whl size=70926 sha256=031aca5a29be64d0a497d9bf0cf31d40fd03c353e2018cfaa5d3d52f575e18c1
+  Stored in directory: /root/.cache/pip/wheels/62/76/4c/aa25851149f3f6d9785f6c869387ad82b3fd37582fa8147ac6
+  Building wheel for py2bit (setup.py): started
+  Building wheel for py2bit (setup.py): finished with status 'done'
+  Created wheel for py2bit: filename=py2bit-0.3.0-cp37-cp37m-linux_x86_64.whl size=45799 sha256=de54b621c79bc742b17474d8d39dfce211a955451b0933d90e5faf049fd23575
+  Stored in directory: /root/.cache/pip/wheels/a3/6f/d1/85fafa2537b2f5744215f97523911abde76d6e3f471095c0e0
+  Building wheel for pysam (setup.py): started
+  Building wheel for pysam (setup.py): still running...
+  Building wheel for pysam (setup.py): still running...
+  Building wheel for pysam (setup.py): still running...
+  Building wheel for pysam (setup.py): finished with status 'done'
+  Created wheel for pysam: filename=pysam-0.20.0-cp37-cp37m-linux_x86_64.whl size=10537361 sha256=0f6c6aa9eea285245695d2291fef1ded895e722e49447c435c373f5e9a3d00ad
+  Stored in directory: /root/.cache/pip/wheels/4b/c1/7f/dd9d0ebc7ee669f6770a5f4651d2de76825f8e27df688b01fe
+  Building wheel for deeptoolsintervals (setup.py): started
+  Building wheel for deeptoolsintervals (setup.py): finished with status 'done'
+  Created wheel for deeptoolsintervals: filename=deeptoolsintervals-0.1.9-cp37-cp37m-linux_x86_64.whl size=117216 sha256=16475f159255517b30f998fcd0dbbef3319dcc5355ae725a0586b7eef7e0c439
+  Stored in directory: /root/.cache/pip/wheels/b5/62/44/d9b409078c4ff6f98b59f31816291b08ffe1e55091fdaf5d12
+Successfully built bpnet deeplift shap termcolor wrapt py2bit pysam deeptoolsintervals
+Installing collected packages: six, google-pasta, termcolor, wheel, wrapt, typing-extensions, zipp, importlib-metadata, markdown, tensorboard-data-server, pyasn1, pyasn1-modules, cachetools, rsa, google-auth, grpcio, oauthlib, requests-oauthlib, google-auth-oauthlib, tensorboard-plugin-wit, MarkupSafe, werkzeug, absl-py, tensorboard, gast, opt-einsum, flatbuffers, astunparse, tensorflow-estimator, h5py, keras-preprocessing, tensorflow, cloudpickle, decorator, dm-tree, tensorflow-probability, joblib, threadpoolctl, scipy, scikit-learn, packaging, pillow, imageio, PyWavelets, networkx, tifffile, scikit-image, numexpr, tables, deepdish, fonttools, kiwisolver, pyparsing, cycler, matplotlib, tenacity, plotly, py2bit, pysam, deeptoolsintervals, sphinxcontrib-devhelp, sphinxcontrib-jsmath, pygments, imagesize, Jinja2, sphinxcontrib-serializinghtml, babel, sphinxcontrib-htmlhelp, docutils, snowballstemmer, sphinxcontrib-qthelp, alabaster, sphinxcontrib-applehelp, sphinx, numpydoc, pyBigWig, deeptools, pyfaidx, deeplift, hdf5plugin, traitlets, matplotlib-inline, pickleshare, ptyprocess, pexpect, parso, jedi, backcall, wcwidth, prompt-toolkit, ipython, shap, bpnet
+  Attempting uninstall: six
+    Found existing installation: six 1.14.0
+    Uninstalling six-1.14.0:
+      Successfully uninstalled six-1.14.0
+  Attempting uninstall: wheel
+    Found existing installation: wheel 0.34.2
+    Uninstalling wheel-0.34.2:
+      Successfully uninstalled wheel-0.34.2
+Successfully installed Jinja2-3.1.2 MarkupSafe-2.1.2 PyWavelets-1.3.0 absl-py-0.15.0 alabaster-0.7.13 astunparse-1.6.3 babel-2.12.1 backcall-0.2.0 bpnet-0.4.0 cachetools-5.3.0 cloudpickle-2.2.1 cycler-0.11.0 decorator-5.1.1 deepdish-0.3.7 deeplift-0.6.13.0 deeptools-3.5.1 deeptoolsintervals-0.1.9 dm-tree-0.1.8 docutils-0.19 flatbuffers-1.12 fonttools-4.38.0 gast-0.3.3 google-auth-2.17.1 google-auth-oauthlib-0.4.6 google-pasta-0.2.0 grpcio-1.32.0 h5py-2.10.0 hdf5plugin-4.1.1 imageio-2.27.0 imagesize-1.4.1 importlib-metadata-6.1.0 ipython-7.34.0 jedi-0.18.2 joblib-1.2.0 keras-preprocessing-1.1.2 kiwisolver-1.4.4 markdown-3.4.3 matplotlib-3.5.3 matplotlib-inline-0.1.6 networkx-2.6.3 numexpr-2.8.4 numpydoc-1.5.0 oauthlib-3.2.2 opt-einsum-3.3.0 packaging-23.0 parso-0.8.3 pexpect-4.8.0 pickleshare-0.7.5 pillow-9.5.0 plotly-5.14.0 prompt-toolkit-3.0.38 ptyprocess-0.7.0 py2bit-0.3.0 pyBigWig-0.3.21 pyasn1-0.4.8 pyasn1-modules-0.2.8 pyfaidx-0.7.2.1 pygments-2.14.0 pyparsing-3.0.9 pysam-0.20.0 requests-oauthlib-1.3.1 rsa-4.9 scikit-image-0.19.3 scikit-learn-1.0.2 scipy-1.7.3 shap-0.29.3 six-1.15.0 snowballstemmer-2.2.0 sphinx-5.3.0 sphinxcontrib-applehelp-1.0.2 sphinxcontrib-devhelp-1.0.2 sphinxcontrib-htmlhelp-2.0.0 sphinxcontrib-jsmath-1.0.1 sphinxcontrib-qthelp-1.0.3 sphinxcontrib-serializinghtml-1.1.5 tables-3.7.0 tenacity-8.2.2 tensorboard-2.11.2 tensorboard-data-server-0.6.1 tensorboard-plugin-wit-1.8.1 tensorflow-2.4.1 tensorflow-estimator-2.4.0 tensorflow-probability-0.12.2 termcolor-1.1.0 threadpoolctl-3.1.0 tifffile-2021.11.2 traitlets-5.9.0 typing-extensions-3.7.4.3 wcwidth-0.2.6 werkzeug-2.2.3 wheel-0.40.0 wrapt-1.12.1 zipp-3.15.0
+Removing intermediate container 32b5c3c9b02e
+ ---> 2fb1cf1842d2
+Step 36/38 : COPY requirements.txt /tfatlas
+ ---> 07452d7f483a
+Step 37/38 : RUN pip install -r requirements.txt
+ ---> Running in f6457c348a7a
+Requirement already satisfied: pandas in /opt/conda/lib/python3.7/site-packages (from -r requirements.txt (line 1)) (1.3.5)
+Requirement already satisfied: pytz>=2017.3 in /opt/conda/lib/python3.7/site-packages (from pandas->-r requirements.txt (line 1)) (2023.3)
+Requirement already satisfied: numpy>=1.17.3; platform_machine != "aarch64" and platform_machine != "arm64" and python_version < "3.10" in /opt/conda/lib/python3.7/site-packages (from pandas->-r requirements.txt (line 1)) (1.19.5)
+Requirement already satisfied: python-dateutil>=2.7.3 in /opt/conda/lib/python3.7/site-packages (from pandas->-r requirements.txt (line 1)) (2.8.2)
+Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.7/site-packages (from python-dateutil>=2.7.3->pandas->-r requirements.txt (line 1)) (1.15.0)
+Removing intermediate container f6457c348a7a
+ ---> 6c17abd7c7fc
+Step 38/38 : RUN rm requirements.txt
+ ---> Running in 784427dbac1a
+Removing intermediate container 784427dbac1a
+ ---> b16370b801e5
+Successfully built b16370b801e5
+Successfully tagged vivekramalingam/tf-atlas:gcp-modeling_dev_shap_save_precision
