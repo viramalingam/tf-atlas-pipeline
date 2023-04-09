@@ -11,6 +11,7 @@ task run_mean_shap {
     
     command {
         #create data directories and download scripts
+        
         cd /; mkdir my_scripts
         cd /my_scripts
         git clone --depth 1 --branch v2.0.0-rc.2 https://github.com/viramalingam/tf-atlas-pipeline.git
