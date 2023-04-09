@@ -20,8 +20,8 @@ task run_mean_shap {
         
         ##mean shap
         
-        echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap} ${chrom_sizes} ${peaks}
-        python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap} ${chrom_sizes} ${peaks}
+        echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
+        python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
         
         echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py" -h5 profile_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o profile_mean_shap_scores.bw -s profile_mean_shap_scores.stats.txt
         
