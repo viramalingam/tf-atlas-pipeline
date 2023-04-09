@@ -23,13 +23,13 @@ task run_mean_shap {
         echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py" --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
         python /my_scripts/tf-atlas-pipeline/anvil/shap/mean_shap.py --counts_shaps ${sep=',' counts_shap} --profile_shaps ${sep=',' profile_shap}
         
-        echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py" -h5 profile_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o profile_mean_shap_scores.bw -s profile_mean_shap_scores.stats.txt
+        echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py" -h5 /cromwell_root/profile_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o /cromwell_root/profile_mean_shap_scores.bw -s /cromwell_root/profile_mean_shap_scores.stats.txt
         
-        python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py -h5 profile_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o profile_mean_shap_scores.bw -s profile_mean_shap_scores.stats.txt
+        python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py -h5 /cromwell_root/profile_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o /cromwell_root/profile_mean_shap_scores.bw -s /cromwell_root/profile_mean_shap_scores.stats.txt
         
-        echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py" -h5 counts_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o counts_mean_shap_scores.bw -s counts_mean_shap_scores.stats.txt
+        echo "python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py" -h5 /cromwell_root/counts_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o /cromwell_root/counts_mean_shap_scores.bw -s /cromwell_root/counts_mean_shap_scores.stats.txt
         
-        python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py -h5 counts_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o counts_mean_shap_scores.bw -s counts_mean_shap_scores.stats.txt
+        python /my_scripts/tf-atlas-pipeline/anvil/shap/importance_hdf5_to_bigwig.py -h5 /cromwell_root/counts_mean_shap_scores.h5 -c ${chrom_sizes} -r ${peaks} -o /cromwell_root/counts_mean_shap_scores.bw -s /cromwell_root/counts_mean_shap_scores.stats.txt
         
         ## All output files are in the cromwell_root folder
     }
