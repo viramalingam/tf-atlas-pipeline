@@ -47,9 +47,9 @@ Step 16/18 : RUN rm -rf meme*
  ---> Using cache
  ---> b4e4e1b2c058
 Step 17/18 : COPY tfmodisco-lite /tfmodisco-lite
- ---> fd731af66793
+ ---> 669319c5189b
 Step 18/18 : RUN pip install -e /tfmodisco-lite
- ---> Running in 693162edf6ba
+ ---> Running in 36178045d662
 Obtaining file:///tfmodisco-lite
 Requirement already satisfied: numpy>=1.21.5 in /opt/conda/lib/python3.8/site-packages (from modisco-lite==2.0.7) (1.23.3)
 Collecting scipy>=1.6.2
@@ -71,11 +71,11 @@ Collecting h5py>=3.7.0
   Downloading h5py-3.8.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.7 MB)
 Collecting hdf5plugin
   Downloading hdf5plugin-4.1.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (39.8 MB)
-Collecting importlib-metadata; python_version < "3.9"
-  Downloading importlib_metadata-6.1.0-py3-none-any.whl (21 kB)
-Requirement already satisfied: setuptools in /opt/conda/lib/python3.8/site-packages (from numba>=0.53.1->modisco-lite==2.0.7) (45.2.0.post20200210)
 Collecting llvmlite<0.40,>=0.39.0dev0
   Downloading llvmlite-0.39.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (34.6 MB)
+Requirement already satisfied: setuptools in /opt/conda/lib/python3.8/site-packages (from numba>=0.53.1->modisco-lite==2.0.7) (45.2.0.post20200210)
+Collecting importlib-metadata; python_version < "3.9"
+  Downloading importlib_metadata-6.3.0-py3-none-any.whl (22 kB)
 Collecting threadpoolctl>=2.0.0
   Downloading threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
 Collecting joblib>=1.1.1
@@ -91,17 +91,17 @@ Requirement already satisfied: matplotlib in /opt/conda/lib/python3.8/site-packa
 Collecting zipp>=0.5
   Downloading zipp-3.15.0-py3-none-any.whl (6.8 kB)
 Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.8/site-packages (from python-dateutil>=2.8.2->pandas>=1.4.3->modisco-lite==2.0.7) (1.14.0)
-Requirement already satisfied: kiwisolver>=1.0.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (1.4.4)
-Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (4.37.2)
-Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (0.11.0)
-Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (1.0.5)
-Requirement already satisfied: pillow>=6.2.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (9.2.0)
-Requirement already satisfied: pyparsing>=2.2.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (3.0.9)
 Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (21.3)
-Installing collected packages: scipy, zipp, importlib-metadata, llvmlite, numba, threadpoolctl, joblib, scikit-learn, texttable, igraph, leidenalg, pytz, tzdata, pandas, logomaker, h5py, hdf5plugin, modisco-lite
+Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (0.11.0)
+Requirement already satisfied: pyparsing>=2.2.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (3.0.9)
+Requirement already satisfied: pillow>=6.2.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (9.2.0)
+Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (4.37.2)
+Requirement already satisfied: kiwisolver>=1.0.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (1.4.4)
+Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.8/site-packages (from matplotlib->logomaker>=0.8->modisco-lite==2.0.7) (1.0.5)
+Installing collected packages: scipy, llvmlite, zipp, importlib-metadata, numba, threadpoolctl, joblib, scikit-learn, texttable, igraph, leidenalg, pytz, tzdata, pandas, logomaker, h5py, hdf5plugin, modisco-lite
   Running setup.py develop for modisco-lite
-Successfully installed h5py-3.8.0 hdf5plugin-4.1.1 igraph-0.9.11 importlib-metadata-6.1.0 joblib-1.2.0 leidenalg-0.8.10 llvmlite-0.39.1 logomaker-0.8 modisco-lite numba-0.56.4 pandas-2.0.0 pytz-2023.3 scikit-learn-1.2.2 scipy-1.10.1 texttable-1.6.7 threadpoolctl-3.1.0 tzdata-2023.3 zipp-3.15.0
-Removing intermediate container 693162edf6ba
- ---> 2dc50fd2c5ec
-Successfully built 2dc50fd2c5ec
+Successfully installed h5py-3.8.0 hdf5plugin-4.1.1 igraph-0.9.11 importlib-metadata-6.3.0 joblib-1.2.0 leidenalg-0.8.10 llvmlite-0.39.1 logomaker-0.8 modisco-lite numba-0.56.4 pandas-2.0.0 pytz-2023.3 scikit-learn-1.2.2 scipy-1.10.1 texttable-1.6.7 threadpoolctl-3.1.0 tzdata-2023.3 zipp-3.15.0
+Removing intermediate container 36178045d662
+ ---> 1c6454422fc1
+Successfully built 1c6454422fc1
 Successfully tagged vivekramalingam/tf-atlas:gcp-modisco_modiscolite_v2.0.7m

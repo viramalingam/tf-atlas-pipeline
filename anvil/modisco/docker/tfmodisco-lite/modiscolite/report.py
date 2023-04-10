@@ -217,7 +217,7 @@ def create_modisco_logos(modisco_file, modisco_logo_dir, trim_threshold):
 	return tags
 
 def report_motifs(modisco_h5py, output_dir, meme_motif_db="./", suffix='./', 
-	top_n_matches=3, trim_threshold=0.3, trim_min_length=3, run_tomtom = True):
+	top_n_matches=3, trim_threshold=0.25, trim_min_length=3, run_tomtom = True):
 
 	if not os.path.isdir(output_dir):
 		os.mkdir(output_dir)
