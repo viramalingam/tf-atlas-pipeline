@@ -3,19 +3,16 @@ version 1.0
 task run_gc_matched_negatives {
 	input {
 		String experiment
-		File reference_file
-		File reference_file_index
-		File chrom_sizes
-		File chroms_txt
 		File reference_gc_stride_1000_flank_size_1057
 		File peaks
+		File? valid_chroms
 
   	}	
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v2.0.0-rc.1 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
@@ -24,8 +21,8 @@ task run_gc_matched_negatives {
 
 		##outlier_detection
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${reference_gc_stride_1000_flank_size_1057} ${peaks}
-		/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ${experiment} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${reference_gc_stride_1000_flank_size_1057} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_gc_stride_1000_flank_size_1057} ${peaks} ${valid_chroms}
+		/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ${experiment}  ${reference_gc_stride_1000_flank_size_1057} ${peaks} ${valid_chroms}
 
 		echo "copying all files to cromwell_root folder"
 
@@ -55,23 +52,17 @@ task run_gc_matched_negatives {
 workflow gc_matched_negatives {
 	input {
 		String experiment
-		File reference_file
-		File reference_file_index
-		File chrom_sizes
-		File chroms_txt
 		File reference_gc_stride_1000_flank_size_1057
 		File peaks
+		File? valid_chroms
 	}
 
 	call run_gc_matched_negatives {
 		input:
 			experiment = experiment,
-			reference_file = reference_file,
-			reference_file_index = reference_file_index,
-			chrom_sizes = chrom_sizes,
-			chroms_txt = chroms_txt,
 			reference_gc_stride_1000_flank_size_1057 = reference_gc_stride_1000_flank_size_1057,
-			peaks = peaks
+			peaks = peaks,
+			valid_chroms = valid_chroms
  	}
 	output {
 

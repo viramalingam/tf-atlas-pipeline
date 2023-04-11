@@ -10,12 +10,9 @@ function timestamp {
 
 
 experiment=$1
-reference_file=$2
-reference_file_index=$3
-chrom_sizes=$4
-chroms_txt=$5
-reference_gc_stride_1000_flank_size_1057=$6
-peaks=$7
+reference_gc_stride_1000_flank_size_1057=$2
+peaks=$3
+valid_chroms=$4
 
 mkdir /project
 project_dir=/project
@@ -47,30 +44,22 @@ tee -a $logfile
 
 gunzip ${data_dir}/${1}_inliers.bed.gz
 
+if [[ -n "${valid_chroms}" ]];then
+    echo "valid_chroms variable set"
+    if [[ $valid_chroms!='' ]];then
+        grep -f ${valid_chroms} ${data_dir}/${1}_inliers.bed > ${data_dir}/${1}_inliers_filtered.bed
+        mv ${data_dir}/${1}_inliers_filtered.bed ${data_dir}/${1}_inliers.bed
+    fi
+fi
 
 # copy down data and reference
-echo $( timestamp ): "cp" $reference_file ${reference_dir}/genome.fa | \
-tee -a $logfile 
-
-echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/genome.fa.fai |\
-tee -a $logfile 
-
-echo $( timestamp ): "cp" $chrom_sizes ${reference_dir}/chrom.sizes |\
-tee -a $logfile 
-
-echo $( timestamp ): "cp" $chroms_txt ${reference_dir}/chroms.txt |\
-tee -a $logfile 
 
 echo $( timestamp ): "cp" $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed |\
 tee -a $logfile 
 
-# copy down data and reference
-
-cp $reference_file ${reference_dir}/genome.fa
-cp $reference_file_index ${reference_dir}/genome.fa.fai
-cp $chrom_sizes $reference_dir/chrom.sizes
-cp $chroms_txt $reference_dir/chroms.txt
 cp $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed
+
+
 
 
 echo $( timestamp ): "
