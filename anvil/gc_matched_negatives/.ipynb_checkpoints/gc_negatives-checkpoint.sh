@@ -59,15 +59,15 @@ fi
 echo $( timestamp ): "cp" $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed |\
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $reference_file ${reference_dir}/hg38.genome.fa | \
+echo $( timestamp ): "cp" $reference_file ${reference_dir}/genome.fa | \
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/hg38.genome.fa.fai |\
+echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/genome.fa.fai |\
 tee -a $logfile 
 
 
-cp $reference_file $reference_dir/hg38.genome.fa
-cp $reference_file_index $reference_dir/hg38.genome.fa.fai
+cp $reference_file $reference_dir/genome.fa
+cp $reference_file_index $reference_dir/genome.fa.fai
 
 cp $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed
 
