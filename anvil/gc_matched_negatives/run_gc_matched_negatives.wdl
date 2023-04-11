@@ -14,7 +14,7 @@ task run_gc_matched_negatives {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.0.0-rc.4 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
