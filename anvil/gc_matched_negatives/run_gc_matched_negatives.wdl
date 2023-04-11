@@ -3,6 +3,8 @@ version 1.0
 task run_gc_matched_negatives {
 	input {
 		String experiment
+		File reference_file
+		File reference_file_index
 		File reference_gc_stride_1000_flank_size_1057
 		File peaks
 		File? valid_chroms
@@ -52,6 +54,8 @@ task run_gc_matched_negatives {
 workflow gc_matched_negatives {
 	input {
 		String experiment
+		File reference_file
+		File reference_file_index
 		File reference_gc_stride_1000_flank_size_1057
 		File peaks
 		File? valid_chroms
@@ -60,6 +64,8 @@ workflow gc_matched_negatives {
 	call run_gc_matched_negatives {
 		input:
 			experiment = experiment,
+			reference_file = reference_file,
+			reference_file_index = reference_file_index,
 			reference_gc_stride_1000_flank_size_1057 = reference_gc_stride_1000_flank_size_1057,
 			peaks = peaks,
 			valid_chroms = valid_chroms

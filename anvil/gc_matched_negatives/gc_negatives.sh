@@ -10,9 +10,11 @@ function timestamp {
 
 
 experiment=$1
-reference_gc_stride_1000_flank_size_1057=$2
-peaks=$3
-valid_chroms=$4
+reference_file=$2
+reference_file_index=$3
+reference_gc_stride_1000_flank_size_1057=$4
+peaks=$5
+valid_chroms=$6
 
 mkdir /project
 project_dir=/project
@@ -56,6 +58,16 @@ fi
 
 echo $( timestamp ): "cp" $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed |\
 tee -a $logfile 
+
+echo $( timestamp ): "cp" $reference_file ${reference_dir}/hg38.genome.fa | \
+tee -a $logfile 
+
+echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/hg38.genome.fa.fai |\
+tee -a $logfile 
+
+
+cp $reference_file $reference_dir/hg38.genome.fa
+cp $reference_file_index $reference_dir/hg38.genome.fa.fai
 
 cp $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed
 
