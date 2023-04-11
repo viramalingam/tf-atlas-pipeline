@@ -24,7 +24,6 @@ task run_gc_matched_negatives {
 		##outlier_detection
 
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_file} ${reference_file_index} ${reference_gc_stride_1000_flank_size_1057} ${peaks} ${valid_chroms}
-        
 		/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ${experiment} ${reference_file} ${reference_file_index} ${reference_gc_stride_1000_flank_size_1057} ${peaks} ${valid_chroms}
 
 		echo "copying all files to cromwell_root folder"
