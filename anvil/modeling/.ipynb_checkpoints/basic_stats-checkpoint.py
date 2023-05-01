@@ -74,7 +74,7 @@ def plot_control_chip_for_experiment(peak_path,
             'neg_scores':neg_scores,
             'control_pos_scores':control_pos_scores,
             'control_neg_scores':control_neg_scores,
-            'number_of_peaks':len(all_peak_coords),
+            'number_of_peaks':len(all_peak_coords)}
     
     
 scores = plot_control_chip_for_experiment(peak_path=args.peak_path,
