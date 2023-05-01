@@ -12,7 +12,6 @@ experiment=$1
 bigwigs=$2
 peaks=$3
 background_regions=$4
-splits_json=$5
 
 
 mkdir /project
@@ -73,19 +72,12 @@ tee -a $logfile
 
 cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed > ${data_dir}/${experiment}_combined.bed
 
-#get the test chromosome
-
-echo 'test_chromosome=jq .["0"]["test"] | join(" ") $splits_json | sed s/"//g'
-
-test_chromosome=`jq '.["0"]["test"] | join(" ")' $splits_json | sed 's/"//g'`
-
 
 echo $( timestamp ): "python ./basic_stats.py -p ${data_dir}/${experiment}_peaks.bed \\
 --pos-bw-path ${data_dir}/${experiment}_plus.bigWig \\
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \\
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \\
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \\
---chroms $test_chromosome \\
 -o ${chip_control_correlation_peaks}" | tee -a $logfile 
 
 python ./basic_stats.py -p ${data_dir}/${experiment}_peaks.bed \
@@ -93,7 +85,6 @@ python ./basic_stats.py -p ${data_dir}/${experiment}_peaks.bed \
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \
---chroms $test_chromosome \
 -o ${chip_control_correlation_peaks} | tee -a $logfile 
 
 
@@ -104,7 +95,6 @@ echo $( timestamp ): "python ./basic_stats.py -p ${data_dir}/${experiment}_combi
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \\
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \\
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \\
---chroms $test_chromosome \\
 -o ${chip_control_correlation_all_peaks}" | tee -a $logfile 
 
 python ./basic_stats.py -p ${data_dir}/${experiment}_combined.bed \
@@ -112,5 +102,4 @@ python ./basic_stats.py -p ${data_dir}/${experiment}_combined.bed \
 --neg-bw-path ${data_dir}/${experiment}_minus.bigWig \
 --control-pos-bw-path ${data_dir}/${experiment}_control_plus.bigWig \
 --control-neg-bw-path ${data_dir}/${experiment}_control_minus.bigWig \
---chroms $test_chromosome \
 -o ${chip_control_correlation_all_peaks} | tee -a $logfile 
