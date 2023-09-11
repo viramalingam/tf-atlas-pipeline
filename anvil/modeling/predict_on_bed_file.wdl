@@ -19,7 +19,7 @@ task run_predict_on_peaks {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 		
-		git clone --depth 1 --branch dev_chrom_predctions https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
@@ -40,7 +40,7 @@ task run_predict_on_peaks {
 	}
 
 runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v1.6.0'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1'
 		memory: 32 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"

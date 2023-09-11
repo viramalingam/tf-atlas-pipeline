@@ -149,10 +149,10 @@ test_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)
 
 echo 'test_chromosome=$(paste -s -d ' ' $reference_dir/hg38_chroms.txt)'  
 
-
+    
 echo $( timestamp ): "
-predict \\
-    --model $model_dir/${1}_split000.h5 \\
+bpnet-predict \\
+    --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
     --test-indices-file $chroms_indices_file \\
@@ -165,10 +165,11 @@ predict \\
     --output-window-size 1000 \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
-    --threads $threads" | tee -a $logfile 
+    --threads $threads \\
+    --reverse-complement-average" | tee -a $logfile 
 
-predict \
-    --model $model_dir/${1}_split000.h5 \
+bpnet-predict \
+    --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
     --test-indices-file $chroms_indices_file \
@@ -181,4 +182,5 @@ predict \
     --output-window-size 1000 \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
-    --threads $threads
+    --threads $threads \
+    --reverse-complement-average
