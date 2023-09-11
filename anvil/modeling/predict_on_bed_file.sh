@@ -99,6 +99,15 @@ echo $model | sed 's/,/ /g' | xargs cp -t $model_dir/
 echo $( timestamp ): "cp" $model ${model_dir}/ |\
 tee -a $logfile 
 
+cd ${model_dir}
+
+echo $( timestamp ): "tar -xvf" ${model_dir}/${1}_split000.tar |\
+tee -a $logfile 
+
+tar -xvf ${model_dir}/${1}_split000.tar
+
+cd -
+
 
 echo $( timestamp ): "cp" $peaks ${data_dir}/${experiment}_peaks.bed.gz |\
 tee -a $logfile 
