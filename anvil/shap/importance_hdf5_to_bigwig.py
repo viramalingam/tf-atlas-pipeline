@@ -71,7 +71,7 @@ if args.tqdm:
 
 for itr in iterator:
     # subset to chromosome (debugging)
-    if debug_chr and regions[i][0]!=debug_chr:
+    if args.debug_chr and regions[i][0]!=args.debug_chr:
         continue
 
     i = order_of_regs[itr]
