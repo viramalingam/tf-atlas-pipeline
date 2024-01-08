@@ -62,32 +62,53 @@ bw.addHeader(gs)
 all_entries = []
 cur_chr = ""
 cur_end = 0
+
+iterator = range(len(order_of_regs))
 if args.tqdm:
     from tqdm import tqdm
-    iterator = tqdm(order_of_regs)
-else:
-    iterator = order_of_regs
+    iterator = tqdm(iterator)
 
-for i in iterator:
+for itr in iterator:
     # subset to chromosome (debugging)
-    #if regions[i][0]!="chr12":
-    #    continue
-    if regions[i][0]!=cur_chr: 
-        cur_chr = regions[i][0]
+    if debug_chr and regions[i][0]!=debug_chr:
+        continue
+
+    i = order_of_regs[itr]
+    i_chr, i_start, i_end, i_mid = regions[i]
+
+    if i_chr != cur_chr: 
+        cur_chr = i_chr
         cur_end = 0
+
     # bring current end to at least start of current region
-    if cur_end < regions[i][1]:
-        cur_end = regions[i][1]
+    if cur_end < i_start:
+        cur_end = i_start
+
     assert(regions[i][2]>=cur_end)
-   
-    vals = np.sum(proj_shap_scores[i], axis=0)[cur_end-regions[i][1]:]
-    bw.addEntries([regions[i][0]]*(regions[i][2]-cur_end), 
-                   list(range(cur_end,regions[i][2])), 
-                   ends=list(range(cur_end+1, regions[i][2]+1)), 
-                   values=vals)
+
+    # figure out where to stop for this region, get next region
+    # which may partially overlap with this one
+    next_end = i_end
+
+    if itr+1 != len(order_of_regs):
+        n = order_of_regs[itr+1]
+        next_chr, next_start, _, next_mid = regions[n]
+
+        if next_chr == i_chr and next_start < i_end:
+            # if next region overlaps with this, end between their midpoints
+            next_end = (i_mid+next_mid)//2
+
+    vals = np.sum(proj_shap_scores[i], axis=0)[cur_end - i_start:next_end - i_start]
+
+    bw.addEntries([i_chr]*(next_end-cur_end), 
+                   list(range(cur_end,next_end)), 
+                   ends = list(range(cur_end+1, next_end+1)), 
+                   values=[float(x) for x in vals])
+
     all_entries.append(vals)
-    
-    cur_end = regions[i][2]+1
+
+    cur_end = next_end
+
 bw.close()
 
 all_entries = np.hstack(all_entries)
@@ -101,4 +122,3 @@ with open(args.outstats, 'w') as f:
     f.write("99.95%\t{:.6f}\n".format(np.quantile(all_entries, 0.9995)))
     f.write("99.99%\t{:.6f}\n".format(np.quantile(all_entries, 0.9999)))
     f.write("Max\t{:.6f}\n".format(np.max(all_entries)))
-
