@@ -50,7 +50,7 @@ else:
     with open(args.regions) as r:
         regions = [x.strip().split('\t') for x in r]
 
-regions = [[x[0], int(x[1])+int(x[9])-int(SEQLEN/2), int(x[1])+int(x[9])+int(SEQLEN/2)] for x in regions]
+regions = [[x[0], int(x[1])+int(x[9])-int(SEQLEN/2), int(x[1])+int(x[9])+int(SEQLEN/2), int(x[1])+int(x[9])] for x in regions]
 
 # regions may not be sorted, so get their sorted order
 order_of_regs = sorted(range(len(regions)), key=lambda x:(chr_to_idx[regions[x][0]], regions[x][1]))
