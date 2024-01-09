@@ -2,7 +2,7 @@ version 1.0
 
 task run_shap {
 	input {
-		[File] chrom_sizes
+		File chrom_sizes
 		Array [File] shaps_dir
 	}	
 	command {
@@ -45,7 +45,7 @@ task run_shap {
 
 workflow shap_h5_to_bw {
 	input {
-		[File] chrom_sizes
+		File chrom_sizes
 		Array [File] shaps_dir
 
 	}

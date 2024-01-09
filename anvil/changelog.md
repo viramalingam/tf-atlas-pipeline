@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
-## [v2.0.1-rc.1] - 2024-01-08
+## [v2.1.0-rc.1] - 2024-01-08
 
 1. created shap_h5_to_bw wdl and shell script files. 
 2. Changed the git tag and docker tag versions used for shap; 
-3. changed the git tag and docker tag used for predict on bed file script from main to v2.0.1-rc.1
+3. changed the git tag and docker tag used for predict on bed file script from main to v2.1.0-rc.1
 
 
 
@@ -184,7 +184,7 @@ Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Sta
 # log of the docker builds
 
 
-## vivekramalingam/tf-atlas:gcp-modeling_v2.0.1-rc.1 - 2024-01-08
+## vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.1 - 2024-01-08
 - Fixed shap h5 save problem for models without wce and the shap bw writing change from "first region based" to "nearest peak" when there are overlapping regions.
 
 
