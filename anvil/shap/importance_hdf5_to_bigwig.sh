@@ -16,7 +16,7 @@ mkdir /project
 project_dir=/project
 
 # create the log file
-logfile=$project_dir/${1}_shap.log
+logfile=$project_dir/shap.log
 touch $logfile
 
 
@@ -67,13 +67,13 @@ echo $( timestamp ): "
 python importance_hdf5_to_bigwig.py \\
         -h5 $shap_dir_peaks/counts_scores.h5 \\
         -c $reference_dir/chrom.sizes \\
-        -r $data_dir/peaks_valid_scores.bed \\
+        -r $shap_dir_peaks/peaks_valid_scores.bed \\
         -o $shap_dir_peaks/counts_scores.bw\\
         -s $shap_dir_peaks/counts_scores.stats.txt" \\ | tee -a $logfile 
 
 python importance_hdf5_to_bigwig.py \
         -h5 $shap_dir_peaks/counts_scores.h5 \
         -c $reference_dir/chrom.sizes \
-        -r $data_dir/peaks_valid_scores.bed \
+        -r $shap_dir_peaks/peaks_valid_scores.bed \
         -o $shap_dir_peaks/counts_scores.bw\
         -s $shap_dir_peaks/counts_scores.stats.txt
