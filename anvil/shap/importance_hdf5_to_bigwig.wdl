@@ -36,9 +36,6 @@ task run_shap_h5_to_bw {
 		memory: 30 + "GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
-		gpuType: "nvidia-tesla-k80"
-		gpuCount: 1
-		nvidiaDriverVersion: "418.87.00"
 		maxRetries: 1
 	}
 }
