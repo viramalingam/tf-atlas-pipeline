@@ -1,6 +1,6 @@
 version 1.0
 
-task run_shap {
+task run_shap_h5_to_bw {
 	input {
 		File chrom_sizes
 		Array [File] shaps_dir
