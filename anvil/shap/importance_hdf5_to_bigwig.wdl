@@ -52,7 +52,7 @@ workflow shap_h5_to_bw {
 
 	call run_shap_h5_to_bw {
 		input:
-			chrom_sizes = chrom_sizes
+			chrom_sizes = chrom_sizes,
 			shaps_dir = shaps_dir
  	}
 	output {
