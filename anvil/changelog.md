@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+
+## [v2.0.1-rc.1] - 2024-01-08
+
+1. created shap_h5_to_bw wdl and shell script files. 
+2. Changed the git tag and docker tag versions used for shap; 
+3. changed the git tag and docker tag used for predict on bed file script from main to v2.0.1-rc.1
+
+
+
 ## [v2.0.0-rc.1] - 2023-03-29
 
 1. fixed rc augmentation. added rc-averaging for prediction. Uses the newer bpnet-refactor repo that combines basepairmodels, mseqgen, genomiclossesandarchs. Changed profile metrics normalization. Exposed seed in shap to prevent same shuffles being used for background calculation in all the folds.
@@ -173,6 +182,11 @@ merged branch dev_without_bias_prediction_metrics. We now also calculated metric
 Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Started traking the github versions and pipeline scripts download a specific version. **Incomplete. Testing the tagging sytem.**
 
 # log of the docker builds
+
+
+## vivekramalingam/tf-atlas:gcp-modeling_v2.0.1-rc.1 - 2024-01-08
+- Fixed shap h5 save problem for models without wce and the shap bw writing change from "first region based" to "nearest peak" when there are overlapping regions.
+
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v1.6.5- 2022-08-23
 - hdf5plugin to support blosc compression for shap saving and opening in motif discovery

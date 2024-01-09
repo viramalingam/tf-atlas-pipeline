@@ -77,7 +77,7 @@ RUN apt install -y --allow-unauthenticated build-essential
 
 
 
-RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.0.0-rc.2
+RUN pip install git+https://github.com/kundajelab/bpnet-refactor@v1.1.0-rc.1
 
 # COPY bpnet-refactor /bpnet
 # RUN pip install -e /bpnet
@@ -91,4 +91,3 @@ RUN rm requirements.txt
 # # Clean up after apt and conda
 # RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # RUN conda clean -tipy
-
