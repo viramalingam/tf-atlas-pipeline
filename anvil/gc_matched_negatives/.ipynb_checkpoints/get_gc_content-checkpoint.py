@@ -7,6 +7,7 @@ def parse_args():
     parser=argparse.ArgumentParser(description="get gc content from a foreground bed file")
     parser.add_argument("-i","--input_bed", help="bed file in narrow peak format - we will find gc content of these regions centered on the summit")
     parser.add_argument("-g", "--ref_fasta", help="reference genome fasta")
+    parser.add_argument("-c","--chroms_sizes",type=str, required=True, help="TSV file with chromosome name in first column and size in the second column")
     parser.add_argument("-o", "--out_prefix", help="output file prefix for storing gc-content values of given foreground bed")
     parser.add_argument("-f","--flank_size",type=int,default=1057, help="flank size to use to fine gc-content")
     return parser.parse_args()
@@ -15,6 +16,8 @@ def main():
     args=parse_args()
     ref=pysam.FastaFile(args.ref_fasta)
     data=pd.read_csv(args.input_bed,header=None,sep='\t')
+    
+    chroms_sizes_dict = {line.strip().split("\t")[0]:int(line.strip().split("\t")[1]) for line in open(args.chroms_sizes).readlines()}
 
     num_rows=str(data.shape[0])
     print("num_rows:"+num_rows) 
@@ -34,7 +37,7 @@ def main():
         if start < 0:
             filtered_points+=1
             continue
-        if end > chrom_sizes_dict[chrom]:
+        if end > chroms_sizes_dict[chrom]:
             filtered_points+=1
             continue
 

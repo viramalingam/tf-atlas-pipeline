@@ -14,7 +14,8 @@ reference_file=$2
 reference_file_index=$3
 reference_gc_stride_1000_flank_size_1057=$4
 peaks=$5
-valid_chroms=$6
+chroms_sizes=$6
+valid_chroms=$7
 
 mkdir /project
 project_dir=/project
@@ -65,12 +66,14 @@ tee -a $logfile
 echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/genome.fa.fai |\
 tee -a $logfile 
 
+echo $( timestamp ): "cp" $chroms_sizes ${reference_dir}/chroms.sizes |\
+tee -a $logfile 
 
 cp $reference_file $reference_dir/genome.fa
 cp $reference_file_index $reference_dir/genome.fa.fai
 
 cp $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed
-
+cp $chroms_sizes ${reference_dir}/chroms.sizes
 
 
 
@@ -79,12 +82,14 @@ python get_gc_content.py \\
        --input_bed $data_dir/${1}_inliers.bed \\
        --ref_fasta $reference_dir/genome.fa \\
        --out_prefix $data_dir/$experiment.gc.bed \\
+       --chroms_sizes ${reference_dir}/chroms.sizes \\
        --flank_size 1057" | tee -a $logfile 
 
 python get_gc_content.py \
        --input_bed $data_dir/${1}_inliers.bed \
        --ref_fasta $reference_dir/genome.fa \
        --out_prefix $data_dir/$experiment.gc.bed \
+       --chroms_sizes ${reference_dir}/chroms.sizes \
        --flank_size 1057
 
 echo $( timestamp ): "
