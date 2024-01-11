@@ -47,6 +47,11 @@ tee -a $logfile
 
 gunzip ${data_dir}/${1}_inliers.bed.gz
 
+echo $( timestamp ): "cat ${1}_inliers.bed | awk '{print \$1}' | sort | uniq" |\
+tee -a $logfile 
+
+cat ${1}_inliers.bed | awk '{print $1}' | sort | uniq
+
 if [[ -n "${valid_chroms}" ]];then
     echo "valid_chroms variable set"
     if [[ $valid_chroms!='' ]];then
@@ -54,6 +59,16 @@ if [[ -n "${valid_chroms}" ]];then
         mv ${data_dir}/${1}_inliers_filtered.bed ${data_dir}/${1}_inliers.bed
     fi
 fi
+
+
+# after filtering if fitering was done
+
+echo $( timestamp ): "cat ${1}_inliers.bed | awk '{print \$1}' | sort | uniq" |\
+tee -a $logfile 
+
+cat ${1}_inliers.bed | awk '{print $1}' | sort | uniq
+
+
 
 # copy down data and reference
 
