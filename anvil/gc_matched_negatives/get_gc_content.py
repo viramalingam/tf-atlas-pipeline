@@ -18,6 +18,8 @@ def main():
 
     num_rows=str(data.shape[0])
     print("num_rows:"+num_rows) 
+    
+    filtered_points=0
 
     outf=open(args.out_prefix,'w')
     for index,row in tqdm(data.iterrows()):
@@ -28,6 +30,13 @@ def main():
         summit=start+row[9]
         start=summit-args.flank_size
         end=summit+args.flank_size
+        
+        if start < 0:
+            filtered_points+=1
+            continue
+        if end > chrom_sizes_dict[chrom]:
+            filtered_points+=1
+            continue
 
         # calculate gc content when centered at summit
         seq=ref.fetch(chrom,start,end).upper()
@@ -37,6 +46,13 @@ def main():
         gc_fract=round(gc/len(seq),2)                
         outf.write(chrom+'\t'+str(start)+'\t'+str(end)+'\t'+str(gc_fract)+"\n")
     outf.close()
+    
+    print("Number of regions filtered because inputlen sequence cannot be constructed: " + str(filtered_points))
+    print("Percentage of regions filtered " + str(round(filtered_points*100.0/data.shape[0],3)) + "%" )
+    
+    if round(filtered_points*100.0/data.shape[0],3) > 25:
+        print("WARNING: If percentage of regions filtered is high (>25%) - your genome is very small - consider using a reduced input/output length for your genome")
+
         
 if __name__=="__main__":
     main()
