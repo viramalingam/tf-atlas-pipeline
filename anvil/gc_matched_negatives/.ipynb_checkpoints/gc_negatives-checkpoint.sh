@@ -54,8 +54,9 @@ cat ${data_dir}/${1}_inliers.bed | awk '{print $1}' | sort | uniq
 
 if [[ -n "${valid_chroms}" ]];then
     echo "valid_chroms variable set"
+    echo $valid_chroms
     if [[ $valid_chroms!='' ]];then
-        grep -f ${valid_chroms} ${data_dir}/${1}_inliers.bed > ${data_dir}/${1}_inliers_filtered.bed
+        awk 'NR==FNR{a[$1];next} $1 in a{print $1}' ${valid_chroms} ${data_dir}/${1}_inliers.bed > ${data_dir}/${1}_inliers_filtered.bed
         mv ${data_dir}/${1}_inliers_filtered.bed ${data_dir}/${1}_inliers.bed
     fi
 fi
