@@ -134,6 +134,7 @@ if __name__=="__main__":
         start=row[1]
         end=row[2]
         gc_value=row[3]
+        
 
 #         chrom_real=chrom
 #         chrom = remap_chrom(chrom, splits_dict)
