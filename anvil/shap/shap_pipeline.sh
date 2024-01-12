@@ -18,6 +18,8 @@ bigwigs=$7
 peaks=$8
 model=${9}
 seed=${10}
+input_seq_len=${11}
+output_len=${12}
 
 mkdir /project
 project_dir=/project
@@ -55,26 +57,26 @@ mkdir $shap_dir_peaks
 # copy down bigwig files, bed file, reference, and model file
 
 
-echo $( timestamp ): "cp" $reference_file ${reference_dir}/hg38.genome.fa | \
+echo $( timestamp ): "cp" $reference_file ${reference_dir}genome.fa | \
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/hg38.genome.fa.fai |\
+echo $( timestamp ): "cp" $reference_file_index ${reference_dir}/genome.fa.fai |\
 tee -a $logfile 
 
 echo $( timestamp ): "cp" $chrom_sizes ${reference_dir}/chrom.sizes |\
 tee -a $logfile 
 
-echo $( timestamp ): "cp" $chroms_txt ${reference_dir}/hg38_chroms.txt |\
+echo $( timestamp ): "cp" $chroms_txt ${reference_dir}/chroms.txt |\
 tee -a $logfile 
 
 
 
 # copy down data and reference
 
-cp $reference_file $reference_dir/hg38.genome.fa
-cp $reference_file_index $reference_dir/hg38.genome.fa.fai
+cp $reference_file $reference_dir/genome.fa
+cp $reference_file_index $reference_dir/genome.fa.fai
 cp $chrom_sizes $reference_dir/chrom.sizes
-cp $chroms_txt $reference_dir/hg38_chroms.txt
+cp $chroms_txt $reference_dir/chroms.txt
 
 
 # Step 1: Copy the bigwigs, model and peak files
@@ -134,25 +136,25 @@ cp $model_dir/${1}_split000.tar $shap_dir_peaks/${1}_split000.tar
 
 echo $( timestamp ): "
 bpnet-shap \\
-    --reference-genome $reference_dir/hg38.genome.fa \\
+    --reference-genome $reference_dir/genome.fa \\
     --model $model_dir/${1}_split000 \\
     --bed-file $data_dir/${1}_peaks.bed \\
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \\
+    --chroms $(paste -s -d ' ' $reference_dir/chroms.txt) \\
     --output-dir $shap_dir_peaks \\
-    --input-seq-len 2114 \\
-    --control-len 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --control-len ${output_len} \\
     --task-id 0 \\
     --seed $seed \\
     --input-data $project_dir/testing_input_peaks.json" | tee -a $logfile
 
 bpnet-shap \
-    --reference-genome $reference_dir/hg38.genome.fa \
+    --reference-genome $reference_dir/genome.fa \
     --model $model_dir/${1}_split000 \
     --bed-file $data_dir/${1}_peaks.bed \
-    --chroms $(paste -s -d ' ' $reference_dir/hg38_chroms.txt) \
+    --chroms $(paste -s -d ' ' $reference_dir/chroms.txt) \
     --output-dir $shap_dir_peaks \
-    --input-seq-len 2114 \
-    --control-len 1000 \
+    --input-seq-len ${input_seq_len} \
+    --control-len ${output_len} \
     --task-id 0 \
     --seed $seed \
     --input-data $project_dir/testing_input_peaks.json # this file doesnt have negatives

@@ -11,7 +11,9 @@ task run_shap {
 		Array [File] bigwigs
 		File peaks
 		Array [File] model
-		Int? seed
+		Int seed
+		Int input_seq_len
+		Int output_len
 
   	}	
 	command {
@@ -24,8 +26,8 @@ task run_shap {
 
 		##shap
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh" ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model} ${seed}
-		/my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model} ${seed}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh" ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model} ${seed} ${input_seq_len} ${output_len}
+		/my_scripts/tf-atlas-pipeline/anvil/shap/shap_pipeline.sh ${experiment} ${input_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${sep=',' model} ${seed} ${input_seq_len} ${output_len}
 
 		echo "copying all files to cromwell_root folder"
 		
@@ -70,7 +72,9 @@ workflow shap {
 		Array [File] bigwigs
 		File peaks
 		Array [File] model
-		Int? seed=0
+		Int seed=0
+		Int input_seq_len = 2114
+		Int output_len = 1000
 
 	}
 
@@ -85,8 +89,10 @@ workflow shap {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			model = model,
-			seed = seed            
- 	}
+			seed = seed,
+			input_seq_len = input_seq_len,
+			output_len = output_len
+	}
 	output {
 		Array[File] shap_dir_peaks = run_shap.shap_dir_peaks
 		File profile_shap_scores = run_shap.profile_shap_scores

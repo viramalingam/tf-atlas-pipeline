@@ -18,6 +18,8 @@ chrom_sizes=$7
 chroms_txt=$8
 bigwigs=${9}
 peaks=${10}
+input_seq_len=${11}
+output_len=${12}
 
 echo $experiment
 echo $model
@@ -29,6 +31,8 @@ echo $chrom_sizes
 echo $chroms_txt
 echo $bigwigs
 echo $peaks
+echo $input_seq_len
+echo $output_len
 
 
 mkdir /project
@@ -169,9 +173,9 @@ bpnet-predict \\
     --output-dir $predictions_dir \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
@@ -186,9 +190,9 @@ bpnet-predict \
     --output-dir $predictions_dir \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \

@@ -12,7 +12,8 @@ task run_predict_on_peaks {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
-		
+		Int input_seq_len
+		Int output_len
 	}
 	command {
 		#create data directories and download scripts
@@ -25,8 +26,8 @@ task run_predict_on_peaks {
 		
 		##fastpredict
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/predict_on_bed_file.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/predict_on_bed_file.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/predict_on_bed_file.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${input_seq_len} ${output_len}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/predict_on_bed_file.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${input_seq_len} ${output_len}
 		
 		
 		echo "copying all files to cromwell_root folder"
@@ -63,7 +64,8 @@ workflow predict_on_peaks {
 		File chroms_txt
 		Array [File] bigwigs
 		File peaks
-		
+		Int input_seq_len = 2114
+		Int output_len = 1000
 	}
 	
 	call run_predict_on_peaks {
@@ -73,11 +75,13 @@ workflow predict_on_peaks {
 			testing_input_json = testing_input_json,
 			splits_json = splits_json,
 			reference_file = reference_file,
-			reference_file_index = reference_file_index,	
+			reference_file_index = reference_file_index,
 			chrom_sizes = chrom_sizes,
 			chroms_txt = chroms_txt,
 			bigwigs = bigwigs,
-			peaks = peaks
+			peaks = peaks,
+			input_seq_len = input_seq_len,
+			output_len = output_len
 	}
 	output {
 		Array[File] predictions_and_metrics = run_predict_on_peaks.predictions_and_metrics

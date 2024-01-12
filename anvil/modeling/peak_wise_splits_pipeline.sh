@@ -13,7 +13,7 @@ bigwigs=$2
 peaks=$3
 nonpeaks=$4
 number_of_folds=$5
-
+input_seq_len=$6
 
 mkdir /project
 project_dir=/project
@@ -51,7 +51,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits.py \
     --bigwig ${data_dir}/${experiment}_plus.bigWig \
     --peaks $peaks \
     --nonpeaks $nonpeaks \
-    --inputlen 2114 \
+    --inputlen ${input_seq_len} \
     -j 128 \
     --number-of-folds $number_of_folds \
     -o $indices_dir\
@@ -61,7 +61,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits.py \
     --bigwig ${data_dir}/${experiment}_plus.bigWig \
     --peaks $peaks \
     --nonpeaks $nonpeaks \
-    --inputlen 2114 \
+    --inputlen ${input_seq_len} \
     -j 128 \
     --number-of-folds $number_of_folds \
     -o $indices_dir \

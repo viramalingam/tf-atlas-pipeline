@@ -7,6 +7,7 @@ task run_peak_wise_splits {
 		File peaks
 		File nonpeaks
 		Int number_of_folds
+		Int input_seq_len
 
 
 	}
@@ -21,8 +22,8 @@ task run_peak_wise_splits {
 		
 		##peak_wise_splits
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits_pipeline.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${nonpeaks} ${number_of_folds}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits_pipeline.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${nonpeaks} ${number_of_folds}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits_pipeline.sh" ${experiment} ${sep=',' bigwigs} ${peaks} ${nonpeaks} ${number_of_folds} ${input_seq_len}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/peak_wise_splits_pipeline.sh ${experiment} ${sep=',' bigwigs} ${peaks} ${nonpeaks} ${number_of_folds} ${input_seq_len}
 		
 		echo "copying all files to cromwell_root folder"
 		
@@ -52,6 +53,7 @@ workflow create_peak_wise_splits {
 		File peaks
 		File nonpeaks
 		Int number_of_folds
+		Int input_seq_len = 2114
 	}
 	
 	call run_peak_wise_splits {
@@ -60,7 +62,8 @@ workflow create_peak_wise_splits {
 			bigwigs = bigwigs,
 			peaks = peaks,
 			nonpeaks = nonpeaks,
-			number_of_folds = number_of_folds
+			number_of_folds = number_of_folds,
+			input_seq_len = input_seq_len
 	}
 	output {
 		Array[File] peak_wise_splits = run_peak_wise_splits.peak_wise_splits

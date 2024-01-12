@@ -21,6 +21,9 @@ peaks=${10}
 background_regions=${11}
 reverse_complement_average=${12}
 indices_files=${13}
+input_seq_len=${14}
+output_len=${15}
+
 
 echo $experiment
 echo $model
@@ -289,13 +292,13 @@ bpnet-predict \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
 bpnet-predict \
     --model $model_dir/${1}_split000 \
@@ -306,13 +309,13 @@ bpnet-predict \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
     
 
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics ..."
@@ -323,7 +326,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len ${output_len} \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
@@ -331,7 +334,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len ${output_len} \
     --chroms $test_chromosome
     
 echo $( timestamp ): "
@@ -344,14 +347,14 @@ bpnet-predict \\
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --set-bias-as-zero
     --threads $threads \\
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
 bpnet-predict \
     --model $model_dir/${1}_split000 \
@@ -362,14 +365,14 @@ bpnet-predict \
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --set-bias-as-zero \
     --threads $threads \
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
     
 echo $( timestamp ): "Calculating the AUPRC and AUROC metrics without bias..."
 
@@ -379,7 +382,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len ${output_len} \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
@@ -387,7 +390,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len ${output_len} \
     --chroms $test_chromosome
 
 
@@ -401,13 +404,13 @@ bpnet-predict \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
 bpnet-predict \
     --model $model_dir/${1}_split000 \
@@ -418,13 +421,13 @@ bpnet-predict \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
 
 
 # modify the testing_input json for prediction
@@ -447,13 +450,13 @@ bpnet-predict \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
 bpnet-predict \
     --model $model_dir/${1}_split000 \
@@ -464,13 +467,13 @@ bpnet-predict \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
     
     
 echo $( timestamp ): "
@@ -483,14 +486,14 @@ bpnet-predict \\
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --set-bias-as-zero
     --threads $threads \\
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
 bpnet-predict \
     --model $model_dir/${1}_split000 \
@@ -501,14 +504,14 @@ bpnet-predict \
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --set-bias-as-zero \
     --threads $threads \
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )
 
 echo $( timestamp ): "
 bpnet-predict \\
@@ -520,13 +523,13 @@ bpnet-predict \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --threads $threads \\
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )" | tee -a $logfile 
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )" | tee -a $logfile 
 
 bpnet-predict \
     --model $model_dir/${1}_split000 \
@@ -537,10 +540,10 @@ bpnet-predict \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --threads $threads \
-    $(case ${reverse_complement_average} in ("true") printf -- '--reverse-complement-average';; esac )
+    $(case ${reverse_complement_average} in (true) printf -- '--reverse-complement-average';; (false) ;; esac )

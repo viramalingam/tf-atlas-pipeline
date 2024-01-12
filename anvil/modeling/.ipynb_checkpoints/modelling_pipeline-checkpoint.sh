@@ -22,6 +22,8 @@ peaks=${11}
 background_regions=${12}
 learning_rate=${13}
 indices_files=${14}
+input_seq_len=${15}
+output_len=${16}
 
 mkdir /project
 project_dir=/project
@@ -233,8 +235,8 @@ bpnet-train \\
     --model-arch-params-json $project_dir/bpnet_params.json \\
     --sequence-generator-name BPNet \\
     --model-output-filename $1 \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
     --threads $threads \\
     --batch-size 64 \\
     --reverse-complement-augmentation \\
@@ -255,8 +257,8 @@ bpnet-train \
     --model-arch-params-json $project_dir/bpnet_params.json \
     --sequence-generator-name BPNet \
     --model-output-filename $1 \
-    --input-seq-len 2114 \
-    --output-len 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
     --threads $threads \
     --batch-size 64 \
     --reverse-complement-augmentation \
@@ -349,9 +351,9 @@ bpnet-predict \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --reverse-complement-average \\
@@ -366,9 +368,9 @@ bpnet-predict \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --reverse-complement-average \
@@ -383,7 +385,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len ${output_len} \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
@@ -391,7 +393,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len ${output_len} \
     --chroms $test_chromosome
     
 echo $( timestamp ): "
@@ -404,9 +406,9 @@ bpnet-predict \\
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --reverse-complement-average \\
@@ -422,9 +424,9 @@ bpnet-predict \
     --output-dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --reverse-complement-average \
@@ -439,7 +441,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms_wo_bias \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
     --neg_file ${data_dir}/${experiment}_background_regions.bed \\
-    --output_len 1000 \\
+    --output_len ${output_len} \\
     --chroms $test_chromosome" | tee -a $logfile 
 
 python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py \
@@ -447,7 +449,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_dir $predictions_dir_all_peaks_test_chroms_wo_bias \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
-    --output_len 1000 \
+    --output_len ${output_len} \
     --chroms $test_chromosome
 
 
@@ -461,9 +463,9 @@ bpnet-predict \\
     --output-dir $predictions_dir_all_peaks_all_chroms \\
     --input-data $project_dir/testing_input_all.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --reverse-complement-average \\
@@ -478,9 +480,9 @@ bpnet-predict \
     --output-dir $predictions_dir_all_peaks_all_chroms \
     --input-data $project_dir/testing_input_all.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --reverse-complement-average \
@@ -507,9 +509,9 @@ bpnet-predict \\
     --output-dir $predictions_dir_test_peaks_test_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --reverse-complement-average \\
@@ -524,9 +526,9 @@ bpnet-predict \
     --output-dir $predictions_dir_test_peaks_test_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --reverse-complement-average \
@@ -543,9 +545,9 @@ bpnet-predict \\
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --reverse-complement-average \\
@@ -561,9 +563,9 @@ bpnet-predict \
     --output-dir $predictions_dir_test_peaks_test_chroms_wo_bias \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --reverse-complement-average \
@@ -580,9 +582,9 @@ bpnet-predict \\
     --output-dir $predictions_dir_test_peaks_all_chroms \\
     --input-data $project_dir/testing_input_peaks.json \\
     --sequence-generator-name BPNet \\
-    --input-seq-len 2114 \\
-    --output-len 1000 \\
-    --output-window-size 1000 \\
+    --input-seq-len ${input_seq_len} \\
+    --output-len ${output_len} \\
+    --output-window-size ${output_len} \\
     --batch-size 1024 \\
     --generate-predicted-profile-bigWigs \\
     --reverse-complement-average \\
@@ -597,9 +599,9 @@ bpnet-predict \
     --output-dir $predictions_dir_test_peaks_all_chroms \
     --input-data $project_dir/testing_input_peaks.json \
     --sequence-generator-name BPNet \
-    --input-seq-len 2114 \
-    --output-len 1000 \
-    --output-window-size 1000 \
+    --input-seq-len ${input_seq_len} \
+    --output-len ${output_len} \
+    --output-window-size ${output_len} \
     --batch-size 1024 \
     --generate-predicted-profile-bigWigs \
     --reverse-complement-average \

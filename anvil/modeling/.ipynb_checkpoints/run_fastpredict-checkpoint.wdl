@@ -14,7 +14,9 @@ task run_fastpredict {
 		File peaks
 		File background_regions
 		Boolean? reverse_complement_average
-		Array [File]? indices_files        
+		Array [File]? indices_files
+		Int input_seq_len
+		Int output_len
 	}
 	command {
 		#create data directories and download scripts
@@ -27,8 +29,8 @@ task run_fastpredict {
 		
 		##fastpredict
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files} ${input_seq_len} ${output_len}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files} ${input_seq_len} ${output_len}
 		
 		
 		echo "copying all files to cromwell_root folder"
@@ -119,6 +121,8 @@ workflow fastpredict {
 		File background_regions
 		Boolean? reverse_complement_average = true
 		Array [File]? indices_files
+		Int input_seq_len = 2114
+		Int output_len = 1000
         
 	}
 	
@@ -136,7 +140,9 @@ workflow fastpredict {
 			peaks = peaks,
 			background_regions = background_regions,
 			reverse_complement_average = reverse_complement_average,
-			indices_files = indices_files
+			indices_files = indices_files,
+			input_seq_len = input_seq_len,
+			output_len = output_len
 	}
 	output {
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = run_fastpredict.predictions_and_metrics_all_peaks_test_chroms

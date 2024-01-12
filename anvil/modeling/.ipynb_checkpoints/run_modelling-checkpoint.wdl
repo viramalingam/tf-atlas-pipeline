@@ -16,6 +16,8 @@ task run_modelling {
 		File background_regions
 		Float learning_rate
 		Array [File]? indices_files
+		Int input_seq_len
+		Int output_len
 	}
 	
 	command {
@@ -28,8 +30,8 @@ task run_modelling {
 		
 		##modelling
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${sep=',' indices_files}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${sep=',' indices_files}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh" ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${sep=',' indices_files} ${input_seq_len} ${output_len}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/modelling_pipeline.sh ${experiment} ${training_input_json} ${testing_input_json} ${bpnet_params_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${learning_rate} ${sep=',' indices_files} ${input_seq_len} ${output_len}
 		
 		echo "copying all files to cromwell_root folder"
 		
@@ -123,6 +125,8 @@ workflow modelling {
 		File background_regions
 		Float learning_rate
 		Array [File]? indices_files
+		Int input_seq_len = 2114
+		Int output_len = 1000
 	}
 	
 	call run_modelling {
@@ -140,7 +144,9 @@ workflow modelling {
 			peaks = peaks,
 			background_regions = background_regions,
 			learning_rate = learning_rate,
-			indices_files = indices_files
+			indices_files = indices_files,
+			input_seq_len = input_seq_len,
+			output_len = output_len
 	}
 	output {
 		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json
