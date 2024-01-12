@@ -12,10 +12,12 @@ function timestamp {
 experiment=$1
 reference_file=$2
 reference_file_index=$3
-reference_gc_stride_1000_flank_size_1057=$4
+reference_gc_stride_flank_size=$4
 peaks=$5
 chroms_sizes=$6
-valid_chroms=$7
+flank_size=$7
+neg_to_pos_ratio_train=$8
+valid_chroms=$9
 
 mkdir /project
 project_dir=/project
@@ -74,7 +76,7 @@ cat ${data_dir}/${1}_inliers.bed | awk '{print $1}' | sort | uniq
 
 # copy down data and reference
 
-echo $( timestamp ): "cp" $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed |\
+echo $( timestamp ): "cp" $reference_gc_stride_flank_size ${reference_dir}/reference_gc_stride_flank_size.bed |\
 tee -a $logfile 
 
 echo $( timestamp ): "cp" $reference_file ${reference_dir}/genome.fa | \
@@ -89,7 +91,7 @@ tee -a $logfile
 cp $reference_file $reference_dir/genome.fa
 cp $reference_file_index $reference_dir/genome.fa.fai
 
-cp $reference_gc_stride_1000_flank_size_1057 ${reference_dir}/genomewide_gc_stride_1000_flank_size_1057.bed
+cp $reference_gc_stride_flank_size ${reference_dir}/reference_gc_stride_flank_size.bed
 cp $chroms_sizes ${reference_dir}/chroms.sizes
 
 
@@ -100,23 +102,23 @@ python get_gc_content.py \\
        --ref_fasta $reference_dir/genome.fa \\
        --out_prefix $data_dir/$experiment.gc.bed \\
        --chroms_sizes ${reference_dir}/chroms.sizes \\
-       --flank_size 1057" | tee -a $logfile 
+       --flank_size ${flank_size}" | tee -a $logfile 
 
 python get_gc_content.py \
        --input_bed $data_dir/${1}_inliers.bed \
        --ref_fasta $reference_dir/genome.fa \
        --out_prefix $data_dir/$experiment.gc.bed \
        --chroms_sizes ${reference_dir}/chroms.sizes \
-       --flank_size 1057
+       --flank_size ${flank_size}
 
 echo $( timestamp ): "
 bedtools intersect -v -a \\
-    $reference_dir/genomewide_gc_stride_1000_flank_size_1057.bed \\
+    $reference_dir/reference_gc_stride_flank_size.bed \\
     -b $data_dir/${1}_inliers.bed > $data_dir/${experiment}.tsv" | \
     tee -a $logfile 
 
 bedtools intersect -v -a \
-$reference_dir/genomewide_gc_stride_1000_flank_size_1057.bed \
+$reference_dir/reference_gc_stride_flank_size.bed \
 -b $data_dir/${1}_inliers.bed > $data_dir/${experiment}.tsv
 
 echo $( timestamp ): "
@@ -124,13 +126,13 @@ python get_gc_matched_negatives.py \\
         --candidate_negatives $data_dir/${experiment}.tsv \\
         --foreground_gc_bed  $data_dir/$experiment.gc.bed \\
         --output_prefix $data_dir/${experiment}_negatives \\
-        --neg_to_pos_ratio_train 4" \\ | tee -a $logfile 
+        --neg_to_pos_ratio_train ${neg_to_pos_ratio_train}" \\ | tee -a $logfile 
 
 python get_gc_matched_negatives.py \
         --candidate_negatives $data_dir/${experiment}.tsv \
         --foreground_gc_bed  $data_dir/$experiment.gc.bed \
         --output_prefix $data_dir/${experiment}_negatives \
-        --neg_to_pos_ratio_train 4
+        --neg_to_pos_ratio_train ${neg_to_pos_ratio_train}
 
 
 # also export the negatives only file
