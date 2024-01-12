@@ -56,7 +56,7 @@ if [[ -n "${valid_chroms}" ]];then
     echo "valid_chroms variable set"
     echo $valid_chroms
     if [[ $valid_chroms!='' ]];then
-        awk 'NR==FNR{a[$1];next} $1 in a{print $1}' ${valid_chroms} ${data_dir}/${1}_inliers.bed > ${data_dir}/${1}_inliers_filtered.bed
+        awk 'NR==FNR{a[$1];next} $1 in a{print $0}' ${valid_chroms} ${data_dir}/${1}_inliers.bed > ${data_dir}/${1}_inliers_filtered.bed
         mv ${data_dir}/${1}_inliers_filtered.bed ${data_dir}/${1}_inliers.bed
     fi
 fi
@@ -64,6 +64,7 @@ fi
 
 # after filtering if fitering was done
 
+echo $( timestamp ): "after filtering chroms"
 echo $( timestamp ): "cat ${data_dir}/${1}_inliers.bed | awk '{print \$1}' | sort | uniq" |\
 tee -a $logfile 
 
