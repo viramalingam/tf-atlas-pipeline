@@ -5,7 +5,7 @@ task run_gc_matched_negatives {
 		String experiment
 		File reference_file
 		File reference_file_index
-		File reference_gc_stride_1000_flank_size_1057
+		File reference_gc_stride_flank_size
 		File peaks
 		File chroms_sizes
 		Int flank_size
@@ -17,7 +17,7 @@ task run_gc_matched_negatives {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v2.1.0-rc.2 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.1.0-rc.3 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/gc_matched_negatives/
 
@@ -25,8 +25,8 @@ task run_gc_matched_negatives {
 
 
 		##outlier_detection
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_file} ${reference_file_index} ${reference_gc_stride_1000_flank_size_1057} ${peaks} ${chroms_sizes} ${flank_size} ${neg_to_pos_ratio_train} ${valid_chroms}
-		/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ${experiment} ${reference_file} ${reference_file_index} ${reference_gc_stride_1000_flank_size_1057} ${peaks} ${chroms_sizes} ${flank_size} ${neg_to_pos_ratio_train} ${valid_chroms}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh" ${experiment} ${reference_file} ${reference_file_index} ${reference_gc_stride_flank_size} ${peaks} ${chroms_sizes} ${flank_size} ${neg_to_pos_ratio_train} ${valid_chroms}
+		/my_scripts/tf-atlas-pipeline/anvil/gc_matched_negatives/gc_negatives.sh ${experiment} ${reference_file} ${reference_file_index} ${reference_gc_stride_flank_size} ${peaks} ${chroms_sizes} ${flank_size} ${neg_to_pos_ratio_train} ${valid_chroms}
 
 		echo "copying all files to cromwell_root folder"
 
@@ -58,7 +58,7 @@ workflow gc_matched_negatives {
 		String experiment
 		File reference_file
 		File reference_file_index
-		File reference_gc_stride_1000_flank_size_1057
+		File reference_gc_stride_flank_size
 		File peaks
 		File chroms_sizes
 		Int flank_size = 1057
@@ -71,7 +71,7 @@ workflow gc_matched_negatives {
 			experiment = experiment,
 			reference_file = reference_file,
 			reference_file_index = reference_file_index,
-			reference_gc_stride_1000_flank_size_1057 = reference_gc_stride_1000_flank_size_1057,
+			reference_gc_stride_flank_size = reference_gc_stride_flank_size,
 			peaks = peaks,
 			chroms_sizes = chroms_sizes,       
 			flank_size = flank_size,

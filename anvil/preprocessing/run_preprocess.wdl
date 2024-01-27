@@ -47,7 +47,7 @@ task run_preprocess {
 	}
 
 	runtime {
-		docker: 'vivekramalingam/tf-atlas'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.1'
 		memory: 40 + "GB"
 		bootDiskSizeGb: 200
 		disks: "local-disk 1000 HDD"
