@@ -7,6 +7,8 @@ import json
 metadata_file_path=sys.argv[1]
 experiment_id=sys.argv[2]
 params_json_outfile=sys.argv[3]
+stranded=sys.argv[4]
+has_control=sys.argv[5]
 
 def make_string(pandas_col_obj):
     """
@@ -58,6 +60,8 @@ params_dict['peaks'] = \
     make_string(row['preferred_default_bed_narrowPeak'])
 params_dict['peaks_md5sum'] = \
     make_string(row['preferred_default_bed_narrowPeak_md5sums'])
+params_dict['stranded'] = stranded
+params_dict['has_control'] = has_control
 
 
 # write python dictionary to json file

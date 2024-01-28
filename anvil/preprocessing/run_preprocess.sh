@@ -24,13 +24,17 @@ python \\
     create_pipeline_params_json.py \\
     $metadata_file_path \\
     $experiment \\
-    $pipeline_json" | tee -a $logfile
+    $pipeline_json \\
+    True \\
+    True" | tee -a $logfile
     
 python \
     create_pipeline_params_json.py \
     $metadata_file_path \
     $experiment \
-    $pipeline_json
+    $pipeline_json \
+    True \
+    True
     
 
 
@@ -64,7 +68,9 @@ peaks=`jq .peaks $pipeline_json | sed 's/"//g'`
 
 peaks_md5sum=`jq .peaks_md5sum $pipeline_json | sed 's/"//g'`
 
+stranded=`jq .stranded $pipeline_json | sed 's/"//g'`
 
+has_control=`jq .has_control $pipeline_json | sed 's/"//g'`
 
 
 # Step 0. Create all required directories and cp the files
