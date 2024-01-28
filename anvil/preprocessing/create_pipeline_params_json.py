@@ -61,5 +61,5 @@ params_dict['peaks_md5sum'] = \
 
 
 # write python dictionary to json file
-with open(params_json_outfile) as outfile:  
+with open(params_json_outfile, "w") as outfile:  
     json.dump(params_dict, outfile, indent='\t')
