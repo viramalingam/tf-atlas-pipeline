@@ -1,23 +1,41 @@
 #!/bin/bash
 
-# TF-Atlas pipeline
-# Step 1. Copy reference files from gcp
-# Step 2. Download bams and peaks file for the experiment
-# Step 3. Process bam files to generate bigWigs
-# Step 4. Modeling, predictions, metrics, shap, modisco, embeddings
-# Step 5. Generate reports
 
 # import the utils script
 source ./utils.sh
 
+experiment=$1
+encode_access_key=$2
+encode_secret_key=$3
+metadata_file_path=$4
+chrom_sizes=$5
+
+# create log file
+logfile=$experiment.log
+touch $logfile
 
 
 # path to json file with pipeline params
-pipeline_json=$1
+pipeline_json="params_file.json"
+
+# create pipeline params json
+echo $( timestamp ): "
+python \\
+    create_pipeline_params_json.py \\
+    $metadata_file_path \\
+    $experiment \\
+    $pipeline_json" | tee -a $logfile
+    
+python \
+    create_pipeline_params_json.py \
+    $metadata_file_path \
+    $experiment \
+    $pipeline_json
+    
+
+
 
 # get params from the pipleine json
-experiment=`jq .experiment $pipeline_json | sed 's/"//g'` 
-
 
 
 assembly=`jq .assembly $pipeline_json | sed 's/"//g'`
@@ -46,50 +64,10 @@ peaks=`jq .peaks $pipeline_json | sed 's/"//g'`
 
 peaks_md5sum=`jq .peaks_md5sum $pipeline_json | sed 's/"//g'`
 
-has_control=`jq .has_control $pipeline_json | sed 's/"//g'`
-
-stranded=`jq .stranded $pipeline_json | sed 's/"//g'`
-
-model_arch_name=`jq .model_arch_name $pipeline_json | sed 's/"//g'`
-
-sequence_generator_name=\
-`jq .sequence_generator_name $pipeline_json | sed 's/"//g'`
-
-splits_json_path=`jq .splits_json_path $pipeline_json | sed 's/"//g'`
-
-test_chroms=`jq .test_chroms $pipeline_json | sed 's/"//g'`
-
-tuning=`jq .tuning $pipeline_json | sed 's/"//g'`
-
-learning_rate=`jq .learning_rate $pipeline_json | sed 's/"//g'`
-
-counts_loss_weight=`jq .counts_loss_weight $pipeline_json | sed 's/"//g'`
-
-epochs=`jq .epochs $pipeline_json | sed 's/"//g'`
-
-gcp_bucket=`jq .gcp_bucket $pipeline_json | sed 's/"//g'`
-
-encode_access_key=$2
-
-encode_secret_key=$3
-
-# the place where the results of the pipeline run will be stored
-# either mnt or gcp. If "mnt" then output files are stored in 
-# --mnt target, or if "gcp" then the files are uploaded to gcp
-pipeline_destination=$4
-
-reference_file=${5}
-reference_file_index=${6}
-chrom_sizes=${7}
-
-
-# create log file
-logfile=$experiment.log
-touch $logfile
 
 
 
-# Step 0. Create all required directories
+# Step 0. Create all required directories and cp the files
 
 dst_dir=$PWD/
 
@@ -115,17 +93,12 @@ echo $( timestamp ): "mkdir" $bigWigs_dir | tee -a $logfile
 mkdir $bigWigs_dir
 
 
-# Step 1: Copy the reference files
 
-echo $( timestamp ): "cp" $reference_file $reference_dir/ | \
-tee -a $logfile 
-echo $( timestamp ): "cp" $reference_file_index $reference_dir/ |\
+echo $( timestamp ): "cp" $chrom_sizes $reference_dir/chrom.sizes |\
 tee -a $logfile 
 
-
-cp $reference_file $reference_dir/
-cp $reference_file_index $reference_dir/
 cp $chrom_sizes $reference_dir/chrom.sizes
+
 
 # Step 2. download bam files and peaks file
 
@@ -139,17 +112,15 @@ download_file "$alignments" "bam" "$alignments_md5sums" 1 $logfile \
 $encode_access_key $encode_secret_key $downloads_dir
 
 
-if [ "$has_control" = "True" ]
-then
-    # 2.3 download control unfiltered alignmentsbams
-    download_file "$control_unfiltered_alignments" "bam" \
-    "$control_unfiltered_alignments_md5sums" 1 $logfile $encode_access_key \
-    $encode_secret_key $downloads_dir
+# 2.3 download control unfiltered alignmentsbams
+download_file "$control_unfiltered_alignments" "bam" \
+"$control_unfiltered_alignments_md5sums" 1 $logfile $encode_access_key \
+$encode_secret_key $downloads_dir
 
-    # 2.4 download control alignments bams
-    download_file "$control_alignments" "bam" "$control_alignments_md5sums" 1 \
-    $logfile $encode_access_key $encode_secret_key $downloads_dir
-fi
+# 2.4 download control alignments bams
+download_file "$control_alignments" "bam" "$control_alignments_md5sums" 1 \
+$logfile $encode_access_key $encode_secret_key $downloads_dir
+
 
 # 2.5 download peaks file
 download_file $peaks "bed.gz" $peaks_md5sum 1 $logfile $encode_access_key \
@@ -183,11 +154,3 @@ then
 fi
 
 wait_for_jobs_to_finish "Preprocessing"
-
-# Step pre_4: Create the input json for the experiment that will
-# be used in training
-echo $( timestamp ): "python create_input_json.py" $experiment $peaks True \
-True $bigWigs_dir $downloads_dir . | tee -a $logfile
-
-python create_input_json.py $experiment $peaks True True $bigWigs_dir \
-$downloads_dir .
