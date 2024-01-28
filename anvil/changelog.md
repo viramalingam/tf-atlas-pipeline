@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+
+## [v2.1.0-rc.4] - 2024-01-11
+
+1. cleaned up preprocessing script
+
+
 ## [v2.1.0-rc.2] - 2024-01-11
 
 1. added additional checks to ignore peaks that fall outside the chroms start stop for gc_matched negative script.
