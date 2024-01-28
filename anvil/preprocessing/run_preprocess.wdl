@@ -19,7 +19,7 @@ task run_preprocess {
 
 		##preprocessing
 		echo "run /my_scripts/tf-atlas-pipeline/anvil/preprocessing/run_preprocess.sh"
-		/my_scripts/tf-atlas-pipeline/anvil/preprocessing/run_preprocess.sh experiment ${encode_access_key} ${encode_secret_key} ${metadata} ${chrom_sizes}
+		/my_scripts/tf-atlas-pipeline/anvil/preprocessing/run_preprocess.sh ${experiment} ${encode_access_key} ${encode_secret_key} ${metadata} ${chrom_sizes}
 		cp downloads/*.bed.gz /cromwell_root/peaks.bed.gz
 		cp -r bigWigs /cromwell_root/
 		
