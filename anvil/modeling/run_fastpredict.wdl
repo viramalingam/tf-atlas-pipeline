@@ -14,23 +14,23 @@ task run_fastpredict {
 		File peaks
 		File background_regions
 		Boolean? reverse_complement_average
-		Array [File]? indices_files
 		Int input_seq_len
 		Int output_len
+		Array [File]? indices_files
 	}
 	command {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
 		
-		git clone --depth 1 --branch v2.1.0-rc.3 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.1.0-rc.5 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/
 		
 		##fastpredict
 		
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files} ${input_seq_len} ${output_len}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${sep=',' indices_files} ${input_seq_len} ${output_len}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh" ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${input_seq_len} ${output_len} ${sep=',' indices_files}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/fastpredict_pipeline.sh ${experiment} ${sep=',' model} ${testing_input_json} ${splits_json} ${reference_file} ${reference_file_index} ${chrom_sizes} ${chroms_txt} ${sep=',' bigwigs} ${peaks} ${background_regions} ${reverse_complement_average} ${input_seq_len} ${output_len} ${sep=',' indices_files}
 		
 		
 		echo "copying all files to cromwell_root folder"
@@ -120,9 +120,9 @@ workflow fastpredict {
 		File peaks
 		File background_regions
 		Boolean? reverse_complement_average = true
-		Array [File]? indices_files
 		Int input_seq_len = 2114
 		Int output_len = 1000
+		Array [File]? indices_files
         
 	}
 	
@@ -140,9 +140,9 @@ workflow fastpredict {
 			peaks = peaks,
 			background_regions = background_regions,
 			reverse_complement_average = reverse_complement_average,
-			indices_files = indices_files,
 			input_seq_len = input_seq_len,
-			output_len = output_len
+			output_len = output_len,
+			indices_files = indices_files
 	}
 	output {
 		Array[File] predictions_and_metrics_all_peaks_test_chroms = run_fastpredict.predictions_and_metrics_all_peaks_test_chroms

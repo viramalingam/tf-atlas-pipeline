@@ -20,9 +20,9 @@ bigwigs=${9}
 peaks=${10}
 background_regions=${11}
 reverse_complement_average=${12}
-indices_files=${13}
-input_seq_len=${14}
-output_len=${15}
+input_seq_len=${13}
+output_len=${14}
+indices_files=${15}
 
 
 echo $experiment

@@ -21,9 +21,9 @@ bigwigs=${10}
 peaks=${11}
 background_regions=${12}
 learning_rate=${13}
-indices_files=${14}
-input_seq_len=${15}
-output_len=${16}
+input_seq_len=${14}
+output_len=${15}
+indices_files=${16}
 
 mkdir /project
 project_dir=/project
