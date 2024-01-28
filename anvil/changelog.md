@@ -3,8 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v2.1.0-rc.6] - 2024-01-28
 
-## [v2.1.0-rc.4] - 2024-01-28
+1. fixed git versions shap; input output lengths properly exposed
+
+## [v2.1.0-rc.5] - 2024-01-28
 
 1. cleaned up preprocessing script
 
