@@ -141,7 +141,7 @@ gunzip ${data_dir}/${experiment}_background_regions.bed.gz
 echo $( timestamp ):"cp" ${data_dir}/${experiment}_background_regions.bed.gz $data_dir/${experiment}_background_regions_filtered.bed |\
 tee -a $logfile 
 
-cp ${data_dir}/${experiment}_background_regions.bed.gz $data_dir/${experiment}_background_regions_filtered.bed
+cp ${data_dir}/${experiment}_background_regions.bed $data_dir/${experiment}_background_regions_filtered.bed
 
 
 # remove the exclude_background_regions bed file from the negative_regions list for auprc auroc calculations
@@ -234,7 +234,7 @@ bpnet-predict \\
     --model $model_dir/${1}_split000 \\
     --chrom-sizes $reference_dir/chrom.sizes \\
     --chroms $test_chromosome \\
-    --test-indices-file $all_peaks_test_chroms_indices_file \\
+    --test-indices-file 'None' \\
     --reference-genome $reference_dir/hg38.genome.fa \\
     --output-dir $predictions_dir_all_peaks_test_chroms \\
     --input-data $project_dir/testing_input_all.json \\
@@ -251,7 +251,7 @@ bpnet-predict \
     --model $model_dir/${1}_split000 \
     --chrom-sizes $reference_dir/chrom.sizes \
     --chroms $test_chromosome \
-    --test-indices-file $all_peaks_test_chroms_indices_file \
+    --test-indices-file 'None' \
     --reference-genome $reference_dir/hg38.genome.fa \
     --output-dir $predictions_dir_all_peaks_test_chroms \
     --input-data $project_dir/testing_input_all.json \
