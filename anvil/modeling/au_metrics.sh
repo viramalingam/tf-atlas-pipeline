@@ -173,10 +173,10 @@ fi
 
 
 
-echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed ">" ${data_dir}/${experiment}_combined.bed |\
+echo $( timestamp ): "cat" ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions_filtered.bed ">" ${data_dir}/${experiment}_combined.bed |\
 tee -a $logfile 
 
-cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions.bed > ${data_dir}/${experiment}_combined.bed
+cat ${data_dir}/${experiment}_peaks.bed ${data_dir}/${experiment}_background_regions_filtered.bed > ${data_dir}/${experiment}_combined.bed
 
 
 # cp input json template
@@ -284,6 +284,6 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --output_len ${output_len} \
     --chroms $test_chromosome
     
-wc -l ${predictions_dir_all_peaks_test_chroms}/${experiment}_peaks.bed > peaks_length.txt
+wc -l ${data_dir}/${experiment}_peaks.bed > ${predictions_dir_all_peaks_test_chroms}/peaks_length.txt
 
-wc -l ${predictions_dir_all_peaks_test_chroms}/${experiment}_background_regions.bed > background_length.txt
+wc -l ${data_dir}/${experiment}_background_regions_filtered.bed > ${predictions_dir_all_peaks_test_chroms}/background_length.txt
