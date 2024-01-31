@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v2.1.0-rc.8] - 2024-01-30
+
+1. fixed wdl versions; aumetrics calculation script bug fixed; added wdl and shell script to calculate AUPRC and AUROC metrics from positive and negative regions on the test chromosome with an option to exclude regions
+
 ## [v2.1.0-rc.6] - 2024-01-28
 
 1. fixed git versions shap; input output lengths properly exposed

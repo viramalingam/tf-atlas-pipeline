@@ -37,8 +37,8 @@ task run_au_metrics {
 
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc.txt /cromwell_root/auprc.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auroc.txt /cromwell_root/auroc.txt
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/peaks_length.txt /cromwell_root/peaks_length.txt
-		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/background_length.txt /cromwell_root/background_length.txt
+		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc_baseline.txt /cromwell_root/auprc_baseline.txt
+
 
 		
 	}
@@ -47,7 +47,7 @@ task run_au_metrics {
 
 		Float auprc = read_float("auprc.txt")
 		Float auroc = read_float("auroc.txt")
-		Float auprc_baseline = read_float("peaks_length.txt")/(read_float("peaks_length.txt")+read_float("background_length.txt"))
+		Float auprc_baseline = read_float("auprc_baseline.txt")
 
 	
 	

@@ -283,7 +283,3 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --neg_file ${data_dir}/${experiment}_background_regions.bed \
     --output_len ${output_len} \
     --chroms $test_chromosome
-    
-wc -l <${data_dir}/${experiment}_peaks.bed > ${predictions_dir_all_peaks_test_chroms}/peaks_length.txt
-
-wc -l <${data_dir}/${experiment}_background_regions_filtered.bed > ${predictions_dir_all_peaks_test_chroms}/background_length.txt

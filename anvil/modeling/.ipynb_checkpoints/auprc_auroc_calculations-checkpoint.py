@@ -91,3 +91,7 @@ with open('{}/auprc.txt'.format(args.output_dir), "w+") as f:
 with open('{}/auroc.txt'.format(args.output_dir), "w+") as f:
         f.write(str(round(roc_auc_score(predictions['label'].astype(int),predictions['log_counts']),3)))
         f.close
+
+with open('{}/auprc_baseline.txt'.format(args.output_dir), "w+") as f:
+        f.write(str(round(sum(predictions['label'])/len(predictions['label']),3)))
+        f.close
