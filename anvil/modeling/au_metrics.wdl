@@ -17,7 +17,7 @@ task run_au_metrics {
 		Int input_seq_len
 		Int output_len
 		File? exclude_background_regions
-		String gpuType
+		String? gpuType
 	}
 	command {
 		#create data directories and download scripts
