@@ -11,6 +11,7 @@ task run_motif_hit_calling {
 		Float? alpha
 		Int? window
 		File chroms_txt
+		String gpuType
         
 	}
 	command {
@@ -51,8 +52,9 @@ task run_motif_hit_calling {
 		cpu: 4
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
-		gpuType: "nvidia-tesla-k80"
 		gpuCount: 1
+		gpuType: "nvidia-tesla-" + gpuType
+		zones: "us-central1-a us-central1-b us-central1-c us-west1-a us-west1-b us-west1-c us-west4-a us-west4-b us-west4-c us-east1-b us-east1-c us-east1-d us-east4-a us-east4-b us-east4-c us-east5-a us-east5-b us-east5-c us-west2-a us-west2-b us-west2-c us-west3-a us-west3-b us-west3-c" 
 		nvidiaDriverVersion: "418.87.00"
 		maxRetries: 1
 	}
@@ -68,7 +70,9 @@ workflow motif_hit_calling {
 		String shap_h5_type
 		Float? alpha=0.6
 		Int? window=400
-		File chroms_txt      
+		File chroms_txt,
+		String? gpuType="p4"
+
 	}
 
 
@@ -83,7 +87,8 @@ workflow motif_hit_calling {
 			shap_h5_type=shap_h5_type,
 			alpha=alpha,
 			window=window,
-			chroms_txt=chroms_txt 
+			chroms_txt=chroms_txt,
+			gpuType=gpuType
 
 	}
 	output {
