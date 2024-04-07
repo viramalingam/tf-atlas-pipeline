@@ -8,8 +8,8 @@ task run_motif_hit_calling {
 		File shap_h5    
 		String match_type
 		String shap_h5_type
-		?Float alpha
-		?Int window
+		Float? alpha
+		Int? window
 		File chroms_txt
 
 
@@ -67,8 +67,8 @@ workflow motif_hit_calling {
 		File shap_h5    
 		String match_type
 		String shap_h5_type
-		?Float alpha=0.6
-		?Int window=400
+		Float? alpha=0.6
+		Int? window=400
 		File chroms_txt      
 	}
 
