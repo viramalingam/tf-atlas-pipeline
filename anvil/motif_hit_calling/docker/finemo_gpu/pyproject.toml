@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finemo"
+version = "0.11"
+dependencies = [
+    "numpy",
+    "scipy",
+    "torch",
+    "polars",
+    "matplotlib",
+    "h5py",
+    "hdf5plugin",
+    "tqdm",
+    "pyBigWig",
+    "pyfaidx",
+    "jinja2"
+]
+
+[project.scripts]
+finemo = "finemo.main:cli"

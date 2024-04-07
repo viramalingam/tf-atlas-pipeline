@@ -1,0 +1,6 @@
+.conda
+.DS_Store
+*.egg-info
+__pycache__
+notebooks/old
+scratch.txt
