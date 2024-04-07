@@ -70,7 +70,7 @@ workflow motif_hit_calling {
 		String shap_h5_type
 		Float? alpha=0.6
 		Int? window=400
-		File chroms_txt,
+		File chroms_txt
 		String? gpuType="p4"
 
 	}
