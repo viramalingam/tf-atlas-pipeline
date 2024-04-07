@@ -17,7 +17,7 @@ task run_motif_hit_calling {
 	command {
 		##motif_hit_calling
 		
-		mkdir -p /project/$experiment
+		mkdir -p /project/${experiment}
 		
 		finemo extract-regions-h5 -c ${shap_h5} -o /project/${experiment}/regions_bw.npz -w ${window} -t ${shap_h5_type}
 		
