@@ -15,22 +15,15 @@ task run_motif_hit_calling {
         
 	}
 	command {
-		#create data directories and download scripts
-		cd /; mkdir my_scripts
-		cd /my_scripts
-		git clone --depth 1 --branch v2.1.0-rc.3 https://github.com/viramalingam/tf-atlas-pipeline.git
-		chmod -R 777 tf-atlas-pipeline
-		cd tf-atlas-pipeline/anvil/motif_hit_calling/
-		
 		##motif_hit_calling
 		
 		mkdir -p /project/$experiment
 		
-		finemo extract-regions-h5 -c $shap_h5 -o /project/$experiment/regions_bw.npz -w $window -t $shap_h5_type
+		finemo extract-regions-h5 -c ${shap_h5} -o /project/${experiment}/regions_bw.npz -w ${window} -t ${shap_h5_type}
 		
-		finemo call-hits -a $alpha -M $match_type -r /project/$experiment/regions_bw.npz -m $modisco_h5 -p $peaks -C $chroms_txt -o /project/$experiment
+		finemo call-hits -a ${alpha} -M ${match_type} -r /project/${experiment}/regions_bw.npz -m ${modisco_h5} -p ${peaks} -C ${chroms_txt} -o /project/${experiment}
 		
-		finemo report -H /project/$experiment/hits.tsv -r /project/$experiment/regions_bw.np -m $modisco_h5 -p $peaks -o /project/$experiment/ -W $window
+		finemo report -H /project/${experiment}/hits.tsv -r /project/${experiment}/regions_bw.np -m ${modisco_h5} -p ${peaks} -o /project/${experiment}/ -W ${window}
 		
 		echo "copying all files to cromwell_root folder"
 		
