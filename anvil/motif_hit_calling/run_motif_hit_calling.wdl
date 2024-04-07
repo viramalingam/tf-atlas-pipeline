@@ -11,7 +11,7 @@ task run_motif_hit_calling {
 		Float? alpha
 		Int? window
 		File chroms_txt
-		String gpuType
+		String? gpuType
         
 	}
 	command {
