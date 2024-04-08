@@ -46,4 +46,4 @@ finemo extract-regions-h5 -c ${shap_h5} -o ${hits_dir}/regions_bw.npz -w ${windo
 
 finemo call-hits -a ${alpha} -M ${match_type} -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -C ${chroms_txt} -o ${hits_dir}
 
-finemo report -H /project/${experiment}/hits.tsv -r /project/${experiment}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -o /project/${experiment}/ -W ${window}
+finemo report -H ${hits_dir}/hits.tsv -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -o ${hits_dir}/ -W ${window}

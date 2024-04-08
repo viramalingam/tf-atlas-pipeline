@@ -28,7 +28,7 @@ task run_motif_hit_calling {
 		
 		cd /project     
 		tar -xvf /project/hits
-		
+		ls /project/
 		cp -r /project/hits.tar /cromwell_root/motif_hits_tar
 		
 	}
