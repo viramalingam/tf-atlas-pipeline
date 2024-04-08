@@ -11,8 +11,7 @@ task run_motif_hit_calling {
 		Float? alpha
 		Int? window
 		File chroms_txt
-		String? gpuType
-        
+		String? gpuType   
 	}
 	command {
 		#create data directories and download scripts
@@ -67,7 +66,6 @@ workflow motif_hit_calling {
 		Int? window=400
 		File chroms_txt
 		String? gpuType="p4"
-
 	}
 
 
@@ -84,7 +82,6 @@ workflow motif_hit_calling {
 			window=window,
 			chroms_txt=chroms_txt,
 			gpuType=gpuType
-
 	}
 	output {
 		File motif_hits_tar = run_motif_hit_calling.motif_hits_tar
