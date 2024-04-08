@@ -19,7 +19,7 @@ task run_motif_hit_calling {
 		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/motif_hit_calling/
-		       
+		
 		##motif_hit_calling
 		
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${match_type} ${shap_h5_type} ${alpha} ${window} ${chroms_txt}
