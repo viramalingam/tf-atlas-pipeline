@@ -1,4 +1,4 @@
-# Use the official TensorFlow image as parent
+# Use the official ubuntu image as parent
 FROM ubuntu:bionic
 
 # Create /tfatlas directory and subdirectories

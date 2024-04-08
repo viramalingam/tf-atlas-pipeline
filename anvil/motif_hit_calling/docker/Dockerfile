@@ -1,5 +1,5 @@
 # Use the official TensorFlow image as parent
-FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+FROM ubuntu:bionic
 
 # Create /tfatlas directory and subdirectories
 RUN mkdir -p /tfatlas
@@ -63,9 +63,6 @@ RUN conda clean -tipy
 # Set environment variables for Python
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-
-
-RUN apt install -y --allow-unauthenticated build-essential
 
 
 

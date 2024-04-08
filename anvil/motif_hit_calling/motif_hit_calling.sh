@@ -21,7 +21,7 @@ chroms_txt=$9
 echo $1 $2 $3 $4 $5 $6 $7 $8 $9
 
 echo 'mkdir project_dir'
-project_dir=/project
+project_dir=/${experiment}
 mkdir $project_dir
 
 # create the log file
