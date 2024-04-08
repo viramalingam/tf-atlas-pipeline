@@ -26,15 +26,14 @@ task run_motif_hit_calling {
 		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${match_type} ${shap_h5_type} ${alpha} ${window} ${chroms_txt}
 		echo "copying all files to cromwell_root folder"
 		
-		cd /project     
-		tar -xvf /project/hits
+		tar -cf /project/hits.tar /project/hits
 		ls /project/
-		cp -r /project/hits.tar /cromwell_root/motif_hits_tar
+		cp -r /project/hits.tar /cromwell_root/motif_hits.tar
 		
 	}
 	
 	output {
-		File motif_hits_tar = "motif_hits_tar"
+		File motif_hits_tar = "motif_hits.tar"
 		
 	
 	}
