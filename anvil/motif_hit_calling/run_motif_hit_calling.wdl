@@ -1,5 +1,4 @@
 version 1.0
-
 task run_motif_hit_calling {
 	input {
 		String experiment
@@ -20,7 +19,7 @@ task run_motif_hit_calling {
 		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/motif_hit_calling/
- 		       
+		       
 		##motif_hit_calling
 		
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${match_type} ${shap_h5_type} ${alpha} ${window} ${chroms_txt}
@@ -39,7 +38,6 @@ task run_motif_hit_calling {
 		
 	
 	}
-
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-motif_hits'
 		memory: "16 GB"
@@ -53,7 +51,6 @@ task run_motif_hit_calling {
 		maxRetries: 1
 	}
 }
-
 workflow motif_hit_calling {
 	input {
 		String experiment
@@ -67,9 +64,6 @@ workflow motif_hit_calling {
 		File chroms_txt
 		String? gpuType="p4"
 	}
-
-
-
 	call run_motif_hit_calling {
 		input:
 			experiment=experiment,
