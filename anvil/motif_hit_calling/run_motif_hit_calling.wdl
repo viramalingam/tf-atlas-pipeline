@@ -28,16 +28,17 @@ task run_motif_hit_calling {
 		
 		tar -cf /${experiment}/hits.tar /${experiment}/hits
 		cp -r /${experiment}/hits.tar /cromwell_root/motif_hits.tar
-		
+		cp -r /${experiment}/hits/hits_unique.tsv /cromwell_root/hits_unique.tsv
 	}
 	
 	output {
 		File motif_hits_tar = "motif_hits.tar"
-		
+		File hits_unique_tsv = "hits_unique.tsv"
+		File motif_occurrences_tsv = "motif_occurrences.tsv"
 	
 	}
 	runtime {
-		docker: 'us-central1-docker.pkg.dev/hai-gcp-genomic/tf-atlas/gcp-motif_hits:v2.2.0-rc.1'
+		docker: 'vivekramalingam/tf-atlas:gcp-motif_hits_v2.2.0-rc.1'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50
@@ -77,9 +78,6 @@ workflow motif_hit_calling {
 	}
 	output {
 		File motif_hits_tar = run_motif_hit_calling.motif_hits_tar
-		
+		File hits_unique_tsv = run_motif_hit_calling.hits_unique_tsv
 	}
 }
-
-
-
