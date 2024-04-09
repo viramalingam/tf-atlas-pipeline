@@ -34,7 +34,6 @@ task run_motif_hit_calling {
 	output {
 		File motif_hits_tar = "motif_hits.tar"
 		File hits_unique_tsv = "hits_unique.tsv"
-		File motif_occurrences_tsv = "motif_occurrences.tsv"
 	
 	}
 	runtime {
