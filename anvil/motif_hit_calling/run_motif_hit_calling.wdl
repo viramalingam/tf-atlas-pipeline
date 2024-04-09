@@ -16,7 +16,7 @@ task run_motif_hit_calling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.2.0-rc.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/motif_hit_calling/
 		
@@ -37,7 +37,7 @@ task run_motif_hit_calling {
 	
 	}
 	runtime {
-		docker: 'us-central1-docker.pkg.dev/hai-gcp-genomic/tf-atlas/gcp-motif_hits:v1'
+		docker: 'us-central1-docker.pkg.dev/hai-gcp-genomic/tf-atlas/gcp-motif_hits:v2.2.0-rc.1'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50

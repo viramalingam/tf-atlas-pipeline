@@ -1,260 +1,100 @@
 #0 building with "default" instance using docker driver
 
 #1 [internal] load build definition from Dockerfile
-#1 transferring dockerfile: 2.14kB done
-#1 DONE 0.0s
+#1 transferring dockerfile: 2.14kB 0.0s done
+#1 DONE 0.1s
 
 #2 [internal] load metadata for docker.io/library/ubuntu:bionic
-#2 DONE 0.3s
+#2 ...
 
-#3 [internal] load .dockerignore
-#3 transferring context: 2B done
+#3 [auth] library/ubuntu:pull token for registry-1.docker.io
 #3 DONE 0.0s
 
-#4 [ 1/24] FROM docker.io/library/ubuntu:bionic@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98
+#2 [internal] load metadata for docker.io/library/ubuntu:bionic
+#2 DONE 0.9s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
 #4 DONE 0.0s
 
-#5 [internal] load build context
-#5 transferring context: 3.66kB 0.0s done
+#5 [ 1/24] FROM docker.io/library/ubuntu:bionic@sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98
 #5 DONE 0.0s
 
-#6 [ 8/24] RUN cd /opt/ && 	wget https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-381.0.0-linux-x86_64.tar.gz && 	tar xvfz google-cloud-cli-381.0.0-linux-x86_64.tar.gz && 	./google-cloud-sdk/install.sh
-#6 CACHED
+#6 [internal] load build context
+#6 transferring context: 3.66kB 0.3s done
+#6 DONE 0.3s
 
-#7 [12/24] RUN apt install -y --allow-unauthenticated liblzma-dev
+#7 [19/24] RUN pip install -r requirements.txt
 #7 CACHED
 
-#8 [ 7/24] RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh &&     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc &&     echo "conda activate base" >> ~/.bashrc
+#8 [ 3/24] WORKDIR /tfatlas
 #8 CACHED
 
-#9 [15/24] RUN apt-get install -y --allow-unauthenticated libssl-dev
+#9 [17/24] RUN apt-get install -y jq
 #9 CACHED
 
-#10 [14/24] RUN apt-get install -y --allow-unauthenticated libpcap-dev
+#10 [23/24] COPY finemo_gpu /finemo_gpu
 #10 CACHED
 
-#11 [16/24] RUN pip install --upgrade protobuf==3.19.0
+#11 [13/24] RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
 #11 CACHED
 
-#12 [ 3/24] WORKDIR /tfatlas
+#12 [ 4/24] RUN apt-get update --fix-missing
 #12 CACHED
 
-#13 [ 2/24] RUN mkdir -p /tfatlas
+#13 [ 5/24] RUN apt-get install -y wget bzip2 ca-certificates curl git
 #13 CACHED
 
-#14 [11/24] RUN apt install -y --allow-unauthenticated libbz2-dev
+#14 [15/24] RUN apt-get install -y --allow-unauthenticated libssl-dev
 #14 CACHED
 
-#15 [ 6/24] RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_24.1.2-0-Linux-x86_64.sh -O ~/miniconda.sh &&     /bin/bash ~/miniconda.sh -b -p /opt/conda &&     rm ~/miniconda.sh
+#15 [ 9/24] RUN conda install -y -c bioconda samtools=1.1 bedtools ucsc-bedgraphtobigwig
 #15 CACHED
 
-#16 [17/24] RUN apt-get install -y jq
+#16 [12/24] RUN apt install -y --allow-unauthenticated liblzma-dev
 #16 CACHED
 
 #17 [10/24] RUN apt-get update
 #17 CACHED
 
-#18 [13/24] RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
+#18 [ 6/24] RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_24.1.2-0-Linux-x86_64.sh -O ~/miniconda.sh &&     /bin/bash ~/miniconda.sh -b -p /opt/conda &&     rm ~/miniconda.sh
 #18 CACHED
 
-#19 [21/24] RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+#19 [20/24] RUN rm requirements.txt
 #19 CACHED
 
-#20 [ 4/24] RUN apt-get update --fix-missing
+#20 [ 2/24] RUN mkdir -p /tfatlas
 #20 CACHED
 
-#21 [19/24] RUN pip install -r requirements.txt
+#21 [16/24] RUN pip install --upgrade protobuf==3.19.0
 #21 CACHED
 
-#22 [ 5/24] RUN apt-get install -y wget bzip2 ca-certificates curl git
+#22 [22/24] RUN conda clean -tipy
 #22 CACHED
 
-#23 [20/24] RUN rm requirements.txt
+#23 [11/24] RUN apt install -y --allow-unauthenticated libbz2-dev
 #23 CACHED
 
-#24 [18/24] COPY requirements.txt /tfatlas
+#24 [ 7/24] RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh &&     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc &&     echo "conda activate base" >> ~/.bashrc
 #24 CACHED
 
-#25 [ 9/24] RUN conda install -y -c bioconda samtools=1.1 bedtools ucsc-bedgraphtobigwig
+#25 [ 8/24] RUN cd /opt/ && 	wget https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-381.0.0-linux-x86_64.tar.gz && 	tar xvfz google-cloud-cli-381.0.0-linux-x86_64.tar.gz && 	./google-cloud-sdk/install.sh
 #25 CACHED
 
-#26 [22/24] RUN conda clean -tipy
+#26 [21/24] RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 #26 CACHED
 
-#27 [23/24] COPY finemo_gpu /finemo_gpu
-#27 DONE 0.1s
+#27 [18/24] COPY requirements.txt /tfatlas
+#27 CACHED
 
-#28 [24/24] RUN pip install -e /finemo_gpu
-#28 0.861 Obtaining file:///finemo_gpu
-#28 0.865   Installing build dependencies: started
-#28 4.105   Installing build dependencies: finished with status 'done'
-#28 4.108   Checking if build backend supports build_editable: started
-#28 4.315   Checking if build backend supports build_editable: finished with status 'done'
-#28 4.318   Getting requirements to build editable: started
-#28 4.688   Getting requirements to build editable: finished with status 'done'
-#28 4.697   Installing backend dependencies: started
-#28 6.035   Installing backend dependencies: finished with status 'done'
-#28 6.038   Preparing editable metadata (pyproject.toml): started
-#28 6.451   Preparing editable metadata (pyproject.toml): finished with status 'done'
-#28 6.485 Requirement already satisfied: numpy in /opt/conda/lib/python3.10/site-packages (from finemo==0.11) (1.26.4)
-#28 6.783 Collecting scipy (from finemo==0.11)
-#28 6.848   Downloading scipy-1.13.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
-#28 6.879      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.6/60.6 kB 2.3 MB/s eta 0:00:00
-#28 6.990 Collecting torch (from finemo==0.11)
-#28 7.004   Downloading torch-2.2.2-cp310-cp310-manylinux1_x86_64.whl.metadata (26 kB)
-#28 7.347 Collecting polars (from finemo==0.11)
-#28 7.363   Downloading polars-0.20.18-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (15 kB)
-#28 7.660 Collecting matplotlib (from finemo==0.11)
-#28 7.675   Downloading matplotlib-3.8.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.8 kB)
-#28 7.789 Collecting h5py (from finemo==0.11)
-#28 7.804   Downloading h5py-3.10.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.5 kB)
-#28 7.890 Collecting hdf5plugin (from finemo==0.11)
-#28 7.905   Downloading hdf5plugin-4.4.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.9 kB)
-#28 7.918 Requirement already satisfied: tqdm in /opt/conda/lib/python3.10/site-packages (from finemo==0.11) (4.65.0)
-#28 7.972 Collecting pyBigWig (from finemo==0.11)
-#28 7.986   Downloading pyBigWig-0.3.22-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (19 kB)
-#28 8.117 Collecting pyfaidx (from finemo==0.11)
-#28 8.132   Downloading pyfaidx-0.8.1.1-py3-none-any.whl.metadata (25 kB)
-#28 8.244 Collecting jinja2 (from finemo==0.11)
-#28 8.257   Downloading Jinja2-3.1.3-py3-none-any.whl.metadata (3.3 kB)
-#28 8.417 Collecting MarkupSafe>=2.0 (from jinja2->finemo==0.11)
-#28 8.433   Downloading MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.0 kB)
-#28 8.607 Collecting contourpy>=1.0.1 (from matplotlib->finemo==0.11)
-#28 8.623   Downloading contourpy-1.2.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.8 kB)
-#28 8.686 Collecting cycler>=0.10 (from matplotlib->finemo==0.11)
-#28 8.703   Downloading cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
-#28 8.943 Collecting fonttools>=4.22.0 (from matplotlib->finemo==0.11)
-#28 8.961   Downloading fonttools-4.51.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (159 kB)
-#28 8.982      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 159.5/159.5 kB 9.1 MB/s eta 0:00:00
-#28 9.085 Collecting kiwisolver>=1.3.1 (from matplotlib->finemo==0.11)
-#28 9.099   Downloading kiwisolver-1.4.5-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl.metadata (6.4 kB)
-#28 9.112 Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.10/site-packages (from matplotlib->finemo==0.11) (23.1)
-#28 9.463 Collecting pillow>=8 (from matplotlib->finemo==0.11)
-#28 9.480   Downloading pillow-10.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.2 kB)
-#28 9.598 Collecting pyparsing>=2.3.1 (from matplotlib->finemo==0.11)
-#28 9.614   Downloading pyparsing-3.1.2-py3-none-any.whl.metadata (5.1 kB)
-#28 9.627 Requirement already satisfied: python-dateutil>=2.7 in /opt/conda/lib/python3.10/site-packages (from matplotlib->finemo==0.11) (2.9.0.post0)
-#28 9.732 Requirement already satisfied: setuptools in /opt/conda/lib/python3.10/site-packages (from pyfaidx->finemo==0.11) (68.2.2)
-#28 9.733 Requirement already satisfied: importlib-metadata in /opt/conda/lib/python3.10/site-packages (from pyfaidx->finemo==0.11) (7.0.1)
-#28 9.899 Collecting filelock (from torch->finemo==0.11)
-#28 9.913   Downloading filelock-3.13.3-py3-none-any.whl.metadata (2.8 kB)
-#28 9.988 Collecting typing-extensions>=4.8.0 (from torch->finemo==0.11)
-#28 9.990   Using cached typing_extensions-4.11.0-py3-none-any.whl.metadata (3.0 kB)
-#28 10.06 Collecting sympy (from torch->finemo==0.11)
-#28 10.07   Downloading sympy-1.12-py3-none-any.whl.metadata (12 kB)
-#28 10.16 Collecting networkx (from torch->finemo==0.11)
-#28 10.18   Downloading networkx-3.3-py3-none-any.whl.metadata (5.1 kB)
-#28 10.27 Collecting fsspec (from torch->finemo==0.11)
-#28 10.29   Downloading fsspec-2024.3.1-py3-none-any.whl.metadata (6.8 kB)
-#28 10.35 Collecting nvidia-cuda-nvrtc-cu12==12.1.105 (from torch->finemo==0.11)
-#28 10.37   Downloading nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
-#28 10.43 Collecting nvidia-cuda-runtime-cu12==12.1.105 (from torch->finemo==0.11)
-#28 10.44   Downloading nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
-#28 10.51 Collecting nvidia-cuda-cupti-cu12==12.1.105 (from torch->finemo==0.11)
-#28 10.52   Downloading nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
-#28 10.58 Collecting nvidia-cudnn-cu12==8.9.2.26 (from torch->finemo==0.11)
-#28 10.60   Downloading nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
-#28 10.66 Collecting nvidia-cublas-cu12==12.1.3.1 (from torch->finemo==0.11)
-#28 10.68   Downloading nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
-#28 10.74 Collecting nvidia-cufft-cu12==11.0.2.54 (from torch->finemo==0.11)
-#28 10.76   Downloading nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
-#28 10.82 Collecting nvidia-curand-cu12==10.3.2.106 (from torch->finemo==0.11)
-#28 10.84   Downloading nvidia_curand_cu12-10.3.2.106-py3-none-manylinux1_x86_64.whl.metadata (1.5 kB)
-#28 10.90 Collecting nvidia-cusolver-cu12==11.4.5.107 (from torch->finemo==0.11)
-#28 10.92   Downloading nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
-#28 10.98 Collecting nvidia-cusparse-cu12==12.1.0.106 (from torch->finemo==0.11)
-#28 10.99   Downloading nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl.metadata (1.6 kB)
-#28 11.05 Collecting nvidia-nccl-cu12==2.19.3 (from torch->finemo==0.11)
-#28 11.07   Downloading nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl.metadata (1.8 kB)
-#28 11.13 Collecting nvidia-nvtx-cu12==12.1.105 (from torch->finemo==0.11)
-#28 11.15   Downloading nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl.metadata (1.7 kB)
-#28 11.22 Collecting triton==2.2.0 (from torch->finemo==0.11)
-#28 11.24   Downloading triton-2.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.4 kB)
-#28 11.34 Collecting nvidia-nvjitlink-cu12 (from nvidia-cusolver-cu12==11.4.5.107->torch->finemo==0.11)
-#28 11.35   Downloading nvidia_nvjitlink_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl.metadata (1.5 kB)
-#28 11.59 Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.10/site-packages (from python-dateutil>=2.7->matplotlib->finemo==0.11) (1.16.0)
-#28 11.72 Requirement already satisfied: zipp>=0.5 in /opt/conda/lib/python3.10/site-packages (from importlib-metadata->pyfaidx->finemo==0.11) (3.17.0)
-#28 11.86 Collecting mpmath>=0.19 (from sympy->torch->finemo==0.11)
-#28 11.87   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
-#28 11.97 Downloading h5py-3.10.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.8 MB)
-#28 12.09    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 43.7 MB/s eta 0:00:00
-#28 12.11 Downloading hdf5plugin-4.4.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (41.8 MB)
-#28 12.64    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 41.8/41.8 MB 47.9 MB/s eta 0:00:00
-#28 12.66 Downloading Jinja2-3.1.3-py3-none-any.whl (133 kB)
-#28 12.68    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 133.2/133.2 kB 9.5 MB/s eta 0:00:00
-#28 12.70 Downloading matplotlib-3.8.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.6 MB)
-#28 12.86    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.6/11.6 MB 75.2 MB/s eta 0:00:00
-#28 12.88 Downloading polars-0.20.18-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (26.3 MB)
-#28 13.20    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 26.3/26.3 MB 61.9 MB/s eta 0:00:00
-#28 13.22 Downloading pyBigWig-0.3.22-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (209 kB)
-#28 13.24    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 209.7/209.7 kB 14.2 MB/s eta 0:00:00
-#28 13.26 Downloading pyfaidx-0.8.1.1-py3-none-any.whl (28 kB)
-#28 13.29 Downloading scipy-1.13.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
-#28 13.78    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 38.6/38.6 MB 49.0 MB/s eta 0:00:00
-#28 13.80 Downloading torch-2.2.2-cp310-cp310-manylinux1_x86_64.whl (755.5 MB)
-#28 21.95    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 755.5/755.5 MB 7.2 MB/s eta 0:00:00
-#28 21.98 Downloading nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl (410.6 MB)
-#28 26.83    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 410.6/410.6 MB 11.9 MB/s eta 0:00:00
-#28 26.85 Downloading nvidia_cuda_cupti_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (14.1 MB)
-#28 27.09    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.1/14.1 MB 56.3 MB/s eta 0:00:00
-#28 27.11 Downloading nvidia_cuda_nvrtc_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (23.7 MB)
-#28 27.46    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.7/23.7 MB 53.4 MB/s eta 0:00:00
-#28 27.48 Downloading nvidia_cuda_runtime_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (823 kB)
-#28 27.51    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 823.6/823.6 kB 33.5 MB/s eta 0:00:00
-#28 27.53 Downloading nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl (731.7 MB)
-#28 35.89    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 731.7/731.7 MB 7.4 MB/s eta 0:00:00
-#28 35.92 Downloading nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl (121.6 MB)
-#28 37.28    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 121.6/121.6 MB 30.8 MB/s eta 0:00:00
-#28 37.29 Downloading nvidia_curand_cu12-10.3.2.106-py3-none-manylinux1_x86_64.whl (56.5 MB)
-#28 37.92    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 56.5/56.5 MB 46.8 MB/s eta 0:00:00
-#28 37.94 Downloading nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl (124.2 MB)
-#28 39.29    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 124.2/124.2 MB 28.6 MB/s eta 0:00:00
-#28 39.31 Downloading nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl (196.0 MB)
-#28 41.79    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 196.0/196.0 MB 21.3 MB/s eta 0:00:00
-#28 41.81 Downloading nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl (166.0 MB)
-#28 43.98    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 166.0/166.0 MB 24.5 MB/s eta 0:00:00
-#28 44.00 Downloading nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl (99 kB)
-#28 44.02    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 99.1/99.1 kB 7.8 MB/s eta 0:00:00
-#28 44.04 Downloading triton-2.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (167.9 MB)
-#28 46.10    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 167.9/167.9 MB 22.9 MB/s eta 0:00:00
-#28 46.12 Downloading contourpy-1.2.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (305 kB)
-#28 46.14    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 305.2/305.2 kB 19.0 MB/s eta 0:00:00
-#28 46.16 Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
-#28 46.19 Downloading fonttools-4.51.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.6 MB)
-#28 46.26    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.6/4.6 MB 69.3 MB/s eta 0:00:00
-#28 46.28 Downloading kiwisolver-1.4.5-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.6 MB)
-#28 46.32    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 46.3 MB/s eta 0:00:00
-#28 46.34 Downloading MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (25 kB)
-#28 46.37 Downloading pillow-10.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.4 MB)
-#28 46.44    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 63.6 MB/s eta 0:00:00
-#28 46.46 Downloading pyparsing-3.1.2-py3-none-any.whl (103 kB)
-#28 46.48    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 103.2/103.2 kB 7.8 MB/s eta 0:00:00
-#28 46.48 Using cached typing_extensions-4.11.0-py3-none-any.whl (34 kB)
-#28 46.49 Downloading filelock-3.13.3-py3-none-any.whl (11 kB)
-#28 46.52 Downloading fsspec-2024.3.1-py3-none-any.whl (171 kB)
-#28 46.54    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 172.0/172.0 kB 12.5 MB/s eta 0:00:00
-#28 46.56 Downloading networkx-3.3-py3-none-any.whl (1.7 MB)
-#28 46.60    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 46.7 MB/s eta 0:00:00
-#28 46.62 Downloading sympy-1.12-py3-none-any.whl (5.7 MB)
-#28 46.71    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.7/5.7 MB 62.0 MB/s eta 0:00:00
-#28 46.73 Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
-#28 46.76    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 26.4 MB/s eta 0:00:00
-#28 46.78 Downloading nvidia_nvjitlink_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl (21.1 MB)
-#28 47.21    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 21.1/21.1 MB 35.3 MB/s eta 0:00:00
-#28 58.68 Building wheels for collected packages: finemo
-#28 58.69   Building editable for finemo (pyproject.toml): started
-#28 59.11   Building editable for finemo (pyproject.toml): finished with status 'done'
-#28 59.12   Created wheel for finemo: filename=finemo-0.11-0.editable-py3-none-any.whl size=2270 sha256=c15e56a2f952c3422236ecc8786064b3ec3b272bd61a704e6e1b407d3995f4ab
-#28 59.12   Stored in directory: /tmp/pip-ephem-wheel-cache-u06v_kvi/wheels/fa/e7/28/9d1e662a2c5eee031af54e13b85a1732e0af229694251e496e
-#28 59.12 Successfully built finemo
-#28 60.07 Installing collected packages: mpmath, typing-extensions, sympy, scipy, pyparsing, pyBigWig, polars, pillow, nvidia-nvtx-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufft-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, MarkupSafe, kiwisolver, h5py, fsspec, fonttools, filelock, cycler, contourpy, triton, pyfaidx, nvidia-cusparse-cu12, nvidia-cudnn-cu12, matplotlib, jinja2, hdf5plugin, nvidia-cusolver-cu12, torch, finemo
-#28 138.0 Successfully installed MarkupSafe-2.1.5 contourpy-1.2.1 cycler-0.12.1 filelock-3.13.3 finemo-0.11 fonttools-4.51.0 fsspec-2024.3.1 h5py-3.10.0 hdf5plugin-4.4.0 jinja2-3.1.3 kiwisolver-1.4.5 matplotlib-3.8.4 mpmath-1.3.0 networkx-3.3 nvidia-cublas-cu12-12.1.3.1 nvidia-cuda-cupti-cu12-12.1.105 nvidia-cuda-nvrtc-cu12-12.1.105 nvidia-cuda-runtime-cu12-12.1.105 nvidia-cudnn-cu12-8.9.2.26 nvidia-cufft-cu12-11.0.2.54 nvidia-curand-cu12-10.3.2.106 nvidia-cusolver-cu12-11.4.5.107 nvidia-cusparse-cu12-12.1.0.106 nvidia-nccl-cu12-2.19.3 nvidia-nvjitlink-cu12-12.4.127 nvidia-nvtx-cu12-12.1.105 pillow-10.3.0 polars-0.20.18 pyBigWig-0.3.22 pyfaidx-0.8.1.1 pyparsing-3.1.2 scipy-1.13.0 sympy-1.12 torch-2.2.2 triton-2.2.0 typing-extensions-4.11.0
-#28 138.0 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
-#28 DONE 140.0s
+#28 [14/24] RUN apt-get install -y --allow-unauthenticated libpcap-dev
+#28 CACHED
 
-#29 exporting to image
-#29 exporting layers
-#29 exporting layers 117.7s done
-#29 writing image sha256:849b247b1c955c22ce4e55a9cabe413d4a75b05852d4ad3ea58b1b63af37d7e9 done
-#29 naming to docker.io/vivekramalingam/tf-atlas:gcp-motif_hits done
-#29 DONE 117.8s
+#29 [24/24] RUN pip install -e /finemo_gpu
+#29 CACHED
+
+#30 exporting to image
+#30 exporting layers done
+#30 writing image sha256:849b247b1c955c22ce4e55a9cabe413d4a75b05852d4ad3ea58b1b63af37d7e9 done
+#30 naming to docker.io/vivekramalingam/tf-atlas:gcp-motif_hits_v2.2.0-rc.1 done
+#30 DONE 0.0s

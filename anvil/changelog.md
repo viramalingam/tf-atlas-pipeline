@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v2.2.0-rc.1] - 2024-04-08
+
+1. scripts for running the hit caller in anvil
+
+
 ## [v2.1.0-rc.8] - 2024-01-30
 
 1. fixed wdl versions; aumetrics calculation script bug fixed; added wdl and shell script to calculate AUPRC and AUROC metrics from positive and negative regions on the test chromosome with an option to exclude regions
@@ -205,6 +210,11 @@ merged branch dev_without_bias_prediction_metrics. We now also calculated metric
 Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Started traking the github versions and pipeline scripts download a specific version. **Incomplete. Testing the tagging sytem.**
 
 # log of the docker builds
+
+## vivekramalingam/tf-atlas:gcp-motif_hits_v2.2.0-rc.1 - 2024-04-08
+## us-central1-docker.pkg.dev/hai-gcp-genomic/tf-atlas/gcp-motif_hits:v2.2.0-rc.1
+
+- scripts for running the hit caller in anvil
 
 
 ## vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.1 - 2024-01-08
