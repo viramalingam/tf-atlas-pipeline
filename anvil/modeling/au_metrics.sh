@@ -272,7 +272,7 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \\
     --output_dir $predictions_dir_all_peaks_test_chroms \\
     --peak_file ${data_dir}/${experiment}_peaks.bed \\
-    --neg_file ${data_dir}/${experiment}_background_regions.bed \\
+    --neg_file ${data_dir}/${experiment}_background_regions_filtered.bed \\
     --output_len ${output_len} \\
     --chroms $test_chromosome" | tee -a $logfile 
 
@@ -280,6 +280,6 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --h5_file $predictions_dir_all_peaks_test_chroms/${experiment}_split000_predictions.h5 \
     --output_dir $predictions_dir_all_peaks_test_chroms \
     --peak_file ${data_dir}/${experiment}_peaks.bed \
-    --neg_file ${data_dir}/${experiment}_background_regions.bed \
+    --neg_file ${data_dir}/${experiment}_background_regions_filtered.bed \
     --output_len ${output_len} \
     --chroms $test_chromosome
