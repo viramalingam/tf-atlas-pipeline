@@ -14,7 +14,7 @@ task run_shap {
 		Int seed
 		Int input_seq_len
 		Int output_len
-		String gpuType
+		String? gpuType
 
   	}	
 	command {
