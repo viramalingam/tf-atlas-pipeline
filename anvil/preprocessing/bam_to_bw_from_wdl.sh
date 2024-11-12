@@ -7,6 +7,10 @@ source ./utils.sh
 experiment=$1
 read -a unfiltered_alignments <<< "$2"
 read -a alignments <<< "$3"
+
+echo $unfiltered_alignments
+echo $alignments
+
 bams_dir=$4
 intermediates_dir=$5
 bigWigs_dir=$6
