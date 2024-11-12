@@ -5,11 +5,16 @@ source ./utils.sh
 
 # command line parameters
 experiment=$1
-read -a unfiltered_alignments <<< "$2"
-read -a alignments <<< "$3"
+unfiltered_alignments_string=$2
+alignments_string=$3
 
-echo $unfiltered_alignments
-echo $alignments
+# Convert strings into arrays using IFS (Internal Field Separator)
+IFS=' ' read -r -a unfiltered_alignments <<< "$unfiltered_alignments_string"
+IFS=' ' read -r -a alignments <<< "$alignments_string"
+
+# Verify arrays are correctly populated
+echo "Parsed unfiltered_alignments array:" "${unfiltered_alignments[@]}" | tee -a $logfile
+echo "Parsed alignments array:" "${alignments[@]}" | tee -a $logfile
 
 bams_dir=$4
 intermediates_dir=$5
