@@ -98,7 +98,7 @@ task run_modelling {
 	
 	}
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-motif_hits_v2.2.0-rc.1'
+		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.1'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50
