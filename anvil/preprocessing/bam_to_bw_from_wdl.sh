@@ -29,10 +29,8 @@ or pair ended | tee -a $logfile
 se_count=0
 pe_count=0
 
-for bam_file in $unfiltered_alignments
-do
-    bam_file_path=$bams_dir/$bam_file.bam
-    
+for bam_file_path in $unfiltered_alignments
+do    
     # get the number of paired end reads
     echo $( timestamp ): "samtools view -c -f 1" $bam_file_path | \
     tee -a $logfile
@@ -65,16 +63,14 @@ if [ $se_count -gt 0 ]
 then
     echo $( timestamp ): All unfiltered alignments bams are single ended. \
     Applying samtools filtering. | tee -a $logfile
-    for bam_file in $unfiltered_alignments
-    do
-        bam_file_path=$bams_dir/$bam_file.bam
-        
+    for bam_file_path in $unfiltered_alignments
+    do        
         # apply samtools filtering
         echo $( timestamp ): "samtools view -F 780 -q 30 -b" $bam_file_path \
         "-o" $intermediates_dir/${bam_file}.bam | tee -a $logfile
         samtools view -F 780 -q 30 -b $bam_file_path \
-        -o $intermediates_dir/$bam_file.bam &
-        all_bams_for_merging+=( $intermediates_dir/$bam_file.bam )
+        -o ${bam_file_path}_filtered &
+        all_bams_for_merging+=( ${bam_file_path}_filtered )
     done
     
     wait_for_jobs_to_finish "samtools filtering"
@@ -83,9 +79,8 @@ else
     # since all bams are paired end we use all the "alignments" bams 
     # directly since they have the correct filtering parameters for 
     # paired-end reads
-    for bam_file in $alignments
+    for bam_file_path in $alignments
     do
-        bam_file_path=$bams_dir/$bam_file.bam
         # we dont need to do any filtering
         all_bams_for_merging+=( ${bam_file_path} )
     done
