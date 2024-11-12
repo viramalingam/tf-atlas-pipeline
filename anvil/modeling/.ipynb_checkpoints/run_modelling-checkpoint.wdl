@@ -18,6 +18,7 @@ task run_modelling {
 		Int input_seq_len
 		Int output_len
 		Array [File]? indices_files
+		String? gpuType
 	}
 	
 	command {
@@ -96,15 +97,16 @@ task run_modelling {
 	
 	
 	}
-
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.1'
-		memory: 32 + "GB"
+		docker: 'vivekramalingam/tf-atlas:gcp-motif_hits_v2.2.0-rc.1'
+		memory: "16 GB"
+		cpu: 4
 		bootDiskSizeGb: 50
-		disks: "local-disk 100 HDD"
-		gpuType: "nvidia-tesla-k80"
+		disks: "local-disk 50 HDD"
 		gpuCount: 1
-		nvidiaDriverVersion: "418.87.00"
+		gpuType: "nvidia-tesla-" + gpuType
+		zones: "us-central1-a us-central1-b us-central1-c us-west1-a us-west1-b us-west1-c us-west4-a us-west4-b us-west4-c us-east1-b us-east1-c us-east1-d us-east4-a us-east4-b us-east4-c us-east5-a us-east5-b us-east5-c us-west2-a us-west2-b us-west2-c us-west3-a us-west3-b us-west3-c" 
+		nvidiaDriverVersion: "535.161.08"
 		maxRetries: 1
 	}
 }
@@ -127,6 +129,7 @@ workflow modelling {
 		Int input_seq_len = 2114
 		Int output_len = 1000
 		Array [File]? indices_files
+		String? gpuType = "t4"
 	}
 	
 	call run_modelling {
@@ -146,7 +149,8 @@ workflow modelling {
 			learning_rate = learning_rate,
 			input_seq_len = input_seq_len,
 			output_len = output_len,
-			indices_files = indices_files
+			indices_files = indices_files,
+			gpuType = gpuType
 	}
 	output {
 		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json
