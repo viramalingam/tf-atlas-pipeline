@@ -8,5 +8,8 @@ from . import util
 from . import tfmodisco
 from . import cluster
 from . import report
+from . import meme_writer
+from . import bed_writer
+from . import fasta_writer
 
-__version__ = '2.0.7'
+__version__ = '2.3.1'

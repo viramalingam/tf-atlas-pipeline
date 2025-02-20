@@ -47,6 +47,8 @@ RUN apt-get install -y --allow-unauthenticated libcurl4-openssl-dev
 RUN apt-get install -y --allow-unauthenticated libpcap-dev
 RUN apt-get install -y --allow-unauthenticated libssl-dev 
 RUN pip install --upgrade protobuf==3.19.0
+RUN pip install --upgrade polars==0.19.12
+
 
 # Install jq
 RUN apt-get install -y jq

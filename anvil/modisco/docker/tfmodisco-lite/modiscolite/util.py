@@ -1,9 +1,25 @@
 # util.py
-# Authors: Jacob Schreiber <jmschreiber91@gmail.com>
+# Authors: Jacob Schreiber <jmschreiber91@gmail.com>, Ivy Raine <ivy.ember.raine@gmail.com>
 # adapted from code written by Avanti Shrikumar 
 
+from enum import Enum
+import textwrap
+from typing import List
 import numpy as np
 from numba import njit
+
+
+class MemeDataType(Enum):
+	PFM = "PFM"
+	CWM = "CWM"
+	hCWM = "hCWM"
+	CWM_PFM = "CWM-PFM"
+	hCWM_PFM = "hCWM-PFM"
+
+	def __str__(self):
+		return self.value
+
+
 
 def cpu_sliding_window_sum(arr, window_size):
 	to_return = np.zeros(len(arr)-window_size+1)
@@ -118,3 +134,31 @@ def get_2d_data_from_patterns(patterns, transformer='l1', include_hypothetical=T
 		all_rev_data.append(rev_data)
 
 	return np.array(all_fwd_data), np.array(all_rev_data)
+
+
+def calculate_window_offsets(center: int, window_size: int) -> tuple:
+	return (center - window_size // 2, center + window_size // 2)
+
+
+def filter_bed_rows_by_chrom(peak_rows: List[str], valid_chroms: List[str]):
+	"""This function filters the rows of a bed file by chromosome.
+	
+	Parameters:
+		peak_rows: list of strings, where each string is a row of a bed file.
+		valid_chroms: list of chars, where each string is a valid chromosome.
+			Example: ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'X']
+
+	Returns:
+		list of row strings, where each sublist is a row of a bed file.
+
+	Usage:
+		>>> peak_rows = ['chr1\t1\t2\tpeak1', 'chr2\t1\t2\tpeak2']
+		>>> valid_chroms = ['1']
+		>>> result = filter_bed_rows_by_chrom(peak_rows, valid_chroms)
+	"""
+	try:
+		return [row for row in peak_rows if row.split('\t')[0] in valid_chroms]
+	except IndexError:
+		raise IndexError(textwrap.dedent(f'''\
+			An error occurred while processing the BED file rows.
+			Verify that the BED file is correct.'''))

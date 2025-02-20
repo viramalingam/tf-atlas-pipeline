@@ -11,8 +11,11 @@ function timestamp {
 experiment=$1
 shap=$2
 max_seqlets=$3
+trim_size=$4
+initial_flank_to_add=$5
+final_flank_to_add=$6
 
-echo $1 $2 $3
+echo $1 $2 $3 $4 $5 $6
 
 echo 'mkdir project_dir'
 project_dir=/project
@@ -38,9 +41,21 @@ modisco_profile_dir=$project_dir/modisco_profile
 echo $( timestamp ): "mkdir" $modisco_profile_dir | tee -a $logfile
 mkdir $modisco_profile_dir
 
+echo $( timestamp ): "mkdir" $modisco_profile_dir/trimmed_logos | tee -a $logfile
+mkdir $modisco_profile_dir/trimmed_logos
+
+echo $( timestamp ): "mkdir" $modisco_profile_dir/meme | tee -a $logfile
+mkdir $modisco_profile_dir/meme
+
 modisco_counts_dir=$project_dir/modisco_counts
 echo $( timestamp ): "mkdir" $modisco_counts_dir | tee -a $logfile
 mkdir $modisco_counts_dir
+
+echo $( timestamp ): "mkdir" $modisco_counts_dir/trimmed_logos | tee -a $logfile
+mkdir $modisco_counts_dir/trimmed_logos
+
+echo $( timestamp ): "mkdir" $modisco_counts_dir/meme | tee -a $logfile
+mkdir $modisco_counts_dir/meme
 
 #Step 1: Copy the shap files
 
@@ -56,27 +71,54 @@ mv ${shap_dir}/profile*scores*h5 ${shap_dir}/profile_scores.h5
 
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
+    --max_seqlets $max_seqlets \\
     --h5py $shap_dir/profile_scores.h5 \\
-    --output $modisco_profile_dir/modisco_results.h5 \\
-    --pngs_dir $modisco_profile_dir \\
-    --max_seqlets $max_seqlets" | tee -a $logfile
+    -o $modisco_profile_dir/profile_scores.h5 \\
+    --trim_size $trim_size \\
+    --initial_flank_to_add $initial_flank_to_add \\
+    --final_flank_to_add $final_flank_to_add" | tee -a $logfile
 
 python /tfmodisco-lite/modisco motifs\
+    --max_seqlets $max_seqlets \
     --h5py $shap_dir/profile_scores.h5 \
-    --output $modisco_profile_dir/modisco_results.h5 \
-    --pngs_dir $modisco_profile_dir \
-    --max_seqlets $max_seqlets
+    -o $modisco_profile_dir/profile_scores.h5 \
+    --trim_size $trim_size \
+    --initial_flank_to_add $initial_flank_to_add \
+    --final_flank_to_add $final_flank_to_add
 
+echo $( timestamp ): "
+python /tfmodisco-lite/modisco report \\
+    -i $modisco_profile_dir/profile_scores.h5 \\
+    -o $modisco_profile_dir/trimmed_logos" | tee -a $logfile
+
+
+python /tfmodisco-lite/modisco report \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o $modisco_profile_dir/trimmed_logos
     
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
+    --max_seqlets $max_seqlets \\
     --h5py $shap_dir/counts_scores.h5 \\
-    --output $modisco_counts_dir/modisco_results.h5 \\
-    --pngs_dir $modisco_counts_dir \\
-    --max_seqlets $max_seqlets" | tee -a $logfile
+    -o $modisco_counts_dir/counts_scores.h5 \\
+    --trim_size $trim_size \\
+    --initial_flank_to_add $initial_flank_to_add \\
+    --final_flank_to_add $final_flank_to_add" | tee -a $logfile
 
 python /tfmodisco-lite/modisco motifs\
+    --max_seqlets $max_seqlets \
     --h5py $shap_dir/counts_scores.h5 \
-    --output $modisco_counts_dir/modisco_results.h5 \
-    --pngs_dir $modisco_counts_dir \
-    --max_seqlets $max_seqlets
+    -o $modisco_counts_dir/counts_scores.h5 \
+    --trim_size $trim_size \
+    --initial_flank_to_add $initial_flank_to_add \
+    --final_flank_to_add $final_flank_to_add
+
+echo $( timestamp ): "
+python /tfmodisco-lite/modisco report \\
+    -i $modisco_counts_dir/profile_scores.h5 \\
+    -o $modisco_counts_dir/trimmed_logos" | tee -a $logfile
+
+
+python /tfmodisco-lite/modisco report \
+    -i $modisco_counts_dir/profile_scores.h5 \
+    -o $modisco_counts_dir/trimmed_logos
