@@ -34,8 +34,8 @@ task run_modisco {
 	}
 	output {
 		File modisco_tar = "modisco.tar"
-		File modisco_profile_h5 = "modisco_profile/profile_scores.h5"
-		File modisco_counts_h5 = "modisco_counts/counts_scores.h5"
+		File modisco_profile_h5 = "modisco/modisco_profile/profile_scores.h5"
+		File modisco_counts_h5 = "modisco/modisco_counts/counts_scores.h5"
 	}
 
 	runtime {

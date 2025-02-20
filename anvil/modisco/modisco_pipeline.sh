@@ -2,8 +2,7 @@
 
 function timestamp {
     # Function to get the current time with the new line character
-    # removed 
-    
+    # removed
     # current time
     date +"%Y-%m-%d_%H-%M-%S" | tr -d '\n'
 }
@@ -95,7 +94,38 @@ python /tfmodisco-lite/modisco report \\
 python /tfmodisco-lite/modisco report \
     -i $modisco_profile_dir/profile_scores.h5 \
     -o $modisco_profile_dir/trimmed_logos
-    
+
+echo $( timestamp ): "
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o meme/{PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}.meme \
+    -t {PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}" | tee -a $logfile
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o meme/CWM.meme \
+    -t CWM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o meme/PFM.meme \
+    -t PFM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o meme/hCWM.meme \
+    -t hCWM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o meme/CWM-PFM.meme \
+    -t CWM-PFM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_profile_dir/profile_scores.h5 \
+    -o meme/hCWM-PFM.meme \
+    -t hCWM-PFM
+
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco motifs\\
     --max_seqlets $max_seqlets \\
@@ -122,3 +152,34 @@ python /tfmodisco-lite/modisco report \\
 python /tfmodisco-lite/modisco report \
     -i $modisco_counts_dir/counts_scores.h5 \
     -o $modisco_counts_dir/trimmed_logos
+
+echo $( timestamp ): "
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_counts_dir/counts_scores.h5 \
+    -o meme/{PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}.meme \
+    -t {PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}" | tee -a $logfile
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_counts_dir/counts_scores.h5 \
+    -o meme/CWM.meme \
+    -t CWM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_counts_dir/counts_scores.h5 \
+    -o meme/PFM.meme \
+    -t PFM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_counts_dir/counts_scores.h5 \
+    -o meme/hCWM.meme \
+    -t hCWM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_counts_dir/counts_scores.h5 \
+    -o meme/CWM-PFM.meme \
+    -t CWM-PFM
+
+python /tfmodisco-lite/modisco meme \
+    -i $modisco_counts_dir/counts_scores.h5 \
+    -o meme/hCWM-PFM.meme \
+    -t hCWM-PFM
