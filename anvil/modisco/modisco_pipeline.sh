@@ -115,10 +115,10 @@ python /tfmodisco-lite/modisco motifs\
 
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco report \\
-    -i $modisco_counts_dir/profile_scores.h5 \\
+    -i $modisco_counts_dir/counts_scores.h5 \\
     -o $modisco_counts_dir/trimmed_logos" | tee -a $logfile
 
 
 python /tfmodisco-lite/modisco report \
-    -i $modisco_counts_dir/profile_scores.h5 \
+    -i $modisco_counts_dir/counts_scores.h5 \
     -o $modisco_counts_dir/trimmed_logos
