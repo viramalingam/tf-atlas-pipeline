@@ -4,7 +4,7 @@ task run_modisco {
 	input {
 		String experiment
 		Array [File] shap
-        Int? trim_size
+		Int? trim_size
 		Int? initial_flank_to_add
 		Int? final_flank_to_add
 		Int? max_seqlets
