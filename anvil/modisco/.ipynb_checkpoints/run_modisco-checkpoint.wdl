@@ -76,7 +76,7 @@ workflow modisco {
 
 	}
 	output {
-		File modisco_tar = modisco_tar
+		File modisco_tar = run_modisco.modisco_tar
 		File modisco_profile_h5 = run_modisco.modisco_profile_h5
 		File modisco_counts_h5 = run_modisco.modisco_counts_h5
 	}
