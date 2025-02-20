@@ -96,34 +96,34 @@ python /tfmodisco-lite/modisco report \
     -o $modisco_profile_dir/trimmed_logos
 
 echo $( timestamp ): "
-python /tfmodisco-lite/modisco meme \
-    -i $modisco_profile_dir/profile_scores.h5 \
-    -o meme/{PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}.meme \
+python /tfmodisco-lite/modisco meme \\
+    -i $modisco_profile_dir/profile_scores.h5 \\
+    -o $modisco_profile_dir/meme/{PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}.meme \\
     -t {PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}" | tee -a $logfile
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_profile_dir/profile_scores.h5 \
-    -o meme/CWM.meme \
+    -o $modisco_profile_dir/meme/CWM.meme \
     -t CWM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_profile_dir/profile_scores.h5 \
-    -o meme/PFM.meme \
+    -o $modisco_profile_dir/meme/PFM.meme \
     -t PFM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_profile_dir/profile_scores.h5 \
-    -o meme/hCWM.meme \
+    -o $modisco_profile_dir/meme/hCWM.meme \
     -t hCWM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_profile_dir/profile_scores.h5 \
-    -o meme/CWM-PFM.meme \
+    -o $modisco_profile_dir/meme/CWM-PFM.meme \
     -t CWM-PFM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_profile_dir/profile_scores.h5 \
-    -o meme/hCWM-PFM.meme \
+    -o $modisco_profile_dir/meme/hCWM-PFM.meme \
     -t hCWM-PFM
 
 echo $( timestamp ): "
@@ -154,32 +154,32 @@ python /tfmodisco-lite/modisco report \
     -o $modisco_counts_dir/trimmed_logos
 
 echo $( timestamp ): "
-python /tfmodisco-lite/modisco meme \
-    -i $modisco_counts_dir/counts_scores.h5 \
-    -o meme/{PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}.meme \
+python /tfmodisco-lite/modisco meme \\
+    -i $modisco_counts_dir/counts_scores.h5 \\
+    -o $modisco_counts_dir/meme/{PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}.meme \\
     -t {PFM,CWM,hCWM,CWM-PFM,hCWM-PFM}" | tee -a $logfile
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_counts_dir/counts_scores.h5 \
-    -o meme/CWM.meme \
+    -o $modisco_counts_dir/meme/CWM.meme \
     -t CWM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_counts_dir/counts_scores.h5 \
-    -o meme/PFM.meme \
+    -o $modisco_counts_dir/meme/PFM.meme \
     -t PFM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_counts_dir/counts_scores.h5 \
-    -o meme/hCWM.meme \
+    -o $modisco_counts_dir/meme/hCWM.meme \
     -t hCWM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_counts_dir/counts_scores.h5 \
-    -o meme/CWM-PFM.meme \
+    -o $modisco_counts_dir/meme/CWM-PFM.meme \
     -t CWM-PFM
 
 python /tfmodisco-lite/modisco meme \
     -i $modisco_counts_dir/counts_scores.h5 \
-    -o meme/hCWM-PFM.meme \
+    -o $modisco_counts_dir/meme/hCWM-PFM.meme \
     -t hCWM-PFM
