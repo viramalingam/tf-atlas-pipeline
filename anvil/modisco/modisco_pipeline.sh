@@ -40,9 +40,6 @@ modisco_profile_dir=$project_dir/modisco_profile
 echo $( timestamp ): "mkdir" $modisco_profile_dir | tee -a $logfile
 mkdir $modisco_profile_dir
 
-echo $( timestamp ): "mkdir" $modisco_profile_dir/trimmed_logos | tee -a $logfile
-mkdir $modisco_profile_dir/trimmed_logos
-
 echo $( timestamp ): "mkdir" $modisco_profile_dir/meme | tee -a $logfile
 mkdir $modisco_profile_dir/meme
 
@@ -51,8 +48,6 @@ modisco_counts_dir=$project_dir/modisco_counts
 echo $( timestamp ): "mkdir" $modisco_counts_dir | tee -a $logfile
 mkdir $modisco_counts_dir
 
-echo $( timestamp ): "mkdir" $modisco_counts_dir/trimmed_logos | tee -a $logfile
-mkdir $modisco_counts_dir/trimmed_logos
 
 echo $( timestamp ): "mkdir" $modisco_counts_dir/meme | tee -a $logfile
 mkdir $modisco_counts_dir/meme
