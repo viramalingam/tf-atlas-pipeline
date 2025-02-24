@@ -89,12 +89,12 @@ python /tfmodisco-lite/modisco motifs\
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco report \\
     -i $modisco_profile_dir/profile_scores.h5 \\
-    -o $modisco_profile_dir/trimmed_logos" | tee -a $logfile
+    -o $modisco_profile_dir/" | tee -a $logfile
 
 
 python /tfmodisco-lite/modisco report \
     -i $modisco_profile_dir/profile_scores.h5 \
-    -o $modisco_profile_dir/trimmed_logos
+    -o $modisco_profile_dir/
 
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco meme \\
@@ -147,12 +147,12 @@ python /tfmodisco-lite/modisco motifs\
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco report \\
     -i $modisco_counts_dir/counts_scores.h5 \\
-    -o $modisco_counts_dir/trimmed_logos" | tee -a $logfile
+    -o $modisco_counts_dir/" | tee -a $logfile
 
 
 python /tfmodisco-lite/modisco report \
     -i $modisco_counts_dir/counts_scores.h5 \
-    -o $modisco_counts_dir/trimmed_logos
+    -o $modisco_counts_dir/
 
 echo $( timestamp ): "
 python /tfmodisco-lite/modisco meme \\
