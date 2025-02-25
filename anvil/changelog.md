@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [v2.3.0] - 2025-02-24
+
+v2.3.0 modified tfmodisco expanded trim window, flank to add. fixed associated bug.
+
 ## [v2.2.0-rc.1] - 2024-04-08
 
 1. scripts for running the hit caller in anvil
@@ -227,6 +231,10 @@ Starting to Merge the dockerfile and the anvil pipeline scripts to one repo. Sta
 
 ## vivekramalingam/tf-atlas:gcp-modeling_dev
 - used for shap calculations for the ZNFs. Same as v1.6.5. Only difference is that motif discovery script has import deepdish. e102fce64557
+
+## vivekramalingam/tf-atlas:gcp-modisco_modiscolite_v2.2.0
+
+- expanded trim_window and initital flank to add as default. Option to edit.
 
 ## vivekramalingam/tf-atlas:gcp-modisco_modiscolite
 - used for modisco runs
