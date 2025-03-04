@@ -101,6 +101,30 @@ def plot_hit_distributions(occ_df, motif_names, plot_dir):
     plt.close(fig)
 
 
+def plot_completeness_distributions(hits_df, motif_names, plot_dir):
+    completeness_dir = os.path.join(plot_dir, "completeness_distributions")
+    os.makedirs(completeness_dir, exist_ok=True)
+
+    data_by_motif = hits_df.select("motif_name", "hit_completeness").collect().partition_by("motif_name", as_dict=True)
+
+    for m in motif_names:
+        data = data_by_motif.get((m,), None)
+
+        fig, ax = plt.subplots(figsize=(6, 2))
+
+        if data is not None:
+            scores = data.get_column("hit_completeness").to_numpy()
+        else:
+            scores = np.array([])
+
+        ax.hist(scores, bins="auto", range=(0, 1.5))
+
+        output_path = os.path.join(completeness_dir, f"{m}.png")
+        plt.savefig(output_path, dpi=300)
+
+        plt.close(fig)
+
+
 def plot_peak_motif_indicator_heatmap(peak_hit_counts, motif_names, output_path):
     """
     Plots a simple indicator heatmap of the motifs in each peak.
@@ -167,7 +191,7 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
             peaks_df.lazy(), on="peak_id", how="inner"
         )
         .select(
-            chr=pl.col("chr"),
+            chr_id=pl.col("chr_id"),
             start_untrimmed=pl.col("start_untrimmed"),
             end_untrimmed=pl.col("end_untrimmed"),
             is_revcomp=pl.col("strand") == '-',
@@ -177,7 +201,7 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
         )
     )
 
-    hits_unique = hits_df.unique(subset=["chr", "start_untrimmed", "motif_name", "is_revcomp"])
+    hits_unique = hits_df.unique(subset=["chr_id", "start_untrimmed", "motif_name", "is_revcomp"])
     
     region_len = regions.shape[2]
     center = region_len / 2
@@ -187,14 +211,14 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
             ((pl.col("start_untrimmed") - pl.col("peak_region_start")) >= (center - modisco_half_width)) 
             & ((pl.col("end_untrimmed") - pl.col("peak_region_start")) <= (center + modisco_half_width))
         )
-        .unique(subset=["chr", "start_untrimmed", "motif_name", "is_revcomp"])
+        .unique(subset=["chr_id", "start_untrimmed", "motif_name", "is_revcomp"])
     )
     
     if compute_recall:
         overlaps_df = (
             hits_filtered.join(
                 seqlets_df, 
-                on=["chr", "start_untrimmed", "is_revcomp", "motif_name"],
+                on=["chr_id", "start_untrimmed", "is_revcomp", "motif_name"],
                 how="inner",
             )
             .collect()
@@ -203,7 +227,7 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
         seqlets_only_df = (
             seqlets_df.join(
                 hits_df, 
-                on=["chr", "start_untrimmed", "is_revcomp", "motif_name"],
+                on=["chr_id", "start_untrimmed", "is_revcomp", "motif_name"],
                 how="anti",
             )
             .collect()
@@ -212,7 +236,7 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
         hits_only_filtered_df = (
             hits_filtered.join(
                 seqlets_df, 
-                on=["chr", "start_untrimmed", "is_revcomp", "motif_name"],
+                on=["chr_id", "start_untrimmed", "is_revcomp", "motif_name"],
                 how="anti",
             )
             .collect()
@@ -234,16 +258,16 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
     cwm_trim_bounds = {}
     dummy_df = hits_df.clear().collect()
     for m in motif_names:
-        hits = hits_by_motif.get(m, dummy_df)
-        hits_filtered = hits_fitered_by_motif.get(m, dummy_df)
+        hits = hits_by_motif.get((m,), dummy_df)
+        hits_filtered = hits_fitered_by_motif.get((m,), dummy_df)
 
         if seqlets_df is not None:
-            seqlets = seqlets_by_motif.get(m, dummy_df)
+            seqlets = seqlets_by_motif.get((m,), dummy_df)
 
         if compute_recall:
-            overlaps = overlaps_by_motif.get(m, dummy_df)
-            seqlets_only = seqlets_only_by_motif.get(m, dummy_df)
-            hits_only_filtered = hits_only_filtered_by_motif.get(m, dummy_df)
+            overlaps = overlaps_by_motif.get((m,), dummy_df)
+            seqlets_only = seqlets_only_by_motif.get((m,), dummy_df)
+            hits_only_filtered = hits_only_filtered_by_motif.get((m,), dummy_df)
 
         report_data[m] = {
             "num_hits_total": hits.height,
@@ -262,9 +286,9 @@ def tfmodisco_comparison(regions, hits_df, peaks_df, seqlets_df, motifs_df, cwms
             }
 
         motif_data_fc = motifs_df.row(by_predicate=(pl.col("motif_name") == m) 
-                                      & (pl.col("motif_strand") == "+"), named=True)
+                                      & (pl.col("strand") == "+"), named=True)
         motif_data_rc = motifs_df.row(by_predicate=(pl.col("motif_name") == m) 
-                                      & (pl.col("motif_strand") == "-"), named=True)
+                                      & (pl.col("strand") == "-"), named=True)
 
         cwms[m] = {
             "hits_fc": get_cwms(regions, hits, motif_width),
@@ -428,11 +452,12 @@ def plot_hit_vs_seqlet_counts(recall_data, output_path):
     plt.close()
 
 
-def write_report(report_df, motif_names, out_path, compute_recall, use_seqlets):
+def write_report(report_df, motif_names, out_path, compute_recall, use_seqlets, show_completeness):
     template_str = importlib.resources.files(templates).joinpath('report.html').read_text()
     template = Template(template_str)
     report = template.render(report_data=report_df.iter_rows(named=True), 
-                             motif_names=motif_names, compute_recall=compute_recall, use_seqlets=use_seqlets)
+                             motif_names=motif_names, compute_recall=compute_recall, 
+                             use_seqlets=use_seqlets, show_completeness=show_completeness)
     with open(out_path, "w") as f:
         f.write(report)
 

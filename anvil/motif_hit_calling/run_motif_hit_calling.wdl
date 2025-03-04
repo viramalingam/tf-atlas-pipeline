@@ -5,9 +5,7 @@ task run_motif_hit_calling {
 		File modisco_h5
 		File peaks
 		File shap_h5    
-		String match_type
-		String shap_h5_type
-		Float? alpha
+		Float? lambda
 		Int? window
 		File chroms_txt
 		String? gpuType   
@@ -16,14 +14,14 @@ task run_motif_hit_calling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch v2.2.0-rc.1 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/motif_hit_calling/
 		
 		##motif_hit_calling
 		
-		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${match_type} ${shap_h5_type} ${alpha} ${window} ${chroms_txt}
-		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${match_type} ${shap_h5_type} ${alpha} ${window} ${chroms_txt}
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${lambda} ${window} ${chroms_txt}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5}  ${lambda} ${window} ${chroms_txt}
 		echo "copying all files to cromwell_root folder"
 		
 		tar -cf /${experiment}/hits.tar /${experiment}/hits
@@ -37,7 +35,7 @@ task run_motif_hit_calling {
 	
 	}
 	runtime {
-		docker: 'vivekramalingam/tf-atlas:gcp-motif_hits_v2.2.0-rc.1'
+		docker: 'vivekramalingam/tf-atlas:gcp-motif_hits_dev_sqrt-transform'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50
@@ -56,8 +54,7 @@ workflow motif_hit_calling {
 		File peaks
 		File shap_h5    
 		String match_type
-		String shap_h5_type
-		Float? alpha=0.6
+		Float? lambda=0.7
 		Int? window=400
 		File chroms_txt
 		String? gpuType="p4"
@@ -68,9 +65,7 @@ workflow motif_hit_calling {
 			modisco_h5=modisco_h5,
 			peaks=peaks,
 			shap_h5=shap_h5,
-			match_type=match_type,
-			shap_h5_type=shap_h5_type,
-			alpha=alpha,
+			lambda=lambda,
 			window=window,
 			chroms_txt=chroms_txt,
 			gpuType=gpuType
