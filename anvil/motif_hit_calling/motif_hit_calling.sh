@@ -40,7 +40,7 @@ zcat ${peaks} > ${hits_dir}/peaks.bed
 
 zcat ${peaks} | head
 
-finemo extract-regions-bpnet-h5 -c ${shap_h5} -o ${hits_dir}/regions_bw.npz -w ${window}
+finemo extract-regions-bpnet-h5 -c ${shap_h5} -o ${hits_dir}/regions_bw.npz -w ${window} -p ${hits_dir}/peaks.bed
 
 finemo call-hits -l ${lambda} -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -C ${chroms_txt} -o ${hits_dir} --compile
 
