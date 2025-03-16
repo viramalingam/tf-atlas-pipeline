@@ -4,11 +4,13 @@ task run_motif_hit_calling {
 		String experiment
 		File modisco_h5
 		File peaks
-		File shap_h5    
+		File shap_h5  
+		File chroms_txt  
 		Float? lambda
+		Float? cwm_threshold
 		Int? window
-		File chroms_txt
 		String? gpuType   
+		String? sqrt_transform
 	}
 	command {
 		#create data directories and download scripts
@@ -20,8 +22,8 @@ task run_motif_hit_calling {
 		
 		##motif_hit_calling
 		
-		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${lambda} ${window} ${chroms_txt}
-		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5}  ${lambda} ${window} ${chroms_txt}
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${window} ${sqrt_transform}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${window} ${sqrt_transform}
 		echo "copying all files to cromwell_root folder"
 		
 		tar -cf /${experiment}/hits.tar /${experiment}/hits
@@ -54,10 +56,12 @@ workflow motif_hit_calling {
 		File peaks
 		File shap_h5    
 		String match_type
-		Float? lambda=0.7
-		Int? window=400
 		File chroms_txt
+		Float? lambda=0.7
+		Float? cwm_threshold=0.3
+		Int? window=400
 		String? gpuType="p4"
+		String? sqrt_transform="True"
 	}
 	call run_motif_hit_calling {
 		input:
@@ -65,10 +69,12 @@ workflow motif_hit_calling {
 			modisco_h5=modisco_h5,
 			peaks=peaks,
 			shap_h5=shap_h5,
-			lambda=lambda,
-			window=window,
 			chroms_txt=chroms_txt,
-			gpuType=gpuType
+			lambda=lambda,
+			cwm_threshold=cwm_threshold,
+			window=window,
+			gpuType=gpuType,
+			sqrt_transform=sqrt_transform
 	}
 	output {
 		File motif_hits_tar = run_motif_hit_calling.motif_hits_tar
