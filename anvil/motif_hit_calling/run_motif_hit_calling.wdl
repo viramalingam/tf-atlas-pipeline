@@ -22,8 +22,8 @@ task run_motif_hit_calling {
 		
 		##motif_hit_calling
 		
-		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${window} ${sqrt_transform}
-		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${window} ${sqrt_transform}
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${cwm_threshold} ${sqrt_transform} ${window}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${cwm_threshold} ${sqrt_transform} ${window}
 		echo "copying all files to cromwell_root folder"
 		
 		tar -cf /${experiment}/hits.tar /${experiment}/hits
