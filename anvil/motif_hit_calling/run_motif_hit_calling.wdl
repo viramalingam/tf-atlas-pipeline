@@ -55,7 +55,6 @@ workflow motif_hit_calling {
 		File modisco_h5
 		File peaks
 		File shap_h5    
-		String match_type
 		File chroms_txt
 		Float? lambda=0.7
 		Float? cwm_threshold=0.3
