@@ -48,11 +48,11 @@ finemo extract-regions-bpnet-h5 -c ${shap_h5} -o ${hits_dir}/regions_bw.npz -w $
 echo $( timestamp ): "finemo extract-regions-bpnet-h5 -c" ${shap_h5} "-o" ${hits_dir}/regions_bw.npz "-w" ${window} "-p" ${hits_dir}/peaks.bed | tee -a $logfile
 
 if [ "$sqrt_transform" == "True" ]; then
-    finemo call-hits -l ${lambda} -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -C ${chroms_txt} -o ${hits_dir} -t cwm_threshold --compile --sqrt-transform
-    echo $( timestamp ): "finemo call-hits -l" ${lambda} "-r" ${hits_dir}/regions_bw.npz "-m" ${modisco_h5} "-p" ${hits_dir}/peaks.bed "-C" ${chroms_txt} "-o" ${hits_dir} -t cwm_threshold "--compile" "--sqrt-transform" | tee -a $logfile
+    finemo call-hits -l ${lambda} -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -C ${chroms_txt} -o ${hits_dir} -t ${cwm_threshold} --compile --sqrt-transform
+    echo $( timestamp ): "finemo call-hits -l" ${lambda} "-r" ${hits_dir}/regions_bw.npz "-m" ${modisco_h5} "-p" ${hits_dir}/peaks.bed "-C" ${chroms_txt} "-o" ${hits_dir} -t ${cwm_threshold} "--compile" "--sqrt-transform" | tee -a $logfile
 else
-    finemo call-hits -l ${lambda} -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -C ${chroms_txt} -o ${hits_dir} -t cwm_threshold --compile
-    echo $( timestamp ): "finemo call-hits -l" ${lambda} "-r" ${hits_dir}/regions_bw.npz "-m" ${modisco_h5} "-p" ${hits_dir}/peaks.bed "-C" ${chroms_txt} "-o" ${hits_dir} -t cwm_threshold "--compile" | tee -a $logfile
+    finemo call-hits -l ${lambda} -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -C ${chroms_txt} -o ${hits_dir} -t ${cwm_threshold} --compile
+    echo $( timestamp ): "finemo call-hits -l" ${lambda} "-r" ${hits_dir}/regions_bw.npz "-m" ${modisco_h5} "-p" ${hits_dir}/peaks.bed "-C" ${chroms_txt} "-o" ${hits_dir} -t ${cwm_threshold} "--compile" | tee -a $logfile
 fi
-finemo report -H ${hits_dir}/hits.tsv -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -o ${hits_dir}/ -t cwm_threshold -W ${window}
-echo $( timestamp ): "finemo report -H" ${hits_dir}/hits.tsv "-r" ${hits_dir}/regions_bw.npz "-m" ${modisco_h5} "-p" ${hits_dir}/peaks.bed "-o" ${hits_dir}/ -t cwm_threshold "-W" ${window} | tee -a $logfile
+finemo report -H ${hits_dir}/hits.tsv -r ${hits_dir}/regions_bw.npz -m ${modisco_h5} -p ${hits_dir}/peaks.bed -o ${hits_dir}/ -t ${cwm_threshold} -W ${window}
+echo $( timestamp ): "finemo report -H" ${hits_dir}/hits.tsv "-r" ${hits_dir}/regions_bw.npz "-m" ${modisco_h5} "-p" ${hits_dir}/peaks.bed "-o" ${hits_dir}/ -t ${cwm_threshold} "-W" ${window} | tee -a $logfile
