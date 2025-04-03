@@ -34,7 +34,7 @@ task run_mean_prediction {
     }
     
     runtime {
-        docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.5'
+        docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.1.0-rc.1'
         memory: mem_gb + "GB"
         bootDiskSizeGb: 100
         disks: "local-disk 100 HDD"
