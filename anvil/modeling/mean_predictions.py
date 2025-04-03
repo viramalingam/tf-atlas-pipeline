@@ -20,8 +20,7 @@ print(args)
 if not os.path.isdir(args.output_dir):
     os.mkdir(args.output_dir)
     
-def mean_predictions(predictions_list,output_path):
-    
+def mean_predictions(predictions_list,h5_out_path):    
     pred_logcounts_lst=[]
     pred_logcounts_both_st_lst=[]
     pred_profs_lst=[]
@@ -100,7 +99,7 @@ all(all(element == end_lst[0]) for element in end_lst)])==3):
         pred_logcounts_dset[:, :] = pred_logcounts_mean
 
         pred_prof_dset = f.create_dataset(
-            "pred_prof", (num_examples, pred_prob_mean.shape[1], pred_prob_mean.shape[2])
+            "pred_prof", (num_examples, pred_prof_mean.shape[1], pred_prof_mean.shape[2])
         )
         pred_prof_dset[:, :, :] = pred_prof_mean
 
@@ -109,8 +108,8 @@ all(all(element == end_lst[0]) for element in end_lst)])==3):
         del(log_pred_prob_mean,pred_prof_mean, exp_log_pred_prob_mean, pred_logcounts_mean,pred_logcounts_both_st_mean, chrom_lst,start_lst,end_lst,pred_logcounts_lst,pred_logcounts_both_st_lst,pred_profs_lst,log_pred_prob_lst)
 
         gc.collect()
-        
-mean_predictions(args.prediction_h5s,f"{args.output_dir}/mean_predictions.h5")
+
+mean_predictions((args.prediction_h5s).split(","),f"{args.output_dir}/mean_predictions.h5")
 
 
 if args.generate_bigwigs:
