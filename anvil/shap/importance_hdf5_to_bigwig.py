@@ -55,8 +55,9 @@ regions = [[x[0], int(x[1])+int(x[9])-int(SEQLEN/2), int(x[1])+int(x[9])+int(SEQ
 # regions may not be sorted, so get their sorted order
 order_of_regs = sorted(range(len(regions)), key=lambda x:(chr_to_idx[regions[x][0]], regions[x][1]))
 
-# regions may overlap but as we go in sorted order, for regions that overlap values are repeated used
-# from the nearest peak 
+# regions may overlap but as we go in sorted order, at a given position,
+# we will pick the value from the interval whose summit is closest to 
+# current position
 
 bw = pyBigWig.open(args.outfile, 'w')
 bw.addHeader(gs)
