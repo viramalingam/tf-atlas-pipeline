@@ -20,12 +20,14 @@ task run_mean_prediction {
         
         mkdir /mean_prediction_data
         
-        echo "python /my_scripts/tf-atlas-pipeline/anvil/modeling/mean_predictions.py" --prediction_h5s ${sep=',' prediction_h5s} --generate_bigwigs --chrom_sizes chrom_sizes --output_dir /mean_prediction_data
+        echo "python /my_scripts/tf-atlas-pipeline/anvil/modeling/mean_predictions.py" --prediction_h5s ${sep=',' prediction_h5s} --generate_bigwigs --chrom_sizes $chrom_sizes --output_dir /mean_prediction_data
         
-        python /my_scripts/tf-atlas-pipeline/anvil/modeling/mean_predictions.py --prediction_h5s ${sep=',' prediction_h5s} --generate_bigwigs --chrom_sizes chrom_sizes --output_dir /mean_prediction_data
+        python /my_scripts/tf-atlas-pipeline/anvil/modeling/mean_predictions.py --prediction_h5s ${sep=',' prediction_h5s} --generate_bigwigs --chrom_sizes $chrom_sizes --output_dir /mean_prediction_data
         
             
         ## All output files are in the cromwell_root folder
+        
+        cp /mean_prediction_data/* /cromwell_root
     }
     
     output {
