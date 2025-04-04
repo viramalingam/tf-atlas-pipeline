@@ -26,9 +26,7 @@ task run_mean_prediction {
         
             
         ## All output files are in the cromwell_root folder
-        
-        tar -xvf /mean_prediction_data/* /cromwell_root
-        
+                
         tar -cf /cromwell_root/mean_prediction.tar /mean_prediction_data
 
     }
