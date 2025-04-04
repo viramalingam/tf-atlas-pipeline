@@ -27,11 +27,13 @@ task run_mean_prediction {
             
         ## All output files are in the cromwell_root folder
         
-        cp /mean_prediction_data/* /cromwell_root
+        tar -xvf /mean_prediction_data/* /cromwell_root
+        
+        tar -cf /cromwell_root/mean_prediction.tar /mean_prediction_data
+
     }
     
     output {
-        File mean_prediction_h5 = "mean_prediction.h5"
         File mean_prediction_tar = "mean_prediction.tar"
     }
     
@@ -57,7 +59,6 @@ workflow mean_prediction {
         mem_gb = mem_gb
     }
     output {
-        File mean_prediction_h5 = run_mean_prediction.mean_prediction_h5
         File mean_prediction_tar = run_mean_prediction.mean_prediction_tar
     }
 }
