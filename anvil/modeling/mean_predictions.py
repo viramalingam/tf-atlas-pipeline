@@ -52,6 +52,10 @@ def mean_predictions(predictions_list,h5_out_path):
 
             pred_logcounts_both_st = np.log(pred_prof_sum)
             pred_logcounts_both_st_lst.append(pred_logcounts_both_st)
+            
+            if np.any(pred_prof<=0) or np.any(pred_logcounts<=0):
+                raise ValueError(f'pred_prof or pred_logcounts less than or equal zero for {predictions_h5}')
+                
             f.close()
         except:
             print(f'{predictions_h5} has problems or does not exist')
