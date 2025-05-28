@@ -79,6 +79,5 @@ workflow motif_hit_calling {
 	}
 	output {
 		File motif_hits_tar = run_motif_hit_calling.motif_hits_tar
-		File hits_unique_tsv = run_motif_hit_calling.hits_unique_tsv
 	}
 }
