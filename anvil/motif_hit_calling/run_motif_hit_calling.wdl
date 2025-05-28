@@ -10,7 +10,6 @@ task run_motif_hit_calling {
 		Float? cwm_threshold
 		Int? window
 		String? gpuType
-		Array[String]? zone
 		String? sqrt_transform
 	}
 	command {
@@ -44,7 +43,7 @@ task run_motif_hit_calling {
 		disks: "local-disk 50 HDD"
 		gpuCount: 1
 		gpuType: "nvidia-tesla-" + gpuType
-		zones: zone 
+		zones: "us-west4-a us-west4-b us-west4-c"
 		nvidiaDriverVersion: "535.161.08"
 		maxRetries: 1
 	}
@@ -60,7 +59,6 @@ workflow motif_hit_calling {
 		Float? cwm_threshold=0.3
 		Int? window=400
 		String? gpuType="p4"
-		Array[String]? zone = ["us-west4-a", "us-west4-b", "us-west4-c"]
 		String? sqrt_transform="True"        
 	}
 	call run_motif_hit_calling {
@@ -74,7 +72,6 @@ workflow motif_hit_calling {
 			cwm_threshold=cwm_threshold,
 			window=window,
 			gpuType=gpuType,
-			zone=zone,
 			sqrt_transform=sqrt_transform
 	}
 	output {
