@@ -37,7 +37,7 @@ task run_motif_hit_calling {
 	
 	}
 	runtime {
-		docker: 'vivekramalingam/gcp-motif_hits_dev_sqrt-transform'
+		docker: 'vivekramalingam/gcp-motif_hits'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50
