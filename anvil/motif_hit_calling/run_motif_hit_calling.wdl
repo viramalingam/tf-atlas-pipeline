@@ -10,7 +10,7 @@ task run_motif_hit_calling {
 		Float? cwm_threshold
 		Int? window
 		String? gpuType
-		String? zone
+		Array[String]? zone
 		String? sqrt_transform
 	}
 	command {
@@ -60,7 +60,7 @@ workflow motif_hit_calling {
 		Float? cwm_threshold=0.3
 		Int? window=400
 		String? gpuType="p4"
-		String? zone="us-west4-a us-west4-b us-west4-c"
+		Array[String]? zone = ["us-west4-a", "us-west4-b", "us-west4-c"]
 		String? sqrt_transform="True"        
 	}
 	call run_motif_hit_calling {
