@@ -9,7 +9,8 @@ task run_motif_hit_calling {
 		Float? lambda
 		Float? cwm_threshold
 		Int? window
-		String? gpuType   
+		String? gpuType
+		String? zone
 		String? sqrt_transform
 	}
 	command {
@@ -33,7 +34,6 @@ task run_motif_hit_calling {
 	
 	output {
 		File motif_hits_tar = "motif_hits.tar"
-		File hits_unique_tsv = "hits_unique.tsv"
 	
 	}
 	runtime {
@@ -44,7 +44,7 @@ task run_motif_hit_calling {
 		disks: "local-disk 50 HDD"
 		gpuCount: 1
 		gpuType: "nvidia-tesla-" + gpuType
-		zones: "us-central1-a us-central1-b us-central1-c us-west1-a us-west1-b us-west1-c us-west4-a us-west4-b us-west4-c us-east1-b us-east1-c us-east1-d us-east4-a us-east4-b us-east4-c us-east5-a us-east5-b us-east5-c us-west2-a us-west2-b us-west2-c us-west3-a us-west3-b us-west3-c" 
+		zones: zone 
 		nvidiaDriverVersion: "535.161.08"
 		maxRetries: 1
 	}
@@ -60,7 +60,8 @@ workflow motif_hit_calling {
 		Float? cwm_threshold=0.3
 		Int? window=400
 		String? gpuType="p4"
-		String? sqrt_transform="True"
+		String? zone="us-west4-a us-west4-b us-west4-c"
+		String? sqrt_transform="True"        
 	}
 	call run_motif_hit_calling {
 		input:
@@ -73,6 +74,7 @@ workflow motif_hit_calling {
 			cwm_threshold=cwm_threshold,
 			window=window,
 			gpuType=gpuType,
+			zone=zone,
 			sqrt_transform=sqrt_transform
 	}
 	output {
