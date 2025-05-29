@@ -32,6 +32,17 @@ def load_mapping(path, type):
 
     return mapping
 
+def load_mapping_tuple(path, type):
+    mapping = {}
+    with open(path) as f:
+        for line in f:
+            entries = line.rstrip("\n").split("\t")
+            key = entries[0]
+            val = entries[1:]
+            mapping[key] = tuple(type(i) for i in val)
+
+    return mapping
+
 
 NARROWPEAK_SCHEMA = ["chr", "peak_start", "peak_end", "peak_name", "peak_score", 
                      "peak_strand", "peak_signal", "peak_pval", "peak_qval", "peak_summit"]
@@ -209,7 +220,6 @@ def write_regions_npz(sequences, contributions, out_path, peaks_df=None):
                             chr=chr_arr, chr_id=chr_id_arr, start=start_arr, peak_id=peak_id_arr, peak_name=peak_name_arr)
 
 
-
 def trim_motif(cwm, trim_threshold):
     """
     Adapted from https://github.com/jmschrei/tfmodisco-lite/blob/570535ee5ccf43d670e898d92d63af43d68c38c5/modiscolite/report.py#L213-L236
@@ -239,8 +249,8 @@ def _motif_name_sort_key(data):
 
 MODISCO_PATTERN_GROUPS = ['pos_patterns', 'neg_patterns']
 
-def load_modisco_motifs(modisco_h5_path, trim_threshold, motif_type, motifs_include, 
-                        motif_name_map, motif_lambdas, motif_lambda_default, include_rc):
+def load_modisco_motifs(modisco_h5_path, trim_coords, trim_thresholds, trim_threshold_default, motif_type, 
+                        motifs_include, motif_name_map, motif_lambdas, motif_lambda_default, include_rc):
     """
     Adapted from https://github.com/jmschrei/tfmodisco-lite/blob/570535ee5ccf43d670e898d92d63af43d68c38c5/modiscolite/report.py#L252-L272
     """
@@ -257,6 +267,11 @@ def load_modisco_motifs(modisco_h5_path, trim_threshold, motif_type, motifs_incl
 
     if motif_lambdas is None:
         motif_lambdas = {}
+
+    if trim_coords is None:
+        trim_coords = {}
+    if trim_thresholds is None:
+        trim_thresholds = {}
 
     if len(motif_name_map.values()) != len(set(motif_name_map.values())):
         raise ValueError("Specified motif names are not unique")
@@ -282,8 +297,15 @@ def load_modisco_motifs(modisco_h5_path, trim_threshold, motif_type, motifs_incl
 
                 cwm_fwd = cwm_raw / cwm_norm
                 cwm_rev = cwm_fwd[::-1,::-1]
-                start_fwd, end_fwd = trim_motif(cwm_fwd, trim_threshold)
-                start_rev, end_rev = trim_motif(cwm_rev, trim_threshold)
+
+                if pattern_tag in trim_coords:
+                    start_fwd, end_fwd = trim_coords[pattern_tag]
+                else:
+                    trim_threshold = trim_thresholds.get(pattern_tag, trim_threshold_default)
+                    start_fwd, end_fwd = trim_motif(cwm_fwd, trim_threshold)
+
+                cwm_len = cwm_fwd.shape[1]
+                start_rev, end_rev = cwm_len - end_fwd, cwm_len - start_fwd
                 
                 trim_mask_fwd = np.zeros(cwm_fwd.shape[1], dtype=np.int8)
                 trim_mask_fwd[start_fwd:end_fwd] = 1
@@ -439,16 +461,23 @@ HITS_DTYPES = {
     "strand": pl.String,
     "peak_name": pl.String,
     "peak_id": pl.UInt32,
-    
 }
+HITS_COLLAPSED_DTYPES = HITS_DTYPES | {"is_primary": pl.UInt32}
 
-def load_hits(hits_path, lazy=False):
+
+def load_hits(hits_path, lazy=False, schema=HITS_DTYPES):
     hits_df = (
-        pl.scan_csv(hits_path, separator='\t', quote_char=None, schema=HITS_DTYPES)
+        pl.scan_csv(hits_path, separator='\t', quote_char=None, schema=schema)
         .with_columns(pl.lit(1).alias("count"))
     )
 
     return hits_df if lazy else hits_df.collect()
+
+
+def write_hits_processed(hits_df, out_path, schema=HITS_DTYPES):
+    if schema is not None:
+        hits_df = hits_df.select(schema.keys())
+    hits_df.write_csv(out_path, separator="\t")
 
 
 def write_hits(hits_df, peaks_df, motifs_df, qc_df, out_dir, motif_width):
@@ -564,6 +593,10 @@ def load_params(params_path):
 
 def write_occ_df(occ_df, out_path):
     occ_df.write_csv(out_path, separator="\t")
+
+
+def write_seqlet_confusion_df(seqlet_confusion_df, out_path):
+    seqlet_confusion_df.write_csv(out_path, separator="\t")
 
 
 def write_report_data(report_df, cwms, out_dir):

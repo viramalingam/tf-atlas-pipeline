@@ -36,7 +36,7 @@ task run_motif_hit_calling {
 	
 	}
 	runtime {
-		docker: 'vivekramalingam/gcp-motif_hits'
+		docker: 'vivekramalingam/gcp-motif_hits_dev'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50
@@ -59,7 +59,7 @@ workflow motif_hit_calling {
 		Float? cwm_threshold=0.3
 		Int? window=400
 		String? gpuType="p4"
-		String? sqrt_transform="True"        
+		String? sqrt_transform="False"        
 	}
 	call run_motif_hit_calling {
 		input:

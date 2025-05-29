@@ -54,8 +54,9 @@ def extract_regions_modisco_fmt(peaks_path, chrom_order_path, shaps_paths, ohe_p
 
 
 def call_hits(regions_path, peaks_path, modisco_h5_path, chrom_order_path, motifs_include_path, motif_names_path, 
-              motif_lambdas_path, out_dir, cwm_trim_threshold, lambda_default, step_size_max, step_size_min, sqrt_transform,
-              convergence_tol, max_steps, batch_size, step_adjust, device, mode, no_post_filter, compile_optimizer):
+              motif_lambdas_path, out_dir, cwm_trim_coords_path, cwm_trim_thresholds_path, cwm_trim_threshold_default, 
+              lambda_default, step_size_max, step_size_min, sqrt_transform, convergence_tol, max_steps, batch_size, 
+              step_adjust, device, mode, no_post_filter, compile_optimizer):
     
     params = locals()
     from . import hitcaller
@@ -107,9 +108,19 @@ def call_hits(regions_path, peaks_path, modisco_h5_path, chrom_order_path, motif
         motif_lambdas = data_io.load_mapping(motif_lambdas_path, float)
     else:
         motif_lambdas = None
+
+    if cwm_trim_coords_path is not None:
+        trim_coords = data_io.load_mapping_tuple(cwm_trim_coords_path, int)
+    else:
+        trim_coords = None
+
+    if cwm_trim_thresholds_path is not None:
+        trim_thresholds = data_io.load_mapping(cwm_trim_thresholds_path, float)
+    else:
+        trim_thresholds = None
     
-    motifs_df, cwms, trim_masks, motif_names = data_io.load_modisco_motifs(modisco_h5_path, cwm_trim_threshold, motif_type, motifs_include, 
-                                                                           motif_name_map, motif_lambdas, lambda_default, True)
+    motifs_df, cwms, trim_masks, motif_names = data_io.load_modisco_motifs(modisco_h5_path, trim_coords, trim_thresholds, cwm_trim_threshold_default, 
+                                                                           motif_type, motifs_include, motif_name_map, motif_lambdas, lambda_default, True)
     num_motifs = cwms.shape[0]
     motif_width = cwms.shape[2]
     lambdas = motifs_df.get_column("lambda").to_numpy(writable=True)
@@ -141,7 +152,7 @@ def call_hits(regions_path, peaks_path, modisco_h5_path, chrom_order_path, motif
 
 def report(regions_path, hits_dir, modisco_h5_path, peaks_path, motifs_include_path, motif_names_path, 
            out_dir, modisco_region_width, cwm_trim_threshold, compute_recall, use_seqlets):
-    from . import evaluation        
+    from . import evaluation, visualization     
 
     sequences, contribs, peaks_df, _ = data_io.load_regions_npz(regions_path)
     if len(contribs.shape) == 3:
@@ -173,8 +184,8 @@ def report(regions_path, hits_dir, modisco_h5_path, peaks_path, motifs_include_p
         else:
             motif_name_map = None
 
-        motifs_df, cwms_modisco, trim_masks, motif_names = data_io.load_modisco_motifs(modisco_h5_path, cwm_trim_threshold, "cwm", 
-                                                                                    motifs_include, motif_name_map, None, None, True)
+        motifs_df, cwms_modisco, trim_masks, motif_names = data_io.load_modisco_motifs(modisco_h5_path, None, None, cwm_trim_threshold, "cwm", 
+                                                                                       motifs_include, motif_name_map, None, None, True)
 
     else:
         hits_df_path = os.path.join(hits_dir, "hits.tsv")
@@ -188,7 +199,7 @@ def report(regions_path, hits_dir, modisco_h5_path, peaks_path, motifs_include_p
 
         params_path = os.path.join(hits_dir, "parameters.json")
         params = data_io.load_params(params_path)
-        cwm_trim_threshold = params["cwm_trim_threshold"]
+        cwm_trim_threshold = params["cwm_trim_threshold_default"]
 
     if not use_seqlets:
         warnings.warn("Usage of the `--no-seqlets` flag is deprecated and will be removed in a future version. Please omit the `--modisco-h5` argument instead.")
@@ -207,6 +218,9 @@ def report(regions_path, hits_dir, modisco_h5_path, peaks_path, motifs_include_p
                                                                                 cwms_modisco, motif_names, modisco_half_width, 
                                                                                 motif_width, compute_recall)
     
+    if seqlets_df is not None:
+        confusion_df, confusion_mat = evaluation.seqlet_confusion(hits_df, seqlets_df, peaks_df, motif_names, motif_width)
+    
     os.makedirs(out_dir, exist_ok=True)
     
     occ_path = os.path.join(out_dir, "motif_occurrences.tsv")
@@ -214,24 +228,44 @@ def report(regions_path, hits_dir, modisco_h5_path, peaks_path, motifs_include_p
 
     data_io.write_report_data(report_df, cwms, out_dir)
 
-    evaluation.plot_hit_distributions(occ_df, motif_names, out_dir)
-
-    coooc_path = os.path.join(out_dir, "motif_cooocurrence.png")
-    evaluation.plot_peak_motif_indicator_heatmap(coooc, motif_names, coooc_path)
+    visualization.plot_hit_stat_distributions(hits_df, motif_names, out_dir)
+    visualization.plot_hit_peak_distributions(occ_df, motif_names, out_dir)
+    visualization.plot_peak_motif_indicator_heatmap(coooc, motif_names, out_dir)
 
     plot_dir = os.path.join(out_dir, "CWMs")
-    evaluation.plot_cwms(cwms, trim_bounds, plot_dir)
+    visualization.plot_cwms(cwms, trim_bounds, plot_dir)
 
     if seqlets_df is not None:
         seqlets_df = seqlets_df.collect()
         seqlets_path = os.path.join(out_dir, "seqlets.tsv")
         data_io.write_modisco_seqlets(seqlets_df, seqlets_path)
 
-        plot_path = os.path.join(out_dir, "hit_vs_seqlet_counts.png")
-        evaluation.plot_hit_vs_seqlet_counts(report_data, plot_path)
+        seqlet_confusion_path = os.path.join(out_dir, "seqlet_confusion.tsv")
+        data_io.write_seqlet_confusion_df(confusion_df, seqlet_confusion_path)
+
+        visualization.plot_hit_vs_seqlet_counts(report_data, out_dir)
+        visualization.plot_seqlet_confusion_heatmap(confusion_mat, motif_names, out_dir)
 
     report_path = os.path.join(out_dir, "report.html")
-    evaluation.write_report(report_df, motif_names, report_path, compute_recall, seqlets_df is not None)
+    visualization.write_report(report_df, motif_names, report_path, compute_recall, seqlets_df is not None)
+
+
+def collapse_hits(hits_path, out_path, overlap_frac):
+    from . import postprocessing
+
+    hits_df = data_io.load_hits(hits_path, lazy=False)
+    hits_collapsed_df = postprocessing.collapse_hits(hits_df, overlap_frac)
+
+    data_io.write_hits_processed(hits_collapsed_df, out_path, schema=data_io.HITS_COLLAPSED_DTYPES)
+
+
+def intersect_hits(hits_paths, out_path, relaxed):
+    from . import postprocessing
+
+    hits_dfs = [data_io.load_hits(hits_path, lazy=False) for hits_path in hits_paths]
+    hits_df = postprocessing.intersect_hits(hits_dfs, relaxed)
+
+    data_io.write_hits_processed(hits_df, out_path, schema=None)
 
 
 def cli():
@@ -358,10 +392,14 @@ def cli():
         help="The path to the output directory.")
     
     call_hits_parser.add_argument("-t", "--cwm-trim-threshold", type=float, default=0.3,
-        help="The threshold to determine motif start and end positions within the full CWMs.")
+        help="The default threshold to determine motif start and end positions within the full CWMs.")
+    call_hits_parser.add_argument("-T", "--cwm-trim-thresholds", type=str, default=None,
+        help="A tab-delimited file with tfmodisco motif names (e.g pos_patterns.pattern_0) in the first column and custom trim thresholds in the second column. Omitted motifs default to the `--cwm-trim-threshold` value.")
+    call_hits_parser.add_argument("-R", "--cwm-trim-coords", type=str, default=None,
+        help="A tab-delimited file with tfmodisco motif names (e.g pos_patterns.pattern_0) in the first column and custom trim start and end coordinates in the second and third columns, respectively. Omitted motifs default to `--cwm-trim-thresholds` values.")
     
     call_hits_parser.add_argument("-l", "--global-lambda", type=float, default=0.7,
-        help="The L1 regularization weight determining the sparsity of hits.")
+        help="The default L1 regularization weight determining the sparsity of hits.")
     call_hits_parser.add_argument("-L", "--motif-lambdas", type=str, default=None,
         help="A tab-delimited file with tfmodisco motif names (e.g pos_patterns.pattern_0) in the first column and motif-specific lambdas in the second column. Omitted motifs default to the `--global-lambda` value.")
     call_hits_parser.add_argument("-a", "--alpha", type=float, default=None,
@@ -418,7 +456,29 @@ def cli():
         help="Do not compute motif recall metrics.")
     report_parser.add_argument("-s", "--no-seqlets", action='store_true',
         help="DEPRECATED: Please omit the `--modisco-h5` argument instead.")
+
+
+    collapse_hits_parser = subparsers.add_parser("collapse-hits", formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        help="Identify best hit by motif similarity among sets of overlapping hits.")
     
+    collapse_hits_parser.add_argument("-i", "--hits", type=str, required=True,
+        help="The `hits.tsv` or `hits_unique.tsv` file from `call-hits`.")
+    collapse_hits_parser.add_argument("-o", "--out-path", type=str, required=True,
+        help="The path to the output .tsv file with an additional \"is_primary\" column.")
+    collapse_hits_parser.add_argument("-O", "--overlap-frac", type=float, default=0.2,
+        help="The threshold for determining overlapping hits. For two hits with lengths x and y, the minimum overlap is defined as `overlap_frac * (x + y) / 2`. The default value of 0.2 means that two hits must overlap by at least 20% of their average lengths to be considered overlapping.")
+    
+
+    intersect_hits_parser = subparsers.add_parser("intersect-hits", formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        help="Intersect hits across multiple runs.")
+    
+    intersect_hits_parser.add_argument("-i", "--hits", type=str, required=True, nargs='+',
+        help="One or more hits.tsv or hits_unique.tsv files, with paths delimited by whitespace.")
+    intersect_hits_parser.add_argument("-o", "--out-path", type=str, required=True,
+        help="The path to the output .tsv file. Duplicate columns are suffixed with the positional index of the input file.")
+    intersect_hits_parser.add_argument("-r", "--relaxed", action='store_true',
+        help="Use relaxed intersection criteria, using only motif names and untrimmed coordinates. By default, the intersection assumes consistent region definitions and motif trimming. This option is not recommended if genomic coordinates are unavailable.")
+
 
     args = parser.parse_args()
     
@@ -447,9 +507,9 @@ def cli():
             args.motif_lambdas = args.motif_alphas
 
         call_hits(args.regions, args.peaks, args.modisco_h5, args.chrom_order, args.motifs_include, args.motif_names, 
-                  args.motif_lambdas, args.out_dir, args.cwm_trim_threshold, args.global_lambda, args.step_size_max, 
-                  args.step_size_min, args.sqrt_transform, args.convergence_tol, args.max_steps, args.batch_size, 
-                  args.step_adjust, args.device, args.mode, args.no_post_filter, args.compile)
+                  args.motif_lambdas, args.out_dir, args.cwm_trim_coords, args.cwm_trim_thresholds, args.cwm_trim_threshold, 
+                  args.global_lambda, args.step_size_max, args.step_size_min, args.sqrt_transform, args.convergence_tol, 
+                  args.max_steps, args.batch_size, args.step_adjust, args.device, args.mode, args.no_post_filter, args.compile)
 
     elif args.cmd == "report":
         if args.no_recall and not args.no_seqlets:
@@ -458,3 +518,10 @@ def cli():
         report(args.regions, args.hits, args.modisco_h5, args.peaks, args.motifs_include, 
                args.motif_names, args.out_dir, args.modisco_region_width, args.cwm_trim_threshold, 
                not args.no_recall, not args.no_seqlets)
+
+    elif args.cmd == "collapse-hits":
+        collapse_hits(args.hits, args.out_path, args.overlap_frac)
+
+    elif args.cmd == "intersect-hits":
+        intersect_hits(args.hits, args.out_path, args.relaxed)
+
