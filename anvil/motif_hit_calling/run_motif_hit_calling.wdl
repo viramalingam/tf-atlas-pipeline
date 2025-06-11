@@ -32,8 +32,7 @@ task run_motif_hit_calling {
 		
 		echo "copying all files to cromwell_root folder"
 		
-		tar -cf /${experiment}/hits.tar /${experiment}_0p6/hits /${experiment}_0p7/hits /${experiment}_0p8/hits
-		cp -r /${experiment}/hits.tar /cromwell_root/motif_hits.tar
+		tar -cf /cromwell_root/motif_hits.tar /${experiment}_0p6/hits /${experiment}_0p7/hits /${experiment}_0p8/hits
 	}
 	
 	output {
