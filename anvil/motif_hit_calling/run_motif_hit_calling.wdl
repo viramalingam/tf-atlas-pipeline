@@ -5,9 +5,9 @@ task run_motif_hit_calling {
 		File counts_modisco_h5
 		File profile_modisco_h5
 		File peaks
-		File counts_shap_h5 
-		File profile_shap_h5  
-		File chroms_txt  
+		File counts_shap_h5
+		File profile_shap_h5
+		File chroms_txt
 		Float? cwm_threshold
 		Int? window
 		String? gpuType
@@ -31,7 +31,7 @@ task run_motif_hit_calling {
 		
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_0p8 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
 		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_0p8 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
-        
+		
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_profile_0p6 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.6 ${cwm_threshold} ${sqrt_transform} ${window}
 		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_profile_0p6 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.6 ${cwm_threshold} ${sqrt_transform} ${window}
 		
@@ -75,7 +75,7 @@ workflow motif_hit_calling {
 		Float? cwm_threshold=0.3
 		Int? window=400
 		String? gpuType="p4"
-		String? sqrt_transform="False"        
+		String? sqrt_transform="False"
 	}
 	call run_motif_hit_calling {
 		input:
