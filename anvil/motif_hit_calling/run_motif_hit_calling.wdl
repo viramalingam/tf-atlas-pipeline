@@ -6,7 +6,6 @@ task run_motif_hit_calling {
 		File peaks
 		File shap_h5  
 		File chroms_txt  
-		Float? lambda
 		Float? cwm_threshold
 		Int? window
 		String? gpuType
@@ -16,19 +15,25 @@ task run_motif_hit_calling {
 		#create data directories and download scripts
 		cd /; mkdir my_scripts
 		cd /my_scripts
-		git clone --depth 1 --branch main https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch v2.3.2 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/motif_hit_calling/
 		
 		##motif_hit_calling
 		
-		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${cwm_threshold} ${sqrt_transform} ${window}
-		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment} ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} ${lambda} ${cwm_threshold} ${sqrt_transform} ${window}
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_0p6 ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} 0.6 ${cwm_threshold} ${sqrt_transform} ${window}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_0p6 ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} 0.6 ${cwm_threshold} ${sqrt_transform} ${window}
+		
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_0p7 ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} 0.7 ${cwm_threshold} ${sqrt_transform} ${window}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_0p7 ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} 0.7 ${cwm_threshold} ${sqrt_transform} ${window}
+		
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_0p8 ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_0p8 ${modisco_h5} ${peaks} ${shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
+		
 		echo "copying all files to cromwell_root folder"
 		
-		tar -cf /${experiment}/hits.tar /${experiment}/hits
+		tar -cf /${experiment}/hits.tar /${experiment}_0p6/hits /${experiment}_0p7/hits /${experiment}_0p8/hits
 		cp -r /${experiment}/hits.tar /cromwell_root/motif_hits.tar
-		cp -r /${experiment}/hits/hits_unique.tsv /cromwell_root/hits_unique.tsv
 	}
 	
 	output {
@@ -55,7 +60,6 @@ workflow motif_hit_calling {
 		File peaks
 		File shap_h5    
 		File chroms_txt
-		Float? lambda=0.7
 		Float? cwm_threshold=0.3
 		Int? window=400
 		String? gpuType="p4"
@@ -68,7 +72,6 @@ workflow motif_hit_calling {
 			peaks=peaks,
 			shap_h5=shap_h5,
 			chroms_txt=chroms_txt,
-			lambda=lambda,
 			cwm_threshold=cwm_threshold,
 			window=window,
 			gpuType=gpuType,
