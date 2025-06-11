@@ -40,7 +40,7 @@ task run_motif_hit_calling {
 	
 	}
 	runtime {
-		docker: 'vivekramalingam/gcp-motif_hits_dev'
+		docker: 'vivekramalingam/gcp-motif_hits_v2.3.2'
 		memory: "16 GB"
 		cpu: 4
 		bootDiskSizeGb: 50
