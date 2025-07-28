@@ -32,8 +32,8 @@ task run_motif_hit_calling {
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_counts_0p8 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
 		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_counts_0p8 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
 
-		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_counts_0p9 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
-		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_counts_0p9 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_counts_0p9 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.9 ${cwm_threshold} ${sqrt_transform} ${window}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_counts_0p9 ${counts_modisco_h5} ${peaks} ${counts_shap_h5} ${chroms_txt} 0.9 ${cwm_threshold} ${sqrt_transform} ${window}
 
 		
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_profile_0p6 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.6 ${cwm_threshold} ${sqrt_transform} ${window}
@@ -45,8 +45,8 @@ task run_motif_hit_calling {
 		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_profile_0p8 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
 		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_profile_0p8 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
 
-		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_profile_0p9 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
-		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_profile_0p9 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.8 ${cwm_threshold} ${sqrt_transform} ${window}
+		echo "/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh" ${experiment}_profile_0p9 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.9 ${cwm_threshold} ${sqrt_transform} ${window}
+		/my_scripts/tf-atlas-pipeline/anvil/motif_hit_calling/motif_hit_calling.sh ${experiment}_profile_0p9 ${profile_modisco_h5} ${peaks} ${profile_shap_h5} ${chroms_txt} 0.9 ${cwm_threshold} ${sqrt_transform} ${window}
 
 		
 		echo "copying all files to cromwell_root folder"
