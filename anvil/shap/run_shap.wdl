@@ -58,10 +58,10 @@ task run_shap {
 		gpuCount: 1
 		gpuType: "nvidia-tesla-" + gpuType
 		zones: "us-west4-a us-west4-b us-west4-c"
-		nvidiaDriverVersion: "418.87.00"
+		nvidiaDriverVersion: "535.161.08"
 		maxRetries: 1
 	}
-}
+
 
 workflow shap {
 	input {
