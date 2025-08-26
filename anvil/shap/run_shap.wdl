@@ -45,9 +45,6 @@ task run_shap {
 		File profile_shap_scores = "profile_scores.h5"
 		File counts_shap_scores_bw = "counts_scores.bw"
 		File profile_shap_scores_bw = "profile_scores.bw"
-		        
-	
-	
 	}
 
 	runtime {
@@ -61,7 +58,6 @@ task run_shap {
 		nvidiaDriverVersion: "535.161.08"
 		maxRetries: 1
 	}
-
 
 workflow shap {
 	input {
