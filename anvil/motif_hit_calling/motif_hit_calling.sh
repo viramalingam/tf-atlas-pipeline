@@ -17,9 +17,10 @@ lambda=$6
 cwm_threshold=$7
 sqrt_transform=$8
 extract_regions_window=$9
-report_window=$10
+report_window=${10}
 
-echo $1 $2 $3 $4 $5 $6 $7 $8 $9
+echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10}
+
 
 echo 'mkdir project_dir'
 project_dir=/${experiment}
