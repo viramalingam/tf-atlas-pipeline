@@ -40,7 +40,6 @@ task run_au_metrics {
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auroc.txt /cromwell_root/auroc.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc_baseline.txt /cromwell_root/auprc_baseline.txt
 
-
 		
 	}
 	
@@ -49,7 +48,7 @@ task run_au_metrics {
 		Float auprc = read_float("auprc.txt")
 		Float auroc = read_float("auroc.txt")
 		Float auprc_baseline = read_float("auprc_baseline.txt")
-
+		File project_tar = /project.tar
 	
 	
 	}
@@ -60,10 +59,9 @@ runtime {
 		bootDiskSizeGb: 50
 		disks: "local-disk 50 HDD"
 		gpuType: "nvidia-tesla-" + gpuType
-		zones: "us-central1-a us-central1-b us-central1-c us-west1-a us-west1-b us-west1-c us-west4-a us-west4-b us-west4-c us-east1-b us-east1-c us-east1-d us-east4-a us-east4-b us-east4-c us-east5-a us-east5-b us-east5-c us-west2-a us-west2-b us-west2-c us-west3-a us-west3-b us-west3-c" 
-		gpuCount: 1
-		nvidiaDriverVersion: "418.87.00"
-		maxRetries: 1 
+		zones: "us-west4-a us-west4-b us-west4-c"
+		nvidiaDriverVersion: "535.161.08"
+		maxRetries: 1
 	}
 }
 
@@ -111,6 +109,7 @@ workflow au_metrics {
 		Float auprc = run_au_metrics.auprc
 		Float auroc = run_au_metrics.auroc
 		Float auprc_baseline = run_au_metrics.auprc_baseline
+		File project_tar = run_au_metrics.project_tar
 
 	}
 }

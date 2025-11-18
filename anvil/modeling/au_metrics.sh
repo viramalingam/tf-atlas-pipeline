@@ -283,3 +283,5 @@ python /my_scripts/tf-atlas-pipeline/anvil/modeling/auprc_auroc_calculations.py 
     --neg_file ${data_dir}/${experiment}_background_regions_filtered.bed \
     --output_len ${output_len} \
     --chroms $test_chromosome
+
+tar -cf /project.tar $project_dir
