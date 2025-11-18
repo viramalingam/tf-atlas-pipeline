@@ -39,8 +39,7 @@ task run_au_metrics {
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc.txt /cromwell_root/auprc.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auroc.txt /cromwell_root/auroc.txt
 		cp -r /project/predictions_and_metrics_all_peaks_test_chroms/auprc_baseline.txt /cromwell_root/auprc_baseline.txt
-
-		
+		cp -r /project.tar /cromwell_root/project.tar
 	}
 	
 	output {
@@ -48,9 +47,7 @@ task run_au_metrics {
 		Float auprc = read_float("auprc.txt")
 		Float auroc = read_float("auroc.txt")
 		Float auprc_baseline = read_float("auprc_baseline.txt")
-		File project_tar = /project.tar
-	
-	
+		File project_tar = /cromwell_root/project.tar
 	}
 
 runtime {
@@ -110,6 +107,5 @@ workflow au_metrics {
 		Float auroc = run_au_metrics.auroc
 		Float auprc_baseline = run_au_metrics.auprc_baseline
 		File project_tar = run_au_metrics.project_tar
-
 	}
 }
