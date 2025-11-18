@@ -47,7 +47,7 @@ task run_au_metrics {
 		Float auprc = read_float("auprc.txt")
 		Float auroc = read_float("auroc.txt")
 		Float auprc_baseline = read_float("auprc_baseline.txt")
-		File project_tar = /cromwell_root/project.tar
+		File project_tar = "project.tar"
 	}
 
 runtime {
