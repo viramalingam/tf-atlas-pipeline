@@ -7,3 +7,10 @@ workflows:
     authors:
       - name: Vivekanandan Ramalingam
         email: vir@stanford.edu
+  - name: modelling_bias0
+    subclass: WDL
+    primaryDescriptorPath: /anvil/modeling/nobias_metrics/run_modelling_bias0.wdl
+    publish: true
+    authors:
+      - name: Vivekanandan Ramalingam
+        email: vir@stanford.edu
