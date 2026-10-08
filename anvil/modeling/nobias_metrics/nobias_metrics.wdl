@@ -9,9 +9,10 @@ version 1.0
 # Outputs: nobias_metrics.tsv (every score x metric) and one Float per value,
 # <metric><tag> with metric auprc, auroc, pearson, spearman, pearson_all_peaks,
 # spearman_all_peaks and tag "" (model, with bias), _wo_bias (model, bias = 0),
-# _linear_probe(_wo_bias), _dense_probe(_wo_bias), _control_only,
-# _shuffled_sequence(_wo_bias), _label_shuffle(_wo_bias),
-# _label_shuffle_linear_probe(_wo_bias), _label_shuffle_dense_probe(_wo_bias).
+# _linear_probe(_wo_bias), _control_only, _shuffled_sequence(_wo_bias),
+# _label_shuffle(_wo_bias), _label_shuffle_linear_probe(_wo_bias). Probes are linear only
+# (probe_fit.py version 2; the dense probes were dropped in nobias_metrics-v0.3.0);
+# probe_version (2) records it.
 
 task run_nobias_metrics {
 	input {
@@ -48,7 +49,7 @@ task run_nobias_metrics {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch nobias_metrics-v0.1.1 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch nobias_metrics-v0.3.0 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/nobias_metrics/
 
@@ -89,24 +90,12 @@ task run_nobias_metrics {
 		Float spearman_linear_probe_wo_bias = read_float("spearman_linear_probe_wo_bias.txt")
 		Float pearson_all_peaks_linear_probe_wo_bias = read_float("pearson_all_peaks_linear_probe_wo_bias.txt")
 		Float spearman_all_peaks_linear_probe_wo_bias = read_float("spearman_all_peaks_linear_probe_wo_bias.txt")
-		Float auprc_dense_probe_wo_bias = read_float("auprc_dense_probe_wo_bias.txt")
-		Float auroc_dense_probe_wo_bias = read_float("auroc_dense_probe_wo_bias.txt")
-		Float pearson_dense_probe_wo_bias = read_float("pearson_dense_probe_wo_bias.txt")
-		Float spearman_dense_probe_wo_bias = read_float("spearman_dense_probe_wo_bias.txt")
-		Float pearson_all_peaks_dense_probe_wo_bias = read_float("pearson_all_peaks_dense_probe_wo_bias.txt")
-		Float spearman_all_peaks_dense_probe_wo_bias = read_float("spearman_all_peaks_dense_probe_wo_bias.txt")
 		Float auprc_linear_probe = read_float("auprc_linear_probe.txt")
 		Float auroc_linear_probe = read_float("auroc_linear_probe.txt")
 		Float pearson_linear_probe = read_float("pearson_linear_probe.txt")
 		Float spearman_linear_probe = read_float("spearman_linear_probe.txt")
 		Float pearson_all_peaks_linear_probe = read_float("pearson_all_peaks_linear_probe.txt")
 		Float spearman_all_peaks_linear_probe = read_float("spearman_all_peaks_linear_probe.txt")
-		Float auprc_dense_probe = read_float("auprc_dense_probe.txt")
-		Float auroc_dense_probe = read_float("auroc_dense_probe.txt")
-		Float pearson_dense_probe = read_float("pearson_dense_probe.txt")
-		Float spearman_dense_probe = read_float("spearman_dense_probe.txt")
-		Float pearson_all_peaks_dense_probe = read_float("pearson_all_peaks_dense_probe.txt")
-		Float spearman_all_peaks_dense_probe = read_float("spearman_all_peaks_dense_probe.txt")
 		Float auprc_control_only = read_float("auprc_control_only.txt")
 		Float auroc_control_only = read_float("auroc_control_only.txt")
 		Float pearson_control_only = read_float("pearson_control_only.txt")
@@ -143,25 +132,14 @@ task run_nobias_metrics {
 		Float spearman_label_shuffle_linear_probe_wo_bias = read_float("spearman_label_shuffle_linear_probe_wo_bias.txt")
 		Float pearson_all_peaks_label_shuffle_linear_probe_wo_bias = read_float("pearson_all_peaks_label_shuffle_linear_probe_wo_bias.txt")
 		Float spearman_all_peaks_label_shuffle_linear_probe_wo_bias = read_float("spearman_all_peaks_label_shuffle_linear_probe_wo_bias.txt")
-		Float auprc_label_shuffle_dense_probe_wo_bias = read_float("auprc_label_shuffle_dense_probe_wo_bias.txt")
-		Float auroc_label_shuffle_dense_probe_wo_bias = read_float("auroc_label_shuffle_dense_probe_wo_bias.txt")
-		Float pearson_label_shuffle_dense_probe_wo_bias = read_float("pearson_label_shuffle_dense_probe_wo_bias.txt")
-		Float spearman_label_shuffle_dense_probe_wo_bias = read_float("spearman_label_shuffle_dense_probe_wo_bias.txt")
-		Float pearson_all_peaks_label_shuffle_dense_probe_wo_bias = read_float("pearson_all_peaks_label_shuffle_dense_probe_wo_bias.txt")
-		Float spearman_all_peaks_label_shuffle_dense_probe_wo_bias = read_float("spearman_all_peaks_label_shuffle_dense_probe_wo_bias.txt")
 		Float auprc_label_shuffle_linear_probe = read_float("auprc_label_shuffle_linear_probe.txt")
 		Float auroc_label_shuffle_linear_probe = read_float("auroc_label_shuffle_linear_probe.txt")
 		Float pearson_label_shuffle_linear_probe = read_float("pearson_label_shuffle_linear_probe.txt")
 		Float spearman_label_shuffle_linear_probe = read_float("spearman_label_shuffle_linear_probe.txt")
 		Float pearson_all_peaks_label_shuffle_linear_probe = read_float("pearson_all_peaks_label_shuffle_linear_probe.txt")
 		Float spearman_all_peaks_label_shuffle_linear_probe = read_float("spearman_all_peaks_label_shuffle_linear_probe.txt")
-		Float auprc_label_shuffle_dense_probe = read_float("auprc_label_shuffle_dense_probe.txt")
-		Float auroc_label_shuffle_dense_probe = read_float("auroc_label_shuffle_dense_probe.txt")
-		Float pearson_label_shuffle_dense_probe = read_float("pearson_label_shuffle_dense_probe.txt")
-		Float spearman_label_shuffle_dense_probe = read_float("spearman_label_shuffle_dense_probe.txt")
-		Float pearson_all_peaks_label_shuffle_dense_probe = read_float("pearson_all_peaks_label_shuffle_dense_probe.txt")
-		Float spearman_all_peaks_label_shuffle_dense_probe = read_float("spearman_all_peaks_label_shuffle_dense_probe.txt")
 		Float auprc_baseline = read_float("auprc_baseline.txt")
+		Float probe_version = read_float("probe_version.txt")
 	}
 
 	runtime {
@@ -255,24 +233,12 @@ workflow nobias_metrics {
 		Float spearman_linear_probe_wo_bias = run_nobias_metrics.spearman_linear_probe_wo_bias
 		Float pearson_all_peaks_linear_probe_wo_bias = run_nobias_metrics.pearson_all_peaks_linear_probe_wo_bias
 		Float spearman_all_peaks_linear_probe_wo_bias = run_nobias_metrics.spearman_all_peaks_linear_probe_wo_bias
-		Float auprc_dense_probe_wo_bias = run_nobias_metrics.auprc_dense_probe_wo_bias
-		Float auroc_dense_probe_wo_bias = run_nobias_metrics.auroc_dense_probe_wo_bias
-		Float pearson_dense_probe_wo_bias = run_nobias_metrics.pearson_dense_probe_wo_bias
-		Float spearman_dense_probe_wo_bias = run_nobias_metrics.spearman_dense_probe_wo_bias
-		Float pearson_all_peaks_dense_probe_wo_bias = run_nobias_metrics.pearson_all_peaks_dense_probe_wo_bias
-		Float spearman_all_peaks_dense_probe_wo_bias = run_nobias_metrics.spearman_all_peaks_dense_probe_wo_bias
 		Float auprc_linear_probe = run_nobias_metrics.auprc_linear_probe
 		Float auroc_linear_probe = run_nobias_metrics.auroc_linear_probe
 		Float pearson_linear_probe = run_nobias_metrics.pearson_linear_probe
 		Float spearman_linear_probe = run_nobias_metrics.spearman_linear_probe
 		Float pearson_all_peaks_linear_probe = run_nobias_metrics.pearson_all_peaks_linear_probe
 		Float spearman_all_peaks_linear_probe = run_nobias_metrics.spearman_all_peaks_linear_probe
-		Float auprc_dense_probe = run_nobias_metrics.auprc_dense_probe
-		Float auroc_dense_probe = run_nobias_metrics.auroc_dense_probe
-		Float pearson_dense_probe = run_nobias_metrics.pearson_dense_probe
-		Float spearman_dense_probe = run_nobias_metrics.spearman_dense_probe
-		Float pearson_all_peaks_dense_probe = run_nobias_metrics.pearson_all_peaks_dense_probe
-		Float spearman_all_peaks_dense_probe = run_nobias_metrics.spearman_all_peaks_dense_probe
 		Float auprc_control_only = run_nobias_metrics.auprc_control_only
 		Float auroc_control_only = run_nobias_metrics.auroc_control_only
 		Float pearson_control_only = run_nobias_metrics.pearson_control_only
@@ -309,24 +275,13 @@ workflow nobias_metrics {
 		Float spearman_label_shuffle_linear_probe_wo_bias = run_nobias_metrics.spearman_label_shuffle_linear_probe_wo_bias
 		Float pearson_all_peaks_label_shuffle_linear_probe_wo_bias = run_nobias_metrics.pearson_all_peaks_label_shuffle_linear_probe_wo_bias
 		Float spearman_all_peaks_label_shuffle_linear_probe_wo_bias = run_nobias_metrics.spearman_all_peaks_label_shuffle_linear_probe_wo_bias
-		Float auprc_label_shuffle_dense_probe_wo_bias = run_nobias_metrics.auprc_label_shuffle_dense_probe_wo_bias
-		Float auroc_label_shuffle_dense_probe_wo_bias = run_nobias_metrics.auroc_label_shuffle_dense_probe_wo_bias
-		Float pearson_label_shuffle_dense_probe_wo_bias = run_nobias_metrics.pearson_label_shuffle_dense_probe_wo_bias
-		Float spearman_label_shuffle_dense_probe_wo_bias = run_nobias_metrics.spearman_label_shuffle_dense_probe_wo_bias
-		Float pearson_all_peaks_label_shuffle_dense_probe_wo_bias = run_nobias_metrics.pearson_all_peaks_label_shuffle_dense_probe_wo_bias
-		Float spearman_all_peaks_label_shuffle_dense_probe_wo_bias = run_nobias_metrics.spearman_all_peaks_label_shuffle_dense_probe_wo_bias
 		Float auprc_label_shuffle_linear_probe = run_nobias_metrics.auprc_label_shuffle_linear_probe
 		Float auroc_label_shuffle_linear_probe = run_nobias_metrics.auroc_label_shuffle_linear_probe
 		Float pearson_label_shuffle_linear_probe = run_nobias_metrics.pearson_label_shuffle_linear_probe
 		Float spearman_label_shuffle_linear_probe = run_nobias_metrics.spearman_label_shuffle_linear_probe
 		Float pearson_all_peaks_label_shuffle_linear_probe = run_nobias_metrics.pearson_all_peaks_label_shuffle_linear_probe
 		Float spearman_all_peaks_label_shuffle_linear_probe = run_nobias_metrics.spearman_all_peaks_label_shuffle_linear_probe
-		Float auprc_label_shuffle_dense_probe = run_nobias_metrics.auprc_label_shuffle_dense_probe
-		Float auroc_label_shuffle_dense_probe = run_nobias_metrics.auroc_label_shuffle_dense_probe
-		Float pearson_label_shuffle_dense_probe = run_nobias_metrics.pearson_label_shuffle_dense_probe
-		Float spearman_label_shuffle_dense_probe = run_nobias_metrics.spearman_label_shuffle_dense_probe
-		Float pearson_all_peaks_label_shuffle_dense_probe = run_nobias_metrics.pearson_all_peaks_label_shuffle_dense_probe
-		Float spearman_all_peaks_label_shuffle_dense_probe = run_nobias_metrics.spearman_all_peaks_label_shuffle_dense_probe
 		Float auprc_baseline = run_nobias_metrics.auprc_baseline
+		Float probe_version = run_nobias_metrics.probe_version
 	}
 }

@@ -367,7 +367,7 @@ step metrics python $scripts_dir/metrics.py --jobs $project_dir/metrics_jobs.txt
 
 # Step 5 (optional): probes on the frozen model and the baselines -- frozen-model
 # features; shuffled sequence (every region on its dinucleotide shuffle, own bias
-# and bias = 0); probes (seed 0); label shuffling; control counts only
+# and bias = 0); linear probes (probe_fit.py version 2); label shuffling; control counts only
 
 ncpu=$(nproc)
 gpu=${NOBIAS_GPU-0}    # GPU index for the Python steps; NOBIAS_GPU="" runs them on CPU (local tests)
@@ -375,7 +375,7 @@ if [ "${run_probes_and_baselines}" = "true" ]; then
     printf "%s %s\n" ${experiment} ${fold} > $project_dir/control_jobs.txt
     step probe_features python $scripts_dir/probe_features.py --experiment ${experiment} --gpu "$gpu" --folds ${fold}
     step shuffled_sequence python $scripts_dir/shuffled_background.py --experiment ${experiment} --fold ${fold} --gpu "$gpu" --procs $ncpu
-    step probe_fit python $scripts_dir/probe_fit.py --experiment ${experiment} --fold ${fold} --threads $ncpu --seeds 0
+    step probe_fit python $scripts_dir/probe_fit.py --experiment ${experiment} --fold ${fold} --threads $ncpu
     step label_shuffle python $scripts_dir/label_shuffle.py --jobs $project_dir/metrics_jobs.txt --workers 2
     step control_only python $scripts_dir/control_only.py --jobs $project_dir/control_jobs.txt --workers 1
 fi

@@ -5,11 +5,12 @@ headline values as one-number text files for the AnVIL workflow's
 read_float outputs (as auprc.txt / auroc.txt in the old au_metrics workflow).
 
     <out-dir>/nobias_metrics.tsv   experiment, fold, score, metric_type,
-                                   regions_input, metric_value (probes: mean
-                                   over seeds; label shuffling: mean over
+                                   regions_input, metric_value (probes: linear,
+                                   probe version 2 only; label shuffling: mean over
                                    permutations, + positive fraction as auprc_baseline)
     <out-dir>/<name>.txt           one value each, e.g. auprc_wo_bias.txt,
-                                   pearson_all_peaks_wo_bias.txt (NaN if absent)
+                                   pearson_all_peaks_wo_bias.txt (NaN if absent), and
+                                   probe_version.txt (2 if version-2 probe rows were used)
 
 Usage:
     python collect_metrics.py --root METRICS_PER_MODEL --experiment EXP --fold 0 --out-dir DIR
@@ -27,16 +28,14 @@ AMBIG = "peaks_and_nonpeaks_ambiguous_removed"
 # AUPRC, AUROC, Pearson / Spearman on peaks and on peaks + non-peaks, + the AUPRC chance level
 SCORE_TAGS = [
     ("", "model, with bias"), ("_wo_bias", "model, bias = 0"),
-    ("_linear_probe_wo_bias", "linear probe, bias = 0"), ("_dense_probe_wo_bias", "dense probe, bias = 0"),
-    ("_linear_probe", "linear probe, with bias"), ("_dense_probe", "dense probe, with bias"),
+    ("_linear_probe_wo_bias", "linear probe, bias = 0"), ("_linear_probe", "linear probe, with bias"),
     ("_control_only", "control counts only"),
     ("_shuffled_sequence", "shuffled sequence, same bias"), ("_shuffled_sequence_wo_bias", "shuffled sequence, bias = 0"),
     ("_label_shuffle", "label shuffle, model, bias with label"), ("_label_shuffle_wo_bias", "label shuffle, model, bias = 0"),
     ("_label_shuffle_linear_probe_wo_bias", "label shuffle, linear probe, bias = 0"),
-    ("_label_shuffle_dense_probe_wo_bias", "label shuffle, dense probe, bias = 0"),
     ("_label_shuffle_linear_probe", "label shuffle, linear probe, with bias"),
-    ("_label_shuffle_dense_probe", "label shuffle, dense probe, with bias"),
 ]
+PROBE_VERSION = 2   # probe_fit.py version 2: linear only, counts least squares on raw features
 METRIC_NAMES = [("auprc", "auprc", None), ("auroc", "auroc", None),
                 ("pearson", "pearsonr", "peaks"), ("spearman", "spearmanr", "peaks"),
                 ("pearson_all_peaks", "pearsonr", "peaks_and_nonpeaks"),
@@ -57,6 +56,8 @@ def collect(root, exp, fold):
         if len(d):
             parts.append(d.assign(score=name)[KEEP])
     pr = read(root, f"probe/fold{fold}", exp)
+    if len(pr):   # version 1 rows (dense probes, standardised least squares) are not used
+        pr = pr[(pr["head"] == "linear") & (pr.get("probe_version", pd.Series(1, index=pr.index)) == PROBE_VERSION)]
     if len(pr):
         b = {"zero": "bias = 0", "real": "with bias"}
         pr["score"] = [(f"label shuffle, {h} probe, {b[i]}" if l == "shuffled" else f"{h} probe, {b[i]}")
@@ -99,7 +100,9 @@ def main():
         v = t.loc[m, "metric_value"]
         x = float(v.iloc[0]) if len(v) else np.nan
         (out / f"{name}.txt").write_text("NaN\n" if np.isnan(x) else f"{x}\n")   # Cromwell read_float wants NaN
-    print(f"{a.experiment} fold{a.fold}: {len(t)} rows, {len(FLOATS)} headline files -> {out}")
+    has_probe = t.score.str.contains("probe").any()
+    (out / "probe_version.txt").write_text(f"{PROBE_VERSION}\n" if has_probe else "NaN\n")   # provenance
+    print(f"{a.experiment} fold{a.fold}: {len(t)} rows, {len(FLOATS) + 1} headline files -> {out}")
 
 
 if __name__ == "__main__":

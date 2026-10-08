@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Fit probes on one released model's frozen features (probe_features.py) and
-score them on the fold's test chromosomes.
+"""Fit linear probes on one released model's frozen features (probe_features.py)
+and score them on the fold's test chromosomes.
 
 Tasks:
     binary   peak vs non-peak, logistic loss, on peaks + GC negatives with
@@ -9,12 +9,18 @@ Tasks:
              pred_logcounts[:, 0], --score strand0)
     counts   observed total log counts, MSE loss, on peaks + all GC negatives;
              Pearson / Spearman on test peaks and on all test regions
-Heads:
-    linear   one linear layer, fit to its optimum (logistic regression for
-             binary, least squares for counts)
-    dense    Dense(64, relu) -> Dense(1), Adam 1e-3, batch 4096, early
-             stopping on the validation chromosomes (patience 10, best kept);
-             seeds from --seeds
+Head: one linear layer, fit to its optimum -- logistic regression on
+standardised features for binary, least squares on the raw features for counts.
+Probe version 2 (2026-10-08, vir): the dense probes are dropped, and the counts
+least squares no longer standardises the features. Version 1 divided every
+feature by its training sd + 1e-6, so a trunk channel that is zero on all
+training regions but fires on a few test ones got test values ~1e6 x larger,
+and the solver's rounding could give it a large coefficient: a few extreme
+predictions collapsed the counts Pearson (e.g. ENCSR940EZR fold 1). Least
+squares predictions do not depend on feature scaling, so the raw features give
+the same fit without that amplification (the way the model's own count head
+reads them). The logistic fit keeps standardised features; its L2 penalty
+drives the weight of a channel that is zero on all training regions to 0.
 Inputs:
     zero     the 64 pooled trunk features (bias = 0 is exact: the trunk never
              sees the control)
@@ -23,13 +29,12 @@ Inputs:
 Labels: true, or shuffled (control): as in label_shuffle.py, labels and
 observed counts are shuffled within each split (and task region set) and take
 their region's control total with them, while the sequence features stay --
-for training, early stopping and scoring alike, so no true label or count
-reaches the probe. With "zero" inputs this is chance; with "real" inputs it is
+for training and scoring alike, so no true label or count reaches the probe. With "zero" inputs this is chance; with "real" inputs it is
 what a trained readout gets from the control alone.
 
 Usage:
     source /oak/stanford/groups/akundaje/vir/tfatlas/eval/src/env.sh
-    $BPNET_PY probe_fit.py --experiment ENCSR000EGN --fold 0 [--seeds 0 1 2]
+    $BPNET_PY probe_fit.py --experiment ENCSR000EGN --fold 0
 """
 
 import argparse
@@ -46,61 +51,42 @@ ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
 ap.add_argument("--experiment", required=True)
 ap.add_argument("--fold", type=int, required=True)
 ap.add_argument("--threads", type=int, default=4)
-ap.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
+ap.add_argument("--seeds", nargs="+", type=int, default=[0],
+                help="unused since probe version 2 (dense probes dropped); kept for old command lines")
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from nobias_paths import FEAT_ROOT, NEG_DIR, OUT, PY, RELEASE, SCORE_ROOT, TFATLAS  # noqa: E402,F401
 import old_script  # noqa: E402
 ap.add_argument("--feat-root", default=str(FEAT_ROOT))
 ap.add_argument("--score-root", default=str(SCORE_ROOT))
 a = ap.parse_args()
-os.environ["CUDA_VISIBLE_DEVICES"] = ""          # tiny heads: CPU, leave GPUs to inference
 os.environ.setdefault("HDF5_USE_FILE_LOCKING", "FALSE")
-os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(v, str(a.threads))
 
 import h5py
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from scipy.stats import pearsonr, spearmanr
 from sklearn.linear_model import LinearRegression, LogisticRegression
 
-tf.config.threading.set_intra_op_parallelism_threads(a.threads)
-tf.config.threading.set_inter_op_parallelism_threads(2)
-
 HERE = Path(__file__).resolve().parent
+PROBE_VERSION = 2
 
-CONFIGS = ([(task, feat, "linear", labels, 0) for task in ("binary", "counts")
-            for feat in ("zero", "real") for labels in ("true", "shuffled")]
-           + [(task, feat, "dense", "true", seed) for task in ("binary", "counts")
-              for feat in ("zero", "real") for seed in a.seeds]
-           + [(task, feat, "dense", "shuffled", 0) for task in ("binary", "counts")
-              for feat in ("zero", "real")])
+CONFIGS = [(task, feat, "linear", labels, 0) for task in ("binary", "counts")
+           for feat in ("zero", "real") for labels in ("true", "shuffled")]
 
 
-def fit_predict(task, head, Z, target, tr, va, te, seed):
-    """Returns (test predictions, n_epochs or solver iterations)."""
-    if head == "linear":
-        if task == "binary":
-            m = LogisticRegression(C=1e4, solver="lbfgs", max_iter=5000)
-            m.fit(Z[tr], target[tr])
-            return m.decision_function(Z[te]), m.n_iter_[0]
-        m = LinearRegression().fit(Z[tr], target[tr])
-        return m.predict(Z[te]), 0
-    tf.keras.backend.clear_session()
-    tf.random.set_seed(seed)
-    np.random.seed(seed)
-    inp = tf.keras.Input((Z.shape[1],))
-    out = tf.keras.layers.Dense(1)(tf.keras.layers.Dense(64, activation="relu")(inp))
-    m = tf.keras.Model(inp, out)
-    m.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
-              loss=(tf.keras.losses.BinaryCrossentropy(from_logits=True) if task == "binary"
-                    else tf.keras.losses.MeanSquaredError()))
-    es = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=True)
-    h = m.fit(Z[tr], target[tr], validation_data=(Z[va], target[va]),
-              batch_size=4096, epochs=300, callbacks=[es], verbose=0)
-    return m.predict(Z[te], batch_size=16384).ravel(), len(h.history["loss"])
+def fit_predict(task, Xf, target, tr, te):
+    """Test predictions, solver iterations and least-squares rank of the linear probe."""
+    if task == "binary":     # standardised features (the L2 penalty needs a common scale)
+        mu, sd = Xf[tr].mean(0), Xf[tr].std(0) + 1e-6
+        Z = ((Xf - mu) / sd).astype(np.float32)
+        m = LogisticRegression(C=1e4, solver="lbfgs", max_iter=5000)
+        m.fit(Z[tr], target[tr])
+        return m.decision_function(Z[te]), m.n_iter_[0], None
+    X64 = Xf.astype(np.float64)   # raw features: least squares does not need a common scale
+    m = LinearRegression().fit(X64[tr], target[tr].astype(np.float64))
+    return m.predict(X64[te]), 0, int(m.rank_)
 
 
 def label_beds(chrom, pos, y, tmpdir):
@@ -173,17 +159,19 @@ def main():
         yl, ol, cl = y[j], obs[j], ctrl[j]
         Xf = feats if feat == "zero" else np.concatenate([feats, cl[:, None]], 1)
         tr, va, te = masks["train"], masks["val"], masks["test"]
-        mu, sd = Xf[tr].mean(0), Xf[tr].std(0) + 1e-6
-        Z = ((Xf - mu) / sd).astype(np.float32)
         if task == "binary":
             target = yl
         else:  # standardised target; correlations are scale-free
             target = ((ol - ol[tr].mean()) / (ol[tr].std() + 1e-6)).astype(np.float32)
-        pred, n_ep = fit_predict(task, head, Z, target, tr, va, te, seed)
+        pred, n_ep, rank = fit_predict(task, Xf, target, tr, te)
         name = f"{task}.{feat}.{head}.{labels}.seed{seed}"
         scores[name] = pred
         meta = dict(encid=exp, fold=fold, task=task, probe_inputs=feat, head=head, labels=labels,
-                    seed=seed, epochs=int(n_ep), n_train=int(tr.sum()), n_val=int(va.sum()))
+                    seed=seed, epochs=int(n_ep), n_train=int(tr.sum()), n_val=int(va.sum()),
+                    probe_version=PROBE_VERSION,
+                    # audit of the counts least squares: rank of the training design (features +
+                    # intercept centring) and the largest |test prediction| in training-sd units
+                    ols_rank=rank, max_abs_pred=(float(np.abs(pred).max()) if task == "counts" else None))
         if task == "binary":
             tc, tp = chrom[te], pos[te]
             with tempfile.TemporaryDirectory() as tmp:
@@ -208,7 +196,14 @@ def main():
 
     out = OUT / "probe" / f"fold{fold}"
     out.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(out / f"{exp}.tsv", sep="\t", index=False)
+    # atomic and collision-free: reruns tell finished files by their contents
+    fd, tmp = tempfile.mkstemp(dir=out, prefix=f"{exp}.tsv.", suffix=".tmp")
+    with os.fdopen(fd, "w") as fh:
+        pd.DataFrame(rows).to_csv(fh, sep="\t", index=False)
+    um = os.umask(0)
+    os.umask(um)
+    os.chmod(tmp, 0o666 & ~um)            # mkstemp makes 0600; keep the usual permissions
+    os.replace(tmp, out / f"{exp}.tsv")
     sdir = Path(a.score_root) / f"fold{fold}"
     sdir.mkdir(parents=True, exist_ok=True)
     with h5py.File(sdir / f"{exp}.h5", "w") as f:

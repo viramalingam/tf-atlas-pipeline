@@ -18,17 +18,20 @@ counts (test peaks; test peaks + all GC negatives), on the fold's test chromosom
 |---|---|---|---|
 | model, with bias | real | the region's control | released model |
 | model, bias = 0 | real | zero | released model |
-| linear / dense probe, bias = 0 | real (64 frozen trunk features) | none | probe trained on the training chromosomes |
-| linear / dense probe, with bias | real (64 features) | log control counts | probe |
+| linear probe, bias = 0 | real (64 frozen trunk features) | none | probe trained on the training chromosomes |
+| linear probe, with bias | real (64 features) | log control counts | probe |
 | control counts only | none | the region's control | model's bias weight x log control counts |
 | shuffled sequence, same bias | dinucleotide shuffle of the region | the region's control | released model |
 | shuffled sequence, bias = 0 | the same shuffles | zero | released model |
 | label shuffle, model, bias with label / bias = 0 | real, stays | moves with the permuted label / zero | released model's count layer |
-| label shuffle, linear / dense probe, with bias / bias = 0 | real features, stay | moves with the permuted label / none | probe retrained on permuted labels |
+| label shuffle, linear probe, with bias / bias = 0 | real features, stay | moves with the permuted label / none | probe retrained on permuted labels |
 
-Probes: logistic loss (binary) or least squares / MSE on observed counts (counts); dense = one
-hidden layer of 64 ReLU units, early stopping on the validation chromosomes; seed 0. Label
-shuffling: 100 permutations for the model rows; within-split shuffles for the probes.
+Probes (probe_fit.py version 2): linear only -- logistic regression on standardised features
+(binary) and least squares on the raw features (counts). Version 1 also had dense probes
+(dropped in `nobias_metrics-v0.3.0`) and standardised the counts features: a trunk channel that
+is zero on every training region but fires on a few test ones was then amplified ~1e6x and could
+take a large coefficient, collapsing the counts Pearson. Label shuffling: 100 permutations for
+the model rows; within-split shuffles for the probes.
 
 ## Training with bias = 0
 
@@ -64,6 +67,6 @@ zero; training settings as the release (`bpnet_params_gap_mse.json`, the fold's
 `predictions_wo_bias_h5` (only with `save_predictions`), and one Float per value:
 `<metric><tag>`, metric in `auprc`, `auroc`, `pearson`, `spearman`, `pearson_all_peaks`,
 `spearman_all_peaks`; tag `""` (model, with bias), `_wo_bias`, `_linear_probe(_wo_bias)`,
-`_dense_probe(_wo_bias)`, `_control_only`, `_shuffled_sequence(_wo_bias)`,
-`_label_shuffle(_wo_bias)`, `_label_shuffle_linear_probe(_wo_bias)`,
-`_label_shuffle_dense_probe(_wo_bias)`; plus `auprc_baseline`.
+`_control_only`, `_shuffled_sequence(_wo_bias)`, `_label_shuffle(_wo_bias)`,
+`_label_shuffle_linear_probe(_wo_bias)`; plus `auprc_baseline` and `probe_version` (2: linear probes,
+counts least squares on raw features; 68 Floats).
