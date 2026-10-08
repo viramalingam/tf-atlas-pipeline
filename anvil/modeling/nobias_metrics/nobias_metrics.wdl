@@ -34,6 +34,7 @@ task run_nobias_metrics {
 		Boolean run_probes_and_baselines
 		Boolean save_predictions
 		String gpuType
+		String zones
 		Int cpu
 		Int memory_gb
 		Int preemptible_tries
@@ -47,7 +48,7 @@ task run_nobias_metrics {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch nobias_metrics-v0.1.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch nobias_metrics-v0.1.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/nobias_metrics/
 
@@ -171,7 +172,7 @@ task run_nobias_metrics {
 		disks: "local-disk 100 SSD"
 		gpuType: "nvidia-tesla-" + gpuType
 		gpuCount: 1
-		zones: "us-central1-a us-central1-b us-central1-c us-west1-a us-west1-b us-west1-c us-west4-a us-west4-b us-west4-c us-east1-b us-east1-c us-east1-d us-east4-a us-east4-b us-east4-c us-east5-a us-east5-b us-east5-c us-west2-a us-west2-b us-west2-c us-west3-a us-west3-b us-west3-c"
+		zones: zones   # GCP Batch: all zones must be in one region
 		nvidiaDriverVersion: "535.161.08"
 		preemptible: preemptible_tries
 		maxRetries: 1
@@ -199,6 +200,7 @@ workflow nobias_metrics {
 		Boolean run_probes_and_baselines = true
 		Boolean save_predictions = false
 		String gpuType = "t4"
+		String zones = "us-west4-a us-west4-b us-west4-c"
 		Int cpu = 8
 		Int memory_gb = 52
 		Int preemptible_tries = 0
@@ -225,6 +227,7 @@ workflow nobias_metrics {
 			run_probes_and_baselines = run_probes_and_baselines,
 			save_predictions = save_predictions,
 			gpuType = gpuType,
+			zones = zones,
 			cpu = cpu,
 			memory_gb = memory_gb,
 			preemptible_tries = preemptible_tries
