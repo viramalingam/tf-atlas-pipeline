@@ -36,10 +36,12 @@ shuffling: 100 permutations for the model rows; within-split shuffles for the pr
 zero: it is the release `../run_modelling.wdl` (tf-atlas-pipeline `v2.0.0-rc.1`: cloned code,
 `modelling_pipeline.sh`, docker `gcp-modeling_v2.0.0-rc.1`, memory, disk) with only the changes
 needed on Terra now -- outputs copied to the task working directory (GCP Batch), `gpuType`
-(default T4; K80s are retired) and `zones` (one region) inputs, NVIDIA driver 535. The bias is
-zero through the inputs: the training / testing input jsons (`training_input_gc_1by3.json` /
+(default T4; K80s are retired), `zones` (one region) and `memory_gb` (default 32 as in the
+release; large experiments can run out of memory in the all-chromosome predictions) inputs,
+NVIDIA driver 535. The bias is zero through the inputs: the training / testing input jsons (`training_input_gc_1by3.json` /
 `testing_input.json` of the release with the bias sources pointed at
-`zero_control_{plus,minus}.bigWig`, all-zero tracks over hg38) and those two bigWigs in place of
+`zero_control_{plus,minus}.bigWig`, all-zero tracks over hg38 stored as 10 kb intervals: with one
+interval per chromosome, pyBigWig reads walk the whole chromosome and training runs ~37x slower) and those two bigWigs in place of
 the experiment's control in `bigwigs`. The architecture is the released one with every bias input
 zero; training settings as the release (`bpnet_params_gap_mse.json`, the fold's
 `split_<f>_encode_fold.json`, learning rate 0.001).
@@ -48,6 +50,7 @@ zero; training settings as the release (`bpnet_params_gap_mse.json`, the fold's
 
 - `nobias_metrics.wdl`: Terra workflow; clones this repository at the tag pinned in its command.
 - `run_modelling_bias0.wdl`: release-pipeline training of one fold model with bias = 0 (above).
+- `make_zero_control_bigwig.py`: builds the all-zero control bigWigs (10 kb tiles) used by it.
 - `nobias_metrics.sh`: driver (positional arguments 1-15 as `au_metrics.sh`, then fold,
   run_probes_and_baselines). Steps: ambiguous-peak removal (bedtools), `bpnet-predict` with bias
   and with `--set-bias-as-zero`, then the scripts below; a failed step fails the task.

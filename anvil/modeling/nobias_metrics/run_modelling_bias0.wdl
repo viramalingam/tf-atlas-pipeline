@@ -5,7 +5,9 @@ version 1.0
 # modelling_pipeline.sh, docker, memory and disk) with only the changes needed on Terra
 # today -- outputs copied to the task working directory (GCP Batch uses
 # /mnt/disks/cromwell_root), gpuType / zones inputs (K80s are retired; GCP Batch needs
-# zones in one region) and NVIDIA driver 535. Bias = 0 comes from the inputs: the
+# zones in one region), NVIDIA driver 535 and a memory_gb input (default 32 as in the
+# release; large experiments can need more for the all-chromosome predictions). Bias = 0
+# comes from the inputs: the
 # training / testing input jsons point the bias at all-zero control bigWigs
 # (zero_control_{plus,minus}.bigWig, passed in the bigwigs list), so the architecture
 # is the released one with every bias input zero.
@@ -28,6 +30,7 @@ task run_modelling {
 		Array [File]? indices_files
 		String gpuType
 		String zones
+		Int memory_gb
 	}
 	
 	command {
@@ -113,7 +116,7 @@ task run_modelling {
 
 	runtime {
 		docker: 'vivekramalingam/tf-atlas:gcp-modeling_v2.0.0-rc.1'
-		memory: 32 + "GB"
+		memory: memory_gb + " GB"
 		bootDiskSizeGb: 50
 		disks: "local-disk 100 HDD"
 		gpuType: gpuType
@@ -142,6 +145,7 @@ workflow modelling {
 		Array [File]? indices_files
 		String gpuType = "nvidia-tesla-t4"
 		String zones = "us-west4-a us-west4-b us-west4-c"
+		Int memory_gb = 32
 	}
 	
 	call run_modelling {
@@ -161,7 +165,8 @@ workflow modelling {
 			learning_rate = learning_rate,
 			indices_files = indices_files,
 			gpuType = gpuType,
-			zones = zones
+			zones = zones,
+			memory_gb = memory_gb
 	}
 	output {
 		File bpnet_params_updated_json = run_modelling.bpnet_params_updated_json
