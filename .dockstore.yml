@@ -1,0 +1,9 @@
+version: 1.2
+workflows:
+  - name: nobias_metrics
+    subclass: WDL
+    primaryDescriptorPath: /anvil/modeling/nobias_metrics/nobias_metrics.wdl
+    publish: true
+    authors:
+      - name: Vivekanandan Ramalingam
+        email: vir@stanford.edu

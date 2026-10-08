@@ -1,0 +1,16 @@
+{
+    "0": {
+        "signal": {
+            "source": ["/project/data/<experiment>_plus.bigWig",
+                       "/project/data/<experiment>_minus.bigWig"]
+        },
+        "loci": {
+            "source": ["/project/data/<experiment>_<test_loci>.bed"]
+        },
+        "bias": {
+            "source": ["/project/data/<experiment>_control_plus.bigWig",
+                       "/project/data/<experiment>_control_minus.bigWig"],
+            "smoothing": [null, null]
+        }
+    }
+}
