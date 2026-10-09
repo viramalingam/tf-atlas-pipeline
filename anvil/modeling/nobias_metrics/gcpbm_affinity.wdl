@@ -7,14 +7,15 @@ version 1.0
 # the scripts are cloned at the tag below.
 # Score per probe: mean over backgrounds of the change in log counts (counts head,
 # reverse-complement averaged, bias input zero) when the 36 bp probe replaces the
-# centre of the background. Two background panels: the first n_background_windows
-# windows of backgrounds_fa (shuffled genomic windows, each record followed by its
-# reverse complement, so 2 x n_background_windows records; 20, 50, 100 or 200) and
-# n_peak_backgrounds (> 0) shuffled test-chromosome peaks of the experiment, each with
-# its reverse complement (realized panel: panel_peaks.fa).
+# centre of the background. Backgrounds: n_peak_backgrounds dinucleotide-shuffled peaks
+# of the experiment (all chromosomes), each with its reverse complement, the same for
+# both models (realized panel: panel_peaks.fa). Optional second panel (off by default):
+# the first n_background_windows (20, 50, 100 or 200) shuffled hg38 windows of
+# backgrounds_fa, each record followed by its reverse complement; its scores are in
+# scores_tsv / metrics_tsv with the suffix _windows.
 # Outputs: scores.tsv.gz (per probe), metrics.tsv, check.json, deltas.npz (probe x
-# background deltas and baselines), panel_peaks.fa, and one Float per value,
-# <metric>_<model>[_peaks] with metric pearson_all, spearman_all, pearson_nonnegctrl,
+# background deltas and baselines), panel_peaks.fa, and one Float per value on the peak
+# panel, <metric>_<model> with metric pearson_all, spearman_all, pearson_nonnegctrl,
 # spearman_nonnegctrl and model released or bias0; bias_check_max_abs_delta_difference
 # checks that the released model's scores do not depend on the bias input.
 
@@ -25,7 +26,7 @@ task run_gcpbm_affinity {
 		Array [File] model_bias0
 		File gcpbm_tsv
 		String gcpbm_column
-		File backgrounds_fa
+		File? backgrounds_fa
 		Int n_background_windows
 		Int n_peak_backgrounds
 		Int probe_subset
@@ -44,12 +45,12 @@ task run_gcpbm_affinity {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch gcpbm_affinity-v0.1.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch gcpbm_affinity-v0.2.0 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/nobias_metrics/
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh" ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} ${backgrounds_fa} ${n_background_windows} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} ${backgrounds_fa} ${n_background_windows} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh" ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} "${backgrounds_fa}" ${n_background_windows} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} "${backgrounds_fa}" ${n_background_windows} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
 
 		echo "copying all files to the task working directory"
 		cp -r /project/gcpbm_outputs/* $workdir/
@@ -71,14 +72,6 @@ task run_gcpbm_affinity {
 		Float spearman_all_bias0 = read_float("spearman_all_bias0.txt")
 		Float pearson_nonnegctrl_bias0 = read_float("pearson_nonnegctrl_bias0.txt")
 		Float spearman_nonnegctrl_bias0 = read_float("spearman_nonnegctrl_bias0.txt")
-		Float pearson_all_released_peaks = read_float("pearson_all_released_peaks.txt")
-		Float spearman_all_released_peaks = read_float("spearman_all_released_peaks.txt")
-		Float pearson_nonnegctrl_released_peaks = read_float("pearson_nonnegctrl_released_peaks.txt")
-		Float spearman_nonnegctrl_released_peaks = read_float("spearman_nonnegctrl_released_peaks.txt")
-		Float pearson_all_bias0_peaks = read_float("pearson_all_bias0_peaks.txt")
-		Float spearman_all_bias0_peaks = read_float("spearman_all_bias0_peaks.txt")
-		Float pearson_nonnegctrl_bias0_peaks = read_float("pearson_nonnegctrl_bias0_peaks.txt")
-		Float spearman_nonnegctrl_bias0_peaks = read_float("spearman_nonnegctrl_bias0_peaks.txt")
 		Float bias_check_max_abs_delta_difference = read_float("bias_check_max_abs_delta_difference.txt")
 	}
 
@@ -104,9 +97,9 @@ workflow gcpbm_affinity {
 		Array [File] model_bias0
 		File gcpbm_tsv
 		String gcpbm_column
-		File backgrounds_fa
-		Int n_background_windows
-		Int n_peak_backgrounds = 100
+		File? backgrounds_fa
+		Int n_background_windows = 0    # 0: no window panel
+		Int n_peak_backgrounds = 200
 		Int probe_subset = 0    # > 0: a fixed random subset of probes (seed 0), for tests
 		File reference_file
 		File reference_file_index
@@ -152,14 +145,6 @@ workflow gcpbm_affinity {
 		Float spearman_all_bias0 = run_gcpbm_affinity.spearman_all_bias0
 		Float pearson_nonnegctrl_bias0 = run_gcpbm_affinity.pearson_nonnegctrl_bias0
 		Float spearman_nonnegctrl_bias0 = run_gcpbm_affinity.spearman_nonnegctrl_bias0
-		Float pearson_all_released_peaks = run_gcpbm_affinity.pearson_all_released_peaks
-		Float spearman_all_released_peaks = run_gcpbm_affinity.spearman_all_released_peaks
-		Float pearson_nonnegctrl_released_peaks = run_gcpbm_affinity.pearson_nonnegctrl_released_peaks
-		Float spearman_nonnegctrl_released_peaks = run_gcpbm_affinity.spearman_nonnegctrl_released_peaks
-		Float pearson_all_bias0_peaks = run_gcpbm_affinity.pearson_all_bias0_peaks
-		Float spearman_all_bias0_peaks = run_gcpbm_affinity.spearman_all_bias0_peaks
-		Float pearson_nonnegctrl_bias0_peaks = run_gcpbm_affinity.pearson_nonnegctrl_bias0_peaks
-		Float spearman_nonnegctrl_bias0_peaks = run_gcpbm_affinity.spearman_nonnegctrl_bias0_peaks
 		Float bias_check_max_abs_delta_difference = run_gcpbm_affinity.bias_check_max_abs_delta_difference
 	}
 }
