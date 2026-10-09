@@ -58,9 +58,7 @@ the score is the mean over backgrounds of the change in log counts (the counts h
 output, averaged over the sequence and its reverse complement, every bias input zero). The
 backgrounds, the same for both models, are `n_peak_backgrounds` of the experiment's own peaks
 (all chromosomes, summit-centred), dinucleotide shuffled, each followed by its reverse complement;
-the first N peaks of a larger panel are exactly the N-peak panel. Optionally (off by default,
-`n_background_windows` 0) a second panel of shuffled hg38 windows from `backgrounds_fa` is scored
-too; its results carry the suffix `_windows` in `scores_tsv` / `metrics_tsv`. Metrics: Pearson
+the first N peaks of a larger panel are exactly the N-peak panel. Metrics: Pearson
 and Spearman against the measured intensity, on all probes and on non-negative-control probes. The
 counts output is a linear layer on [sequence trunk, bias], so these scores are the same for the
 released model with its bias or with the bias set to zero; every run checks that on the model
@@ -92,8 +90,8 @@ torch engine in `tfatlas/analysis/syntax_analysis/paralog_specificity/lib/bpnet_
 `_label_shuffle_linear_probe(_wo_bias)`; plus `auprc_baseline` and `probe_version` (2: linear probes,
 counts least squares on raw features; 68 Floats).
 
-`gcpbm_affinity.wdl`: `scores_tsv` (per probe: the library's columns, `ad_<model>[_windows]`,
-`sd_<model>[_windows]`), `metrics_tsv`, `check_json` (versions, hashes, checks), `deltas_npz` (probe x
-background deltas), `peaks_panel_fa`, `log`, and 9 Floats on the peak panel: `<metric>_<model>` with
+`gcpbm_affinity.wdl`: `scores_tsv` (per probe: the library's columns, `ad_<model>`, `sd_<model>`),
+`metrics_tsv`, `check_json` (versions, hashes, checks), `deltas_npz` (probe x background deltas),
+`peaks_panel_fa`, `log`, and 9 Floats: `<metric>_<model>` with
 metric `pearson_all`, `spearman_all`, `pearson_nonnegctrl`, `spearman_nonnegctrl` and model `released`
 or `bias0`, plus `bias_check_max_abs_delta_difference`.

@@ -7,15 +7,12 @@ version 1.0
 # the scripts are cloned at the tag below.
 # Score per probe: mean over backgrounds of the change in log counts (counts head,
 # reverse-complement averaged, bias input zero) when the 36 bp probe replaces the
-# centre of the background. Backgrounds: n_peak_backgrounds dinucleotide-shuffled peaks
-# of the experiment (all chromosomes), each with its reverse complement, the same for
-# both models (realized panel: panel_peaks.fa). Optional second panel (off by default):
-# the first n_background_windows (20, 50, 100 or 200) shuffled hg38 windows of
-# backgrounds_fa, each record followed by its reverse complement; its scores are in
-# scores_tsv / metrics_tsv with the suffix _windows.
+# centre of the background. Backgrounds: n_peak_backgrounds of the experiment's peaks
+# (all chromosomes, summit-centred), dinucleotide shuffled, each with its reverse
+# complement, the same for both models (realized panel: panel_peaks.fa).
 # Outputs: scores.tsv.gz (per probe), metrics.tsv, check.json, deltas.npz (probe x
-# background deltas and baselines), panel_peaks.fa, and one Float per value on the peak
-# panel, <metric>_<model> with metric pearson_all, spearman_all, pearson_nonnegctrl,
+# background deltas and baselines), panel_peaks.fa, and one Float per value,
+# <metric>_<model> with metric pearson_all, spearman_all, pearson_nonnegctrl,
 # spearman_nonnegctrl and model released or bias0; bias_check_max_abs_delta_difference
 # checks that the released model's scores do not depend on the bias input.
 
@@ -26,8 +23,6 @@ task run_gcpbm_affinity {
 		Array [File] model_bias0
 		File gcpbm_tsv
 		String gcpbm_column
-		File? backgrounds_fa
-		Int n_background_windows
 		Int n_peak_backgrounds
 		Int probe_subset
 		File reference_file
@@ -45,12 +40,12 @@ task run_gcpbm_affinity {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch gcpbm_affinity-v0.2.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch gcpbm_affinity-v0.3.0 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/nobias_metrics/
 
-		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh" ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} "${backgrounds_fa}" ${n_background_windows} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
-		/my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} "${backgrounds_fa}" ${n_background_windows} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
+		echo "run /my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh" ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
+		/my_scripts/tf-atlas-pipeline/anvil/modeling/nobias_metrics/gcpbm_affinity.sh ${experiment} ${sep=',' model} ${sep=',' model_bias0} ${gcpbm_tsv} ${gcpbm_column} ${n_peak_backgrounds} ${reference_file} ${reference_file_index} ${probe_subset}
 
 		echo "copying all files to the task working directory"
 		cp -r /project/gcpbm_outputs/* $workdir/
@@ -97,8 +92,6 @@ workflow gcpbm_affinity {
 		Array [File] model_bias0
 		File gcpbm_tsv
 		String gcpbm_column
-		File? backgrounds_fa
-		Int n_background_windows = 0    # 0: no window panel
 		Int n_peak_backgrounds = 200
 		Int probe_subset = 0    # > 0: a fixed random subset of probes (seed 0), for tests
 		File reference_file
@@ -117,8 +110,6 @@ workflow gcpbm_affinity {
 			model_bias0 = model_bias0,
 			gcpbm_tsv = gcpbm_tsv,
 			gcpbm_column = gcpbm_column,
-			backgrounds_fa = backgrounds_fa,
-			n_background_windows = n_background_windows,
 			n_peak_backgrounds = n_peak_backgrounds,
 			probe_subset = probe_subset,
 			reference_file = reference_file,

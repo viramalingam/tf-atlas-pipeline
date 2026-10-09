@@ -24,31 +24,25 @@ numerically (deltas with a non-flat, strand-asymmetric bias input, the strands
 swapped for the reverse complement as in predict.py, against zero bias), and
 fails if either check does not hold.
 
-Background panels:
-  peaks    (primary; --n-peak-backgrounds K) K of the experiment's peaks
-           (summit-centred 2114 bp windows inside the chromosome, ACGT only; all
-           chromosomes of the peaks file, or the fold's test chromosomes with
-           --peak-chroms test), drawn in a seeded random order without replacement,
-           each dinucleotide shuffled with a seed that depends only on --peak-seed and
-           the peak, and followed by its reverse complement. The first K peaks of a
-           larger panel are therefore exactly the K-peak panel. This is the background
-           type of the published evaluation code. Realized panel: panel_peaks.fa.
-  windows  (optional; only with --backgrounds) the first 2N records of --backgrounds
-           (N = --n-windows, 0 = all): panels v2A / v2B hold each dinucleotide-shuffled
-           hg38 window followed by its reverse complement (checked), so 2N records are
-           N windows with their RCs. Scores get the suffix _windows.
+Backgrounds: --n-peak-backgrounds K of the experiment's peaks (summit-centred 2114 bp
+windows inside the chromosome, ACGT only, all chromosomes of the peaks file), drawn in a
+seeded random order without replacement, each dinucleotide shuffled with a seed that
+depends only on --peak-seed and the peak, and followed by its reverse complement (2K
+records). The first K peaks of a larger panel are therefore exactly the K-peak panel.
+This is the background type of the published evaluation code. Realized panel:
+panel_peaks.fa.
 
 Outputs in --out-dir:
   scores.tsv.gz      one row per probe: probe_index, the library's columns
                      (ID_REF, ID, Sequence, all measured columns), measured
-                     (= --column), ad_<model>[_windows], sd_<model>[_windows]
+                     (= --column), ad_<model>, sd_<model>
                      (SD over background records; descriptive, not a standard error)
   metrics.tsv        Pearson / Spearman of each score vs measured, all probes and
                      non-negative-control probes (ID != NegCtrl)
   <metric>_<score>.txt   one number per file for the WDL (read_float)
   bias_check_max_abs_delta_difference.txt
   check.json         versions, hashes (scorer, inputs, models, panels), timings, checks
-  panel_peaks.txt, panel_peaks.fa, panel_windows.txt
+  panel_peaks.txt, panel_peaks.fa
   deltas.npz / deltas_<score>.npy   (--save-deltas npz|npy) probe x record deltas
                      (rows = distinct probe sequences in sorted order) and baselines
 
@@ -56,7 +50,7 @@ Usage:
   python affinity_distillation.py --models released=DIR_OR_TAR bias0=DIR_OR_TAR \
       --probes ETS_gcpbm.tsv --column Gabpa_100nM \
       --peaks EXP_peaks.bed --fasta hg38.fa --n-peak-backgrounds 200 \
-      [--backgrounds v2A.fa --n-windows 100] [--check-n 64] [--save-deltas npz] --out-dir out/
+      [--check-n 64] [--save-deltas npz] --out-dir out/
 """
 import argparse
 import hashlib
@@ -77,14 +71,7 @@ ap.add_argument("--peaks", required=True, help="EXP_peaks.bed (narrowPeak, summi
 ap.add_argument("--fasta", required=True, help="hg38 FASTA (with .fai) for --peaks")
 ap.add_argument("--n-peak-backgrounds", type=int, required=True,
                 help="shuffled peaks, each with its reverse complement")
-ap.add_argument("--peak-chroms", choices=["all", "test"], default="all",
-                help="draw peaks from all chromosomes or from the fold's test chromosomes (--splits)")
-ap.add_argument("--splits", help="splits.json of the fold (for --peak-chroms test)")
 ap.add_argument("--peak-seed", type=int, default=20261009)
-ap.add_argument("--backgrounds", help="optional window panel: background FASTA (2114 bp records)")
-ap.add_argument("--n-windows", type=int, default=0,
-                help="use the first N windows (2N records: each window and its reverse "
-                     "complement) of --backgrounds (0 = all records)")
 ap.add_argument("--probe-subset", type=int, default=0,
                 help="score a fixed random subset of N probes (0 = all)")
 ap.add_argument("--probe-seed", type=int, default=0)
@@ -100,8 +87,6 @@ ap.add_argument("--allow-cpu", action="store_true", help="run without a GPU (loc
 ap.add_argument("--save-deltas", nargs="?", const="npy", choices=["npy", "npz"], default=None)
 ap.add_argument("--out-dir", required=True)
 a = ap.parse_args()
-if a.peak_chroms == "test" and not a.splits:
-    ap.error("--peak-chroms test needs --splits")
 if a.gpu is not None:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(a.gpu)
 
@@ -295,28 +280,12 @@ class CountsScorer:
         return delta, base
 
 
-def window_panel(path, n_windows):
-    names, seqs = read_fasta(path)
-    if any(len(s) != INPUT_LEN for s in seqs) or any(set(s) - set("ACGT") for s in seqs):
-        raise ValueError("backgrounds must all be 2114 bp of ACGT")
-    if n_windows:
-        if 2 * n_windows > len(seqs):
-            raise ValueError(f"--n-windows {n_windows} needs {2 * n_windows} records, {path} has {len(seqs)}")
-        names, seqs = names[:2 * n_windows], seqs[:2 * n_windows]
-        bad = [k for k in range(0, len(seqs), 2) if revcomp(seqs[k]) != seqs[k + 1]]
-        if bad:
-            raise ValueError(f"{path}: record {bad[0] + 1} is not followed by its reverse complement")
-    return names, seqs
-
-
-def peak_panel(peaks, fasta, n, seed, chroms="all", splits=None):
+def peak_panel(peaks, fasta, n, seed):
     """n eligible peaks (summit-centred 2114 bp inside the chromosome, ACGT only), in a
     seeded random order without replacement, each dinucleotide shuffled with a seed that
     depends only on `seed` and the peak, and followed by its reverse complement."""
     import pyfaidx
     b = pd.read_csv(peaks, sep="\t", header=None)
-    if chroms == "test":
-        b = b[b[0].isin(json.loads(Path(splits).read_text())["0"]["test"])]
     b = b.assign(pos=b[1] + b[9]).drop_duplicates([0, "pos"]).sort_values([0, "pos"]).reset_index(drop=True)
     fa = pyfaidx.Fasta(fasta)
     elig = []
@@ -328,7 +297,7 @@ def peak_panel(peaks, fasta, n, seed, chroms="all", splits=None):
         if len(s) == INPUT_LEN and not set(s) - set("ACGT"):
             elig.append((c, p, s))
     if len(elig) < n:
-        raise ValueError(f"only {len(elig)} eligible peaks ({chroms} chromosomes), {n} requested")
+        raise ValueError(f"only {len(elig)} eligible peaks, {n} requested")
     pick = np.random.RandomState(seed).permutation(len(elig))[:n]
     names, seqs = [], []
     for i in pick:
@@ -336,7 +305,7 @@ def peak_panel(peaks, fasta, n, seed, chroms="all", splits=None):
         sh = dinuc_shuffle(s, 1, np.random.RandomState((seed * 1000003 + int(i)) % 2 ** 32))[0]
         names += [f"peak_{c}_{p}_fwd", f"peak_{c}_{p}_rev"]
         seqs += [sh, revcomp(sh)]
-    return names, seqs, dict(chroms=chroms, n_peaks_in_file=int(len(b)), n_eligible=len(elig), n_sampled=int(n))
+    return names, seqs, dict(chroms="all", n_peaks_in_file=int(len(b)), n_eligible=len(elig), n_sampled=int(n))
 
 
 def correlations(score, y, nonneg):
@@ -379,15 +348,12 @@ def main():
     print(f"{len(d)} probes ({len(uniq)} distinct sequences, {(~nonneg).sum()} NegCtrl), column {a.column}",
           flush=True)
 
-    nm, sq, meta = peak_panel(a.peaks, a.fasta, a.n_peak_backgrounds, a.peak_seed, a.peak_chroms, a.splits)
-    panels = {"peaks": (nm, sq)}             # primary panel first: its scores carry no suffix
+    nm, sq, meta = peak_panel(a.peaks, a.fasta, a.n_peak_backgrounds, a.peak_seed)
+    panels = {"peaks": (nm, sq)}
     info["peak_panel"] = dict(meta, peaks_sha256=sha256(a.peaks))
     with open(out / "panel_peaks.fa", "w") as fh:
         for n_, s_ in zip(nm, sq):
             fh.write(f">{n_}\n{s_}\n")
-    if a.backgrounds:
-        panels["windows"] = window_panel(a.backgrounds, a.n_windows)
-        info["backgrounds_sha256"] = sha256(a.backgrounds)
     info["panels"] = {k: dict(records=len(v[0]), sequences_sha256=sha256_seqs(v[1])) for k, v in panels.items()}
     for k, (nm, _) in panels.items():
         (out / f"panel_{k}.txt").write_text("\n".join(nm) + "\n")
@@ -408,7 +374,7 @@ def main():
         for pk, (nm, sq) in panels.items():
             B = one_hot(sq, INPUT_LEN)
             delta, base = sc.scan(B, Q, log_every=max(1, len(B) // 10), label=f"{name}/{pk}")
-            col = name if pk == "peaks" else f"{name}_{pk}"
+            col = name
             scores[f"ad_{col}"] = delta.mean(1)[inv]
             scores[f"sd_{col}"] = delta.std(1)[inv]
             if a.save_deltas == "npy":
@@ -419,8 +385,8 @@ def main():
             r = correlations(scores[f"ad_{col}"].to_numpy(), y, nonneg)
             rows.append(dict(score=col, model=name, panel=pk, n_records=len(B), **r))
             print(f"{col}: " + ", ".join(f"{k} {v:.4f}" for k, v in r.items() if not k.startswith("n_")), flush=True)
-            # bias invariance on random probes and background records of the primary panel
-            if a.check_n and pk == "peaks":
+            # bias invariance on random probes and background records
+            if a.check_n:
                 rng = np.random.RandomState(12345)
                 qi = np.sort(rng.choice(len(Q), size=min(a.check_n, len(Q)), replace=False))
                 bi = np.sort(rng.choice(len(B), size=min(8, len(B)), replace=False))
