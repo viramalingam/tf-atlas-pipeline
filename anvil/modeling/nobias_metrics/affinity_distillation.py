@@ -24,6 +24,12 @@ numerically (deltas with a non-flat, strand-asymmetric bias input, the strands
 swapped for the reverse complement as in predict.py, against zero bias), and
 fails if either check does not hold.
 
+Engines: --engine fast (default) runs each background once and recomputes, for every
+probe, only the window of each layer the centred insert changes (WindowedScorer; exact, about
+6x faster than the full pass for the released architecture); --engine full puts every
+sequence through the Keras model (CountsScorer). Every fast run checks itself against the
+full engine on 64 random probes x 4 background pairs and fails above --check-tol.
+
 Backgrounds: --n-peak-backgrounds K of the experiment's peaks (summit-centred 2114 bp
 windows inside the chromosome, ACGT only, all chromosomes of the peaks file), drawn in a
 seeded random order without replacement, each dinucleotide shuffled with a seed that
@@ -82,6 +88,13 @@ ap.add_argument("--check-n", type=int, default=64,
                 help="random probes for the bias-invariance check (0 = skip)")
 ap.add_argument("--check-tol", type=float, default=1e-4)
 ap.add_argument("--batch-size", type=int, default=512, help="probes per model call (x2 with the RC)")
+ap.add_argument("--engine", choices=["fast", "full"], default="fast",
+                help="fast: run each background once and recompute only the layer windows the insert "
+                     "changes (exact; checked against full on a sample every run); full: every "
+                     "sequence through the Keras model")
+ap.add_argument("--fast-batch-size", type=int, default=1024, help="probes per windowed call")
+ap.add_argument("--engine-check-n", type=int, default=64,
+                help="random probes (x 4 background pairs) for the fast-vs-full check")
 ap.add_argument("--gpu", default=None, help="CUDA_VISIBLE_DEVICES (default: leave as is)")
 ap.add_argument("--allow-cpu", action="store_true", help="run without a GPU (local tests)")
 ap.add_argument("--save-deltas", nargs="?", const="npy", choices=["npy", "npz"], default=None)
@@ -222,8 +235,7 @@ class CountsScorer:
     """RC-averaged raw log counts of the counts head, bias input `cb` (2 values, the
     per-strand log(sum + 1); swapped for the reverse complement as in predict.py)."""
 
-    def __init__(self, model_dir, batch_size):
-        m = load_model(model_dir, compile=False)
+    def __init__(self, m, batch_size):
         self.model = Model([m.get_layer("sequence").input, m.get_layer("counts_bias_input_0").input],
                            m.get_layer("logcounts_predictions").output)
         self.structure = check_counts_head(m)
@@ -280,6 +292,180 @@ class CountsScorer:
         return delta, base
 
 
+class WindowedScorer:
+    """Exact fast path for the released BPNet counts path, the same scores as CountsScorer
+    with every bias input zero.
+
+    The counts path is a valid-padding stack: main_conv_0 (kernel k0) and ReLU, then
+    dilated residual layers main_dil_conv_i (kernel 3, dilation d_i) on the ReLU of the
+    previous pre-ReLU sum, added to that sum cropped by d_i on each side, then ReLU; a
+    global average over the last layer, a Dense(1), and the linear output layer on
+    [counts head, bias branch]. A probe at the window centre ([1039, 1075)) changes only
+    a fixed window of each layer: in layer-index coordinates [s - k0 + 1, e) of the first
+    conv's outputs, and [lo - 2d, hi) of a dilated layer's outputs when [lo, hi) of its
+    input changed (6.3x fewer multiply-adds for the released architecture). So each
+    background is run once with every layer cached, and for each batch of probes only
+    those windows are recomputed from the cached flanks; the global average is updated
+    from the last window. The layer structure is checked on the model graph, and every
+    run compares the result with CountsScorer on a random sample.
+
+    The panel must be closed under reverse complement in pairs (records 2k, 2k + 1): for a
+    centred even-length insert in an even window RC(r + q) = RC(r) + RC(q), so
+        delta(q, r) = [g(r + q) + g(r' + RC(q))] / 2 - [g(r) + g(r')] / 2,  r' = RC(r),
+    with g the model's raw log counts, which is CountsScorer's reverse-complement average.
+    """
+
+    def __init__(self, m, batch_size):
+        g = m.get_layer
+
+        def inbound(layer):
+            x = layer._inbound_nodes[0].inbound_layers
+            return [l.name for l in (x if isinstance(x, (list, tuple)) else [x])]
+
+        def check(cond, what):
+            if not cond:
+                raise ValueError(f"fast engine: unexpected model structure ({what}); use --engine full")
+
+        def conv_ok(c, k, d):
+            return (isinstance(c, tf.keras.layers.Conv1D) and c.kernel_size == (k,) and c.dilation_rate == (d,)
+                    and c.strides == (1,) and c.padding == "valid" and c.activation.__name__ == "linear" and c.use_bias)
+
+        def relu_ok(r, src):
+            cfg = r.get_config()
+            return (isinstance(r, tf.keras.layers.ReLU) and cfg.get("max_value") is None
+                    and not cfg.get("negative_slope") and not cfg.get("threshold") and inbound(r) == [src])
+
+        c0 = g("main_conv_0")
+        self.k0 = c0.kernel_size[0]
+        check(conv_ok(c0, self.k0, 1) and inbound(c0) == ["sequence"], "main_conv_0")
+        check(relu_ok(g("main_conv_0_relu"), "main_conv_0"), "main_conv_0_relu")
+        self.W0, self.b0 = [tf.constant(w) for w in c0.get_weights()]
+        self.dil, prev_sum, prev_relu, i = [], "main_conv_0", "main_conv_0_relu", 1
+        names = {l.name for l in m.layers}
+        while f"main_dil_conv_{i}" in names:
+            c = g(f"main_dil_conv_{i}")
+            d = int(c.dilation_rate[0])
+            crop, add = g(f"{prev_sum}_cr"), g(f"main_add_{i}")
+            check(conv_ok(c, 3, d) and inbound(c) == [prev_relu], f"main_dil_conv_{i}")
+            check(isinstance(crop, tf.keras.layers.Cropping1D) and tuple(crop.cropping) == (d, d)
+                  and inbound(crop) == [prev_sum], f"{prev_sum}_cr")
+            check(isinstance(add, tf.keras.layers.Add)
+                  and sorted(inbound(add)) == sorted([c.name, crop.name]), f"main_add_{i}")
+            check(relu_ok(g(f"main_add_{i}_relu"), add.name), f"main_add_{i}_relu")
+            W, b = c.get_weights()
+            self.dil.append((d, tf.constant(W), tf.constant(b)))
+            prev_sum, prev_relu, i = add.name, f"main_add_{i}_relu", i + 1
+        check(len(self.dil) > 0, "no dilated layers")
+        gap, head, out = g("main_global_avg_pooling"), g("main_counts_head"), g("logcounts_predictions")
+        check(isinstance(gap, tf.keras.layers.GlobalAveragePooling1D) and inbound(gap) == [prev_relu],
+              "main_global_avg_pooling")
+        check(isinstance(head, tf.keras.layers.Dense) and head.units == 1 and head.activation.__name__ == "linear"
+              and inbound(head) == [gap.name], "main_counts_head")
+        concat = g(inbound(out)[0])
+        branches = inbound(concat)
+        check(isinstance(concat, tf.keras.layers.Concatenate) and branches[0] == head.name and len(branches) == 2,
+              "counts head concatenation")
+        self.wh, self.bh = [tf.constant(w) for w in head.get_weights()]
+        self.wo, self.bo = [tf.constant(w) for w in out.get_weights()]
+        # the bias branch with every bias input zero is a constant
+        bias_branch = Model(g("counts_bias_input_0").input, g(branches[1]).output)
+        self.bias_feat = tf.constant(bias_branch(np.zeros((1, 2), np.float32), training=False).numpy())
+        n = [INPUT_LEN - self.k0 + 1]
+        win = [(max(START - self.k0 + 1, 0), min(END, n[0]))]
+        for d, _, _ in self.dil:
+            n.append(n[-1] - 2 * d)
+            lo, hi = win[-1]
+            win.append((max(lo - 2 * d, 0), min(hi, n[-1])))
+        self.n, self.win, self.bs = n, win, batch_size
+        self._full = tf.function(self._full_py, input_signature=[tf.TensorSpec((None, INPUT_LEN, 4), tf.float32)])
+        self._win = tf.function(self._win_py)
+
+    def summary(self):
+        ch = int(self.W0.shape[-1])
+        full = self.n[0] * self.k0 * 4 * ch + sum(n_ * 3 * ch * ch for n_ in self.n[1:])
+        part = ((self.win[0][1] - self.win[0][0]) * self.k0 * 4 * ch
+                + sum((hi - lo) * 3 * ch * ch for lo, hi in self.win[1:]))
+        return dict(layer_lengths=self.n, changed_positions=[hi - lo for lo, hi in self.win],
+                    multiply_add_ratio=round(full / part, 2))
+
+    def _head(self, gap):
+        h = tf.matmul(gap, self.wh) + self.bh
+        z = tf.concat([h, tf.broadcast_to(self.bias_feat, (tf.shape(h)[0], self.bias_feat.shape[-1]))], axis=1)
+        return (tf.matmul(z, self.wo) + self.bo)[:, 0]
+
+    def _full_py(self, X):
+        S = [tf.nn.conv1d(X, self.W0, 1, "VALID") + self.b0]
+        A = [tf.nn.relu(S[0])]
+        for d, W, b in self.dil:
+            S.append(tf.nn.conv1d(A[-1], W, 1, "VALID", dilations=d) + b + S[-1][:, d:-d])
+            A.append(tf.nn.relu(S[-1]))
+        return S, A, self._head(tf.reduce_mean(A[-1], axis=1))
+
+    @staticmethod
+    def _assemble(ref, new, lo, hi, p, q):
+        """Rows [p, q) of a layer: the batch's values on [lo, hi), the background's elsewhere."""
+        m = tf.shape(new)[0]
+        a_, b_ = max(p, lo), min(q, hi)
+        parts = []
+        if p < a_:
+            parts.append(tf.broadcast_to(ref[p:a_], (m, a_ - p, ref.shape[-1])))
+        parts.append(new[:, a_ - lo:b_ - lo])
+        if b_ < q:
+            parts.append(tf.broadcast_to(ref[b_:q], (m, q - b_, ref.shape[-1])))
+        return tf.concat(parts, axis=1) if len(parts) > 1 else parts[0]
+
+    def _win_py(self, xb, S_ref, A_ref, sumA_last, Q):
+        m = tf.shape(Q)[0]
+        lo, hi = self.win[0]
+        x = tf.concat([tf.broadcast_to(xb[lo:START], (m, START - lo, 4)), Q,
+                       tf.broadcast_to(xb[END:hi + self.k0 - 1], (m, hi + self.k0 - 1 - END, 4))], axis=1)
+        s = tf.nn.conv1d(x, self.W0, 1, "VALID") + self.b0
+        act = tf.nn.relu(s)
+        for i, (d, W, b) in enumerate(self.dil, start=1):
+            plo, phi = lo, hi
+            lo, hi = self.win[i]
+            inp = self._assemble(A_ref[i - 1], act, plo, phi, lo, hi + 2 * d)
+            res = self._assemble(S_ref[i - 1], s, plo, phi, lo + d, hi + d)
+            s = tf.nn.conv1d(inp, W, 1, "VALID", dilations=d) + b + res
+            act = tf.nn.relu(s)
+        gap = (sumA_last - tf.reduce_sum(A_ref[-1][lo:hi], axis=0) + tf.reduce_sum(act, axis=1)) / self.n[-1]
+        return self._head(gap)
+
+    def scan(self, B, Q, log_every=0, label=""):
+        """B (n_bg, 2114, 4) RC-closed panel, Q (n_q, 36, 4) probes -> deltas (n_q, n_bg) and the
+        reverse-complement-averaged baselines (n_bg,), as CountsScorer.scan with zero bias."""
+        n_bg = len(B)
+        if n_bg % 2 or any(not np.array_equal(B[k + 1], B[k][::-1, ::-1]) for k in range(0, n_bg, 2)):
+            raise ValueError("fast engine: the panel must hold each background followed by its reverse complement")
+        QR = np.ascontiguousarray(Q[:, ::-1, ::-1])
+        g_q = np.empty((len(Q), n_bg), np.float32)
+        g_rq = np.empty((len(Q), n_bg), np.float32)
+        g0 = np.empty(n_bg, np.float32)
+        t0 = time.time()
+        for j in range(n_bg):
+            xb = tf.constant(B[j])
+            S, A, lc = self._full(xb[None])
+            S, A = [t_[0] for t_ in S], [t_[0] for t_ in A]
+            g0[j] = lc.numpy()[0]
+            sumA = tf.reduce_sum(A[-1], axis=0)
+            for arr, QQ in ((g_q, Q), (g_rq, QR)):
+                parts = [self._win(xb, S, A, sumA, tf.constant(QQ[lo:lo + self.bs])) for lo in range(0, len(QQ), self.bs)]
+                arr[:, j] = tf.concat(parts, axis=0).numpy()
+            if log_every and (j + 1) % log_every == 0:
+                el = time.time() - t0
+                print(f"  {label}: {j + 1}/{n_bg} backgrounds, {el / 60:.1f} min "
+                      f"({el / (j + 1) * (n_bg - j - 1) / 60:.1f} min left)", flush=True)
+        delta = np.empty_like(g_q)
+        base = np.empty(n_bg, np.float32)
+        for k in range(0, n_bg, 2):
+            base[k] = base[k + 1] = (g0[k] + g0[k + 1]) / 2
+            delta[:, k] = (g_q[:, k] + g_rq[:, k + 1]) / 2 - base[k]
+            delta[:, k + 1] = (g_q[:, k + 1] + g_rq[:, k]) / 2 - base[k]
+        if not (np.isfinite(delta).all() and np.isfinite(base).all()):
+            raise FloatingPointError(f"{label}: non-finite predictions")
+        return delta, base
+
+
 def peak_panel(peaks, fasta, n, seed):
     """n eligible peaks (summit-centred 2114 bp inside the chromosome, ACGT only), in a
     seeded random order without replacement, each dinucleotide shuffled with a seed that
@@ -329,7 +515,7 @@ def main():
                 versions=dict(tensorflow=tf.__version__, bpnet=package_version("bpnet"),
                               numpy=np.__version__, pandas=pd.__version__, scipy=scipy.__version__,
                               python=sys.version.split()[0]),
-                gpus=[d.name for d in gpus], probes_sha256=sha256(a.probes))
+                gpus=[d.name for d in gpus], probes_sha256=sha256(a.probes), engine=a.engine)
 
     d = pd.read_csv(a.probes, sep="\t")
     meas = pd.to_numeric(d[a.column], errors="coerce")
@@ -369,11 +555,35 @@ def main():
             raise ValueError(f"model {name} is the same file as {[k for k, v in model_hashes.items() if v == digest]}")
         model_hashes[name] = digest
         t0 = time.time()
-        sc = CountsScorer(mdir, a.batch_size)
-        info["models"][name] = dict(path=path[:300], savedmodel=mdir, sha256=digest, counts_head=sc.structure)
+        keras_model = load_model(mdir, compile=False)
+        sc = CountsScorer(keras_model, a.batch_size)
+        info["models"][name] = dict(path=path[:300], savedmodel=mdir, sha256=digest, counts_head=sc.structure,
+                                    engine=a.engine)
+        fs = None
+        if a.engine == "fast":
+            fs = WindowedScorer(keras_model, a.fast_batch_size)
+            info["models"][name]["windowed"] = fs.summary()
         for pk, (nm, sq) in panels.items():
             B = one_hot(sq, INPUT_LEN)
-            delta, base = sc.scan(B, Q, log_every=max(1, len(B) // 10), label=f"{name}/{pk}")
+            scorer = fs if fs is not None else sc
+            delta, base = scorer.scan(B, Q, log_every=max(1, len(B) // 10), label=f"{name}/{pk}")
+            if fs is not None and a.engine_check_n:
+                # the fast engine against the Keras model on random probes and background pairs
+                rng = np.random.RandomState(54321)
+                qi = np.sort(rng.choice(len(Q), size=min(a.engine_check_n, len(Q)), replace=False))
+                pairs = np.sort(rng.choice(len(B) // 2, size=min(4, len(B) // 2), replace=False))
+                bi = np.sort(np.concatenate([2 * pairs, 2 * pairs + 1]))
+                d_full, b_full = sc.scan(B[bi], Q[qi])
+                err = float(max(np.abs(d_full - delta[qi][:, bi]).max(), np.abs(b_full - base[bi]).max()))
+                passed = bool(np.isfinite(err) and err < a.check_tol)
+                info["models"][name]["engine_check"] = dict(
+                    n_probes=int(len(qi)), n_backgrounds=int(len(bi)), max_abs_difference=err,
+                    tolerance=a.check_tol, passed=passed)
+                print(f"  {name}: fast vs full engine on {len(qi)} probes x {len(bi)} backgrounds: "
+                      f"max abs difference {err:.2e}", flush=True)
+                if not passed:
+                    (out / "check.json").write_text(json.dumps(info, indent=2, default=str) + "\n")
+                    raise ValueError(f"{name}: fast engine differs from the full engine by {err:.3e}")
             col = name
             scores[f"ad_{col}"] = delta.mean(1)[inv]
             scores[f"sd_{col}"] = delta.std(1)[inv]
@@ -404,7 +614,7 @@ def main():
                     (out / "check.json").write_text(json.dumps(info, indent=2, default=str) + "\n")
                     raise ValueError(f"{name}: bias check failed, max abs delta difference {err:.3e}")
         info["models"][name]["seconds"] = round(time.time() - t0, 1)
-        del sc
+        del sc, fs, keras_model
         tf.keras.backend.clear_session()
 
     if saved:

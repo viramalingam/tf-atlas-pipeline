@@ -58,7 +58,10 @@ the score is the mean over backgrounds of the change in log counts (the counts h
 output, averaged over the sequence and its reverse complement, every bias input zero). The
 backgrounds, the same for both models, are `n_peak_backgrounds` of the experiment's own peaks
 (all chromosomes, summit-centred), dinucleotide shuffled, each followed by its reverse complement;
-the first N peaks of a larger panel are exactly the N-peak panel. Metrics: Pearson
+the first N peaks of a larger panel are exactly the N-peak panel. Scoring uses an exact fast path
+(fastISM-style): each background is run once with every layer cached, and for each probe only the
+window of each layer that the centred insert changes is recomputed (about 6x fewer multiply-adds);
+every run checks it against the full Keras forward pass on a random sample. Metrics: Pearson
 and Spearman against the measured intensity, on all probes and on non-negative-control probes. The
 counts output is a linear layer on [sequence trunk, bias], so these scores are the same for the
 released model with its bias or with the bias set to zero; every run checks that on the model

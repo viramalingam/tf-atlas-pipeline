@@ -7,7 +7,8 @@ version 1.0
 # the scripts are cloned at the tag below.
 # Score per probe: mean over backgrounds of the change in log counts (counts head,
 # reverse-complement averaged, bias input zero) when the 36 bp probe replaces the
-# centre of the background. Backgrounds: n_peak_backgrounds of the experiment's peaks
+# centre of the background (exact fast path: each background is run once and only the
+# layer windows the insert changes are recomputed). Backgrounds: n_peak_backgrounds of the experiment's peaks
 # (all chromosomes, summit-centred), dinucleotide shuffled, each with its reverse
 # complement, the same for both models (realized panel: panel_peaks.fa).
 # Outputs: scores.tsv.gz (per probe), metrics.tsv, check.json, deltas.npz (probe x
@@ -40,7 +41,7 @@ task run_gcpbm_affinity {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch gcpbm_affinity-v0.3.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch gcpbm_affinity-v0.4.0 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/nobias_metrics/
 
