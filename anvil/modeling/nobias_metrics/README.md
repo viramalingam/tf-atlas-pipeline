@@ -49,11 +49,30 @@ the experiment's control in `bigwigs`. The architecture is the released one with
 zero; training settings as the release (`bpnet_params_gap_mse.json`, the fold's
 `split_<f>_encode_fold.json`, learning rate 0.001).
 
+## Affinity distillation on gcPBM
+
+`gcpbm_affinity.wdl` scores one experiment's fold-0 released model and its bias = 0 trained model
+(`run_modelling_bias0.wdl`) on in vitro gcPBM probes (affinity distillation, Alexandari et al.
+2023): each 36 bp probe replaces the centre of a 2114 bp background (zero-based [1039, 1075)), and
+the score is the mean over backgrounds of the change in log counts (the counts head's scalar
+output, averaged over the sequence and its reverse complement, every bias input zero). Two
+background panels, the same for both models: the first `n_background_windows` (20, 50, 100 or
+200) dinucleotide-shuffled hg38 windows of `backgrounds_fa`, each followed by its reverse
+complement, and `n_peak_backgrounds` shuffled test-chromosome peaks of the experiment. Metrics:
+Pearson and Spearman against the measured intensity, on all probes and on non-negative-control
+probes. The counts output is a linear layer on [sequence trunk, bias], so these scores are the
+same for the released model with its bias or with the bias set to zero; every run checks that on
+the model graph and numerically and fails otherwise. `affinity_distillation.py` is the Keras port
+of the torch engine in `tfatlas/analysis/syntax_analysis/paralog_specificity/lib/bpnet_engine.py`
+(validated against it: GABPA HepG2, 5 folds, Pearson 0.7506 for both).
+
 ## Files
 
 - `nobias_metrics.wdl`: Terra workflow; clones this repository at the tag pinned in its command.
 - `run_modelling_bias0.wdl`: release-pipeline training of one fold model with bias = 0 (above).
 - `make_zero_control_bigwig.py`: builds the all-zero control bigWigs (10 kb tiles) used by it.
+- `gcpbm_affinity.wdl`, `gcpbm_affinity.sh`, `affinity_distillation.py`: affinity distillation on
+  gcPBM (above); the driver checks its inputs (one model tar per list, different tars, same splits).
 - `nobias_metrics.sh`: driver (positional arguments 1-15 as `au_metrics.sh`, then fold,
   run_probes_and_baselines). Steps: ambiguous-peak removal (bedtools), `bpnet-predict` with bias
   and with `--set-bias-as-zero`, then the scripts below; a failed step fails the task.
@@ -70,3 +89,9 @@ zero; training settings as the release (`bpnet_params_gap_mse.json`, the fold's
 `_control_only`, `_shuffled_sequence(_wo_bias)`, `_label_shuffle(_wo_bias)`,
 `_label_shuffle_linear_probe(_wo_bias)`; plus `auprc_baseline` and `probe_version` (2: linear probes,
 counts least squares on raw features; 68 Floats).
+
+`gcpbm_affinity.wdl`: `scores_tsv` (per probe: the library's columns, `ad_<model>[_peaks]`,
+`sd_<model>[_peaks]`), `metrics_tsv`, `check_json` (versions, hashes, checks), `deltas_npz` (probe x
+background deltas), `peaks_panel_fa`, `log`, and 17 Floats: `<metric>_<model>[_peaks]` with metric
+`pearson_all`, `spearman_all`, `pearson_nonnegctrl`, `spearman_nonnegctrl` and model `released` or
+`bias0`, plus `bias_check_max_abs_delta_difference`.

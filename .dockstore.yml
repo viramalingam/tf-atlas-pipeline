@@ -14,3 +14,10 @@ workflows:
     authors:
       - name: Vivekanandan Ramalingam
         email: vir@stanford.edu
+  - name: gcpbm_affinity
+    subclass: WDL
+    primaryDescriptorPath: /anvil/modeling/nobias_metrics/gcpbm_affinity.wdl
+    publish: true
+    authors:
+      - name: Vivekanandan Ramalingam
+        email: vir@stanford.edu
