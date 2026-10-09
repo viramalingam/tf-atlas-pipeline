@@ -319,20 +319,25 @@ class WindowedScorer:
         g = m.get_layer
 
         def inbound(layer):
+            check(len(layer._inbound_nodes) == 1, f"{layer.name} is called more than once")
             x = layer._inbound_nodes[0].inbound_layers
             return [l.name for l in (x if isinstance(x, (list, tuple)) else [x])]
+
+        def f32(layer):
+            return getattr(layer, "compute_dtype", layer.dtype) == "float32"
 
         def check(cond, what):
             if not cond:
                 raise ValueError(f"fast engine: unexpected model structure ({what}); use --engine full")
 
         def conv_ok(c, k, d):
-            return (isinstance(c, tf.keras.layers.Conv1D) and c.kernel_size == (k,) and c.dilation_rate == (d,)
-                    and c.strides == (1,) and c.padding == "valid" and c.activation.__name__ == "linear" and c.use_bias)
+            return (type(c) is tf.keras.layers.Conv1D and c.kernel_size == (k,) and c.dilation_rate == (d,)
+                    and c.strides == (1,) and c.padding == "valid" and c.activation.__name__ == "linear"
+                    and c.use_bias and c.data_format == "channels_last" and getattr(c, "groups", 1) == 1 and f32(c))
 
         def relu_ok(r, src):
             cfg = r.get_config()
-            return (isinstance(r, tf.keras.layers.ReLU) and cfg.get("max_value") is None
+            return (type(r) is tf.keras.layers.ReLU and cfg.get("max_value") is None
                     and not cfg.get("negative_slope") and not cfg.get("threshold") and inbound(r) == [src])
 
         c0 = g("main_conv_0")
@@ -347,9 +352,9 @@ class WindowedScorer:
             d = int(c.dilation_rate[0])
             crop, add = g(f"{prev_sum}_cr"), g(f"main_add_{i}")
             check(conv_ok(c, 3, d) and inbound(c) == [prev_relu], f"main_dil_conv_{i}")
-            check(isinstance(crop, tf.keras.layers.Cropping1D) and tuple(crop.cropping) == (d, d)
+            check(type(crop) is tf.keras.layers.Cropping1D and tuple(crop.cropping) == (d, d)
                   and inbound(crop) == [prev_sum], f"{prev_sum}_cr")
-            check(isinstance(add, tf.keras.layers.Add)
+            check(type(add) is tf.keras.layers.Add
                   and sorted(inbound(add)) == sorted([c.name, crop.name]), f"main_add_{i}")
             check(relu_ok(g(f"main_add_{i}_relu"), add.name), f"main_add_{i}_relu")
             W, b = c.get_weights()
@@ -357,19 +362,27 @@ class WindowedScorer:
             prev_sum, prev_relu, i = add.name, f"main_add_{i}_relu", i + 1
         check(len(self.dil) > 0, "no dilated layers")
         gap, head, out = g("main_global_avg_pooling"), g("main_counts_head"), g("logcounts_predictions")
-        check(isinstance(gap, tf.keras.layers.GlobalAveragePooling1D) and inbound(gap) == [prev_relu],
-              "main_global_avg_pooling")
-        check(isinstance(head, tf.keras.layers.Dense) and head.units == 1 and head.activation.__name__ == "linear"
-              and inbound(head) == [gap.name], "main_counts_head")
+        check(type(gap) is tf.keras.layers.GlobalAveragePooling1D and gap.data_format == "channels_last"
+              and inbound(gap) == [prev_relu], "main_global_avg_pooling")
+        check(type(head) is tf.keras.layers.Dense and head.units == 1 and head.activation.__name__ == "linear"
+              and f32(head) and inbound(head) == [gap.name], "main_counts_head")
+        check(type(out) is tf.keras.layers.Dense and out.units == 1 and out.activation.__name__ == "linear"
+              and f32(out) and len(inbound(out)) == 1, "logcounts_predictions")
+        check_counts_head(m)
         concat = g(inbound(out)[0])
         branches = inbound(concat)
-        check(isinstance(concat, tf.keras.layers.Concatenate) and branches[0] == head.name and len(branches) == 2,
-              "counts head concatenation")
+        check(type(concat) is tf.keras.layers.Concatenate and concat.axis in (-1, 1) and branches[0] == head.name
+              and len(branches) == 2, "counts head concatenation")
+        # the bias branch must be the released per-example logsumexp over the two strands
+        lse = g(branches[1])
+        check(type(lse) is tf.keras.layers.Lambda and inbound(lse) == ["counts_bias_input_0"], "bias branch")
         self.wh, self.bh = [tf.constant(w) for w in head.get_weights()]
         self.wo, self.bo = [tf.constant(w) for w in out.get_weights()]
         # the bias branch with every bias input zero is a constant
         bias_branch = Model(g("counts_bias_input_0").input, g(branches[1]).output)
-        self.bias_feat = tf.constant(bias_branch(np.zeros((1, 2), np.float32), training=False).numpy())
+        feat = bias_branch(np.zeros((3, 2), np.float32), training=False).numpy()
+        check(feat.shape == (3, 1) and np.allclose(feat, np.log(2.0), atol=1e-6), "bias branch is not logsumexp")
+        self.bias_feat = tf.constant(feat[:1])
         n = [INPUT_LEN - self.k0 + 1]
         win = [(max(START - self.k0 + 1, 0), min(END, n[0]))]
         for d, _, _ in self.dil:
@@ -404,8 +417,11 @@ class WindowedScorer:
     @staticmethod
     def _assemble(ref, new, lo, hi, p, q):
         """Rows [p, q) of a layer: the batch's values on [lo, hi), the background's elsewhere."""
+        assert 0 <= p < q <= ref.shape[0] and 0 <= lo < hi <= ref.shape[0] and new.shape[1] == hi - lo
         m = tf.shape(new)[0]
         a_, b_ = max(p, lo), min(q, hi)
+        if a_ >= b_:                       # nothing changed in [p, q): the background's rows
+            return tf.broadcast_to(ref[p:q], (m, q - p, ref.shape[-1]))
         parts = []
         if p < a_:
             parts.append(tf.broadcast_to(ref[p:a_], (m, a_ - p, ref.shape[-1])))
@@ -428,8 +444,20 @@ class WindowedScorer:
             res = self._assemble(S_ref[i - 1], s, plo, phi, lo + d, hi + d)
             s = tf.nn.conv1d(inp, W, 1, "VALID", dilations=d) + b + res
             act = tf.nn.relu(s)
-        gap = (sumA_last - tf.reduce_sum(A_ref[-1][lo:hi], axis=0) + tf.reduce_sum(act, axis=1)) / self.n[-1]
+        if lo == 0 and hi == self.n[-1]:
+            gap = tf.reduce_mean(act, axis=1)
+        else:
+            gap = (sumA_last - tf.reduce_sum(A_ref[-1][lo:hi], axis=0) + tf.reduce_sum(act, axis=1)) / self.n[-1]
         return self._head(gap)
+
+    def raw(self, b, Q):
+        """g(b with q) for one background (2114, 4) and probes Q, without RC averaging."""
+        xb = tf.constant(b)
+        S, A, _ = self._full(xb[None])
+        S, A = [t_[0] for t_ in S], [t_[0] for t_ in A]
+        sumA = tf.reduce_sum(A[-1], axis=0)
+        return tf.concat([self._win(xb, S, A, sumA, tf.constant(Q[lo:lo + self.bs]))
+                          for lo in range(0, len(Q), self.bs)], axis=0).numpy()
 
     def scan(self, B, Q, log_every=0, label=""):
         """B (n_bg, 2114, 4) RC-closed panel, Q (n_q, 36, 4) probes -> deltas (n_q, n_bg) and the
@@ -566,27 +594,54 @@ def main():
         for pk, (nm, sq) in panels.items():
             B = one_hot(sq, INPUT_LEN)
             scorer = fs if fs is not None else sc
-            delta, base = scorer.scan(B, Q, log_every=max(1, len(B) // 10), label=f"{name}/{pk}")
             if fs is not None and a.engine_check_n:
-                # the fast engine against the Keras model on random probes and background pairs
+                # preflight: a small fast-vs-full comparison before the full scan
+                q0 = np.arange(min(16, len(Q)))
+                d_f, b_f = fs.scan(B[:2], Q[q0])
+                d_k, b_k = sc.scan(B[:2], Q[q0])
+                pre = float(max(np.abs(d_f - d_k).max(), np.abs(b_f - b_k).max()))
+                if not (np.isfinite(pre) and pre < a.check_tol):
+                    raise ValueError(f"{name}: fast engine preflight differs from the full engine by {pre:.3e}")
+            delta, base = scorer.scan(B, Q, log_every=max(1, len(B) // 10), label=f"{name}/{pk}")
+            if fs is not None and not a.engine_check_n:
+                info["models"][name]["engine_check"] = dict(skipped=True)
+            if fs is not None and a.engine_check_n:
+                # the fast engine against the Keras model: random probes, probes of the last
+                # (partial) batch, the largest and smallest scores, and random background pairs
                 rng = np.random.RandomState(54321)
-                qi = np.sort(rng.choice(len(Q), size=min(a.engine_check_n, len(Q)), replace=False))
+                ad_ = delta.mean(1)
+                last = np.arange((len(Q) - 1) // a.fast_batch_size * a.fast_batch_size, len(Q))
+                special = np.unique(np.concatenate([rng.choice(last, size=min(8, len(last)), replace=False),
+                                                    np.argsort(ad_)[:4], np.argsort(ad_)[-4:]]))
+                rest = np.setdiff1d(np.arange(len(Q)), special)
+                qi = np.sort(np.concatenate([special, rng.choice(rest, size=max(0, min(a.engine_check_n, len(Q))
+                                                                               - len(special)), replace=False)]))
                 pairs = np.sort(rng.choice(len(B) // 2, size=min(4, len(B) // 2), replace=False))
                 bi = np.sort(np.concatenate([2 * pairs, 2 * pairs + 1]))
                 d_full, b_full = sc.scan(B[bi], Q[qi])
-                err = float(max(np.abs(d_full - delta[qi][:, bi]).max(), np.abs(b_full - base[bi]).max()))
+                diff = np.abs(d_full - delta[qi][:, bi])
+                wq, wb = np.unravel_index(int(diff.argmax()), diff.shape)
+                # raw single-orientation predictions, which the RC average could hide
+                j = int(bi[0])
+                X = np.repeat(B[j:j + 1], len(qi), axis=0)
+                X[:, START:END] = Q[qi]
+                g_keras = sc.model([tf.constant(X), tf.zeros((len(qi), 2))], training=False).numpy()[:, 0]
+                raw_err = float(np.abs(fs.raw(B[j], Q[qi]) - g_keras).max())
+                err = float(max(diff.max(), np.abs(b_full - base[bi]).max(), raw_err, pre))
                 passed = bool(np.isfinite(err) and err < a.check_tol)
                 info["models"][name]["engine_check"] = dict(
                     n_probes=int(len(qi)), n_backgrounds=int(len(bi)), max_abs_difference=err,
-                    tolerance=a.check_tol, passed=passed)
+                    preflight_max_abs_difference=pre, raw_orientation_max_abs_difference=raw_err,
+                    worst=dict(probe=int(qi[wq]), background=int(bi[wb]), difference=float(diff.max())),
+                    probes=qi.tolist(), backgrounds=bi.tolist(), tolerance=a.check_tol, passed=passed)
                 print(f"  {name}: fast vs full engine on {len(qi)} probes x {len(bi)} backgrounds: "
                       f"max abs difference {err:.2e}", flush=True)
                 if not passed:
                     (out / "check.json").write_text(json.dumps(info, indent=2, default=str) + "\n")
                     raise ValueError(f"{name}: fast engine differs from the full engine by {err:.3e}")
             col = name
-            scores[f"ad_{col}"] = delta.mean(1)[inv]
-            scores[f"sd_{col}"] = delta.std(1)[inv]
+            scores[f"ad_{col}"] = delta.mean(1, dtype=np.float64)[inv]
+            scores[f"sd_{col}"] = delta.std(1, dtype=np.float64)[inv]
             if a.save_deltas == "npy":
                 np.save(out / f"deltas_{col}.npy", delta)
                 np.save(out / f"baseline_{col}.npy", base)

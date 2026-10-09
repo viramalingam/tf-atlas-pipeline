@@ -41,7 +41,7 @@ task run_gcpbm_affinity {
 		cd /; mkdir my_scripts
 		cd /my_scripts
 
-		git clone --depth 1 --branch gcpbm_affinity-v0.4.0 https://github.com/viramalingam/tf-atlas-pipeline.git
+		git clone --depth 1 --branch gcpbm_affinity-v0.4.1 https://github.com/viramalingam/tf-atlas-pipeline.git
 		chmod -R 777 tf-atlas-pipeline
 		cd tf-atlas-pipeline/anvil/modeling/nobias_metrics/
 
